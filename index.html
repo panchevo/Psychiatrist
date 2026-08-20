@@ -501,6 +501,15 @@
                 'циклодол': 3
             };
 
+            // ИСПРАВЛЕНИЕ: добавили больше имён (50 штук)
+            const ALL_NAMES = [
+                'Алексей', 'Мария', 'Иван', 'Екатерина', 'Дмитрий', 'Анна', 'Сергей', 'Ольга', 'Павел', 'Татьяна',
+                'Николай', 'Наталья', 'Артём', 'Юлия', 'Максим', 'Елена', 'Владимир', 'Ирина', 'Андрей', 'Ксения',
+                'Георгий', 'София', 'Михаил', 'Алиса', 'Роман', 'Анастасия', 'Евгений', 'Виктория', 'Игорь', 'Полина',
+                'Василий', 'Дарья', 'Григорий', 'Марина', 'Анатолий', 'Светлана', 'Пётр', 'Юрий', 'Вероника', 'Антон',
+                'Никита', 'Тимофей', 'Константин', 'Александра', 'Кирилл', 'Оксана', 'Вячеслав', 'Лидия', 'Семён', 'Валентина'
+            ];
+
             const ALL_DISEASES = [
                 { code: 'F32.0', name: 'Лёгкий депрессивный эпизод', treat: ['флуоксетин', 'глицин'], weight: 6, category: 'depression', severity: 1, gender: 'neutral' },
                 { code: 'F32.1', name: 'Умеренный депрессивный эпизод', treat: ['флуоксетин', 'кветиапин'], weight: 5, category: 'depression', severity: 2, gender: 'neutral' },
@@ -916,6 +925,9 @@
                 zLetters = [];
                 zSpawnCounter = 0;
 
+                // Восстанавливаем пул имён при переходе на новый уровень
+                namePool = shuffleArray([...ALL_NAMES]);
+
                 // Уменьшаем начальное количество пациентов на 2
                 const extraPatients = Math.floor(Math.random() * 3) + 1;
                 const totalInitial = Math.max(1, taskTarget + extraPatients - 2);
@@ -1279,7 +1291,6 @@
             let currentHealthRange = [50, 80];
             let gameActive = false;
 
-            const NAMES = ['Алексей', 'Мария', 'Иван', 'Екатерина', 'Дмитрий', 'Анна', 'Сергей', 'Ольга', 'Павел', 'Татьяна', 'Николай', 'Наталья', 'Артём', 'Юлия', 'Максим', 'Елена', 'Владимир', 'Ирина', 'Андрей', 'Ксения', 'Георгий', 'София', 'Михаил', 'Алиса', 'Роман'];
             const beds = [];
             for (let i = 0; i < 8; i++) beds.push({ x: 50 + i * 100, y: 480 + Math.sin(i * 1.2) * 20, occupied: false });
 
@@ -1446,6 +1457,7 @@
                 }
             }
 
+            // ИСПРАВЛЕНИЕ: создаём пациента с именем из пула, а не с числами
             function createPatient() {
                 const gender = Math.random() < 0.5 ? 'male' : 'female';
                 const disease = getRandomDisease(gender);
@@ -1453,20 +1465,40 @@
                 let x, y, attempts = 0;
                 do { x = random(70, W - 70); y = random(80, H - 80); attempts++; } while (attempts < 30 && isPositionBlocked(null, x, y));
                 const target = findNewTarget(null);
+                
+                // ИСПРАВЛЕНИЕ: берём имя из пула, если пул пуст — перемешиваем заново
                 let name = 'Пациент';
                 const maleNames = ['Алексей', 'Иван', 'Дмитрий', 'Сергей', 'Павел', 'Николай', 'Артём', 'Максим', 'Владимир', 'Андрей', 'Георгий', 'Михаил', 'Роман'];
                 const femaleNames = ['Мария', 'Екатерина', 'Анна', 'Ольга', 'Татьяна', 'Наталья', 'Юлия', 'Елена', 'Ирина', 'Ксения', 'София', 'Алиса'];
-                const namesPool = gender === 'male' ? maleNames : femaleNames;
-                if (namePool.length > 0) {
-                    for (let i = 0; i < namePool.length; i++) {
-                        const n = namePool[i];
-                        const isMale = maleNames.includes(n);
-                        if ((gender === 'male' && isMale) || (gender === 'female' && !isMale)) {
-                            name = namePool.splice(i, 1)[0]; break;
-                        }
+                
+                // Если пул имён пуст — перемешиваем ALL_NAMES заново
+                if (namePool.length === 0) {
+                    namePool = shuffleArray([...ALL_NAMES]);
+                }
+                
+                // Ищем подходящее имя в пуле
+                let foundName = null;
+                for (let i = 0; i < namePool.length; i++) {
+                    const n = namePool[i];
+                    const isMale = maleNames.includes(n);
+                    if ((gender === 'male' && isMale) || (gender === 'female' && !isMale)) {
+                        foundName = namePool.splice(i, 1)[0];
+                        break;
                     }
-                    if (name === 'Пациент' && namePool.length > 0) name = namePool.pop();
-                } else name = namesPool[randomInt(0, namesPool.length - 1)] + (Math.floor(Math.random() * 100));
+                }
+                
+                // Если подходящего имени нет — берём первое попавшееся
+                if (foundName === null && namePool.length > 0) {
+                    foundName = namePool.pop();
+                }
+                
+                // Если всё ещё нет имени — генерируем из списка по полу (без чисел!)
+                if (foundName === null) {
+                    const pool = gender === 'male' ? maleNames : femaleNames;
+                    foundName = pool[randomInt(0, pool.length - 1)];
+                }
+                
+                name = foundName || 'Пациент';
 
                 const [minHealth, maxHealth] = currentHealthRange;
                 const health = Math.floor(random(minHealth, maxHealth));
@@ -1481,6 +1513,13 @@
                     breathPhase: Math.random() * Math.PI * 2,
                     shakeX: 0, shakeY: 0, stuckCounter: 0
                 };
+            }
+
+            // ИСПРАВЛЕНИЕ: функция для возврата имени в пул
+            function returnNameToPool(name) {
+                if (name && name !== 'Пациент' && !namePool.includes(name)) {
+                    namePool.push(name);
+                }
             }
 
             function injectPatient(patient) {
@@ -1526,8 +1565,24 @@
                     }
                     p2.health = Math.max(0, p2.health - damage);
                     p1.health = Math.max(0, p1.health - damage);
-                    if (p1.health <= 0) { p1.state = 'healed'; score = Math.max(0, score - 3); statusMessage = '💀 ' + p1.name + ' погиб в драке! -3 Ψ'; updateUI(); endGame(); return; }
-                    if (p2.health <= 0) { p2.state = 'healed'; score = Math.max(0, score - 3); statusMessage = '💀 ' + p2.name + ' погиб в драке! -3 Ψ'; updateUI(); endGame(); return; }
+                    if (p1.health <= 0) { 
+                        p1.state = 'healed'; 
+                        returnNameToPool(p1.name); // ИСПРАВЛЕНИЕ: возвращаем имя
+                        score = Math.max(0, score - 3); 
+                        statusMessage = '💀 ' + p1.name + ' погиб в драке! -3 Ψ'; 
+                        updateUI(); 
+                        endGame(); 
+                        return; 
+                    }
+                    if (p2.health <= 0) { 
+                        p2.state = 'healed'; 
+                        returnNameToPool(p2.name); // ИСПРАВЛЕНИЕ: возвращаем имя
+                        score = Math.max(0, score - 3); 
+                        statusMessage = '💀 ' + p2.name + ' погиб в драке! -3 Ψ'; 
+                        updateUI(); 
+                        endGame(); 
+                        return; 
+                    }
                 }
                 if (p1.fightTimer <= 0 || p2.fightTimer <= 0 || p1.health <= 30 || p2.health <= 30) {
                     p1.isFighting = false; p2.isFighting = false;
@@ -1598,6 +1653,7 @@
                         statusMessage = sideEffectMessage;
                         if (patient.health <= 0) {
                             patient.state = 'healed';
+                            returnNameToPool(patient.name); // ИСПРАВЛЕНИЕ: возвращаем имя
                             score = Math.max(0, score - 5);
                             statusMessage = '💀 ' + patient.name + ' умер от побочного эффекта! -5 Ψ';
                             updateUI();
@@ -1612,6 +1668,7 @@
                     const severityLabel = getSeverityLabel(disease.severity);
                     if (patient.health >= 100) {
                         patient.state = 'healed';
+                        returnNameToPool(patient.name); // ИСПРАВЛЕНИЕ: возвращаем имя
                         const bonusPoints = 10 + Math.floor(disease.severity * 2);
                         score += bonusPoints;
                         const orderlyBonus = getOrderlyBonus();
@@ -1639,6 +1696,7 @@
                     statusMessage = '❌ ' + drugName + ' не лечит ' + disease.name + ' (-' + wrongDrugPenalty + '%)' + sideEffectMessage;
                     if (patient.health <= 0) {
                         patient.state = 'healed';
+                        returnNameToPool(patient.name); // ИСПРАВЛЕНИЕ: возвращаем имя
                         score = Math.max(0, score - 5);
                         statusMessage = '💀 ' + patient.name + ' умер! -5 Ψ';
                         updateUI();
@@ -1677,7 +1735,9 @@
                 maxNurses = limits.nurses; maxOrderlies = limits.orderlies; maxOrderlies2 = limits.orderlies2;
                 nurseCount = 0; orderlyCount = 0; orderly2Count = 0;
 
-                namePool = shuffleArray([...NAMES]);
+                // ИСПРАВЛЕНИЕ: инициализируем пул имён при старте уровня
+                namePool = shuffleArray([...ALL_NAMES]);
+                
                 patients = [];
                 // Уменьшаем начальное количество пациентов на 2
                 const extraPatients = Math.floor(Math.random() * 3) + 1;
@@ -2288,6 +2348,7 @@
                             p.health = Math.max(0, p.health - healthDropRate);
                             if (p.health <= 0) {
                                 p.state = 'healed';
+                                returnNameToPool(p.name); // ИСПРАВЛЕНИЕ: возвращаем имя
                                 score = Math.max(0, score - 5);
                                 statusMessage = '💀 ' + p.name + ' умер от болезни! -5 Ψ';
                                 updateUI();
