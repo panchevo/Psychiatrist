@@ -308,7 +308,7 @@
             const LEVELS = [
                 { 
                     id: 'bechtereva', name: 'Бехтерева', desc: 'Неврозы', 
-                    fightChance: 0.003, spawnInterval: 45, drugPrice: 5, drugLimit: 35, 
+                    fightChance: 0.003, spawnInterval: 12, drugPrice: 5, drugLimit: 35, 
                     task: 'Вылечить 3 пациентов', taskTarget: 3, healthRange: [70, 95], 
                     unlocked: true, requiredLevel: null, 
                     availableDrugs: ['глицин'], diseaseCount: 5, 
@@ -317,7 +317,7 @@
                 },
                 { 
                     id: 'suhanova', name: 'Суханова', desc: 'Тревожные расстройства', 
-                    fightChance: 0.005, spawnInterval: 38, drugPrice: 6, drugLimit: 30, 
+                    fightChance: 0.005, spawnInterval: 12, drugPrice: 6, drugLimit: 30, 
                     task: 'Вылечить 4 пациентов', taskTarget: 4, healthRange: [60, 90], 
                     unlocked: false, requiredLevel: 'bechtereva', 
                     availableDrugs: ['глицин', 'флуоксетин'], diseaseCount: 8, 
@@ -326,7 +326,7 @@
                 },
                 { 
                     id: 'korsakov', name: 'Корсаков', desc: 'Психозы и деменции', 
-                    fightChance: 0.008, spawnInterval: 34, drugPrice: 7, drugLimit: 28, 
+                    fightChance: 0.008, spawnInterval: 11, drugPrice: 7, drugLimit: 28, 
                     task: 'Вылечить 5 пациентов', taskTarget: 5, healthRange: [55, 85], 
                     unlocked: false, requiredLevel: 'suhanova', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин'], diseaseCount: 12, 
@@ -335,7 +335,7 @@
                 },
                 { 
                     id: 'balinsky', name: 'Балинский', desc: 'Психосоматика', 
-                    fightChance: 0.006, spawnInterval: 32, drugPrice: 9, drugLimit: 22, 
+                    fightChance: 0.006, spawnInterval: 11, drugPrice: 9, drugLimit: 22, 
                     task: 'Вылечить 6 пациентов', taskTarget: 6, healthRange: [55, 85], 
                     unlocked: false, requiredLevel: 'korsakov', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин'], diseaseCount: 16, 
@@ -344,7 +344,7 @@
                 },
                 { 
                     id: 'gannushkina', name: 'Ганнушкина', desc: 'Расстройства личности', 
-                    fightChance: 0.01, spawnInterval: 28, drugPrice: 8, drugLimit: 25, 
+                    fightChance: 0.01, spawnInterval: 10, drugPrice: 8, drugLimit: 25, 
                     task: 'Вылечить 7 пациентов', taskTarget: 7, healthRange: [50, 80], 
                     unlocked: false, requiredLevel: 'balinsky', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин'], diseaseCount: 20, 
@@ -353,7 +353,7 @@
                 },
                 { 
                     id: 'osipova', name: 'Осипова', desc: 'Шизофрения', 
-                    fightChance: 0.012, spawnInterval: 26, drugPrice: 10, drugLimit: 20, 
+                    fightChance: 0.012, spawnInterval: 10, drugPrice: 10, drugLimit: 20, 
                     task: 'Вылечить 8 пациентов', taskTarget: 8, healthRange: [45, 75], 
                     unlocked: false, requiredLevel: 'gannushkina', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол'], diseaseCount: 25, 
@@ -362,7 +362,7 @@
                 },
                 { 
                     id: 'zhuravsky', name: 'Журавский', desc: 'Аффективные расстройства', 
-                    fightChance: 0.009, spawnInterval: 30, drugPrice: 11, drugLimit: 24, 
+                    fightChance: 0.009, spawnInterval: 9, drugPrice: 11, drugLimit: 24, 
                     task: 'Вылечить 9 пациентов', taskTarget: 9, healthRange: [50, 80], 
                     unlocked: false, requiredLevel: 'osipova', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон'], diseaseCount: 30, 
@@ -371,7 +371,7 @@
                 },
                 { 
                     id: 'snezhnevsky', name: 'Снежневский', desc: 'Шизоаффективные расстройства', 
-                    fightChance: 0.02, spawnInterval: 22, drugPrice: 14, drugLimit: 12, 
+                    fightChance: 0.02, spawnInterval: 9, drugPrice: 14, drugLimit: 12, 
                     task: 'Вылечить 10 пациентов', taskTarget: 10, healthRange: [35, 65], 
                     unlocked: false, requiredLevel: 'zhuravsky', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин'], diseaseCount: 35, 
@@ -380,7 +380,7 @@
                 },
                 { 
                     id: 'kashchenko', name: 'Кащенко', desc: 'Смешанные расстройства', 
-                    fightChance: 0.018, spawnInterval: 20, drugPrice: 12, drugLimit: 18, 
+                    fightChance: 0.018, spawnInterval: 9, drugPrice: 12, drugLimit: 18, 
                     task: 'Вылечить 12 пациентов', taskTarget: 12, healthRange: [40, 70], 
                     unlocked: false, requiredLevel: 'snezhnevsky', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит'], diseaseCount: 40, 
@@ -389,7 +389,7 @@
                 },
                 { 
                     id: 'skvortsova-stepanova', name: 'Скворцова-Степанова', desc: 'Резистентные формы', 
-                    fightChance: 0.025, spawnInterval: 16, drugPrice: 15, drugLimit: 10, 
+                    fightChance: 0.025, spawnInterval: 9, drugPrice: 15, drugLimit: 10, 
                     task: 'Вылечить 15 пациентов', taskTarget: 15, healthRange: [30, 60], 
                     unlocked: false, requiredLevel: 'kashchenko', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 50, 
@@ -398,7 +398,7 @@
                 },
                 { 
                     id: 'gilyarovsky', name: 'Гиляровский', desc: 'Психопатии', 
-                    fightChance: 0.035, spawnInterval: 14, drugPrice: 18, drugLimit: 8, 
+                    fightChance: 0.035, spawnInterval: 8, drugPrice: 18, drugLimit: 8, 
                     task: 'Вылечить 20 пациентов', taskTarget: 20, healthRange: [25, 55], 
                     unlocked: false, requiredLevel: 'skvortsova-stepanova', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 55, 
@@ -407,7 +407,7 @@
                 },
                 { 
                     id: 'serbsky', name: 'Сербский', desc: 'Судебная психиатрия', 
-                    fightChance: 0.04, spawnInterval: 12, drugPrice: 20, drugLimit: 6, 
+                    fightChance: 0.04, spawnInterval: 8, drugPrice: 20, drugLimit: 6, 
                     task: 'Вылечить 25 пациентов', taskTarget: 25, healthRange: [20, 50], 
                     unlocked: false, requiredLevel: 'gilyarovsky', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 60, 
@@ -416,7 +416,7 @@
                 },
                 { 
                     id: 'kandinsky', name: 'Кандинский', desc: 'Бредовые расстройства', 
-                    fightChance: 0.045, spawnInterval: 10, drugPrice: 22, drugLimit: 5, 
+                    fightChance: 0.045, spawnInterval: 8, drugPrice: 22, drugLimit: 5, 
                     task: 'Вылечить 30 пациентов', taskTarget: 30, healthRange: [15, 45], 
                     unlocked: false, requiredLevel: 'serbsky', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 65, 
@@ -425,7 +425,7 @@
                 },
                 { 
                     id: 'sukhanov', name: 'Суханов', desc: 'Редкие синдромы', 
-                    fightChance: 0.05, spawnInterval: 9, drugPrice: 25, drugLimit: 4, 
+                    fightChance: 0.05, spawnInterval: 7, drugPrice: 25, drugLimit: 4, 
                     task: 'Вылечить 35 пациентов', taskTarget: 35, healthRange: [10, 40], 
                     unlocked: false, requiredLevel: 'kandinsky', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 70, 
