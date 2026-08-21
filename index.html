@@ -6,60 +6,19 @@
     <title>Психиатр</title>
     <style>
 
-/* Добавьте это в стили, чтобы убрать обводку при выделении */
-button:focus,
-button:focus-visible {
-    outline: none;
-    box-shadow: none;
+
+
+
+
+
+
+
+
+
+
+.staff-panel.hidden-staff-panel { 
+    display: none !important; 
 }
-
-/* Для всех интерактивных элементов */
-button,
-.book-btn-top,
-.tech-btn-top,
-.info-btn-top,
-.save-btn-top,
-.load-btn-top,
-.sel-card,
-.sel-level,
-.drug-pill,
-.action-btn,
-.go-btn,
-.lt-btn,
-.sel-btn {
-    outline: none;
-    -webkit-tap-highlight-color: transparent;
-}
-
-/* Для всех элементов, которые могут получать фокус */
-*:focus {
-    outline: none;
-}
-
-/* Убираем обводку у кнопок при фокусе через клавиатуру */
-button:focus-visible {
-    outline: 0px solid #4a3a2a;
-    outline-offset: 0px;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -109,9 +68,9 @@ button:focus-visible {
         .staff-panel .staff-item .action-btn { background: #b09a7a; border: none; border-bottom: 2px solid #6a5a42; color: #1a1612; padding: 0 10px; border-radius: 16px; cursor: pointer; font-size: 0.7rem; margin-left: 2px; font-family: 'Georgia', serif; font-weight: bold; }
         .staff-panel .staff-item .action-btn:active { transform: translateY(1px); border-bottom-width: 1px; }
         .staff-panel .staff-item .action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .bottom-panel { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-top: 8px; padding: 8px 16px; background: #cbb99e; border-radius: 30px; box-shadow: inset 0 4px 0 #b09a7a, 0 4px 0 #6a5a42; color: #2d2417; font-weight: bold; gap: 6px 10px; font-size: 0.95rem; font-family: 'Georgia', serif; }
+        .bottom-panel { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-top: 0px; padding: 10px 16px; background: #cbb99e; border-radius: 30px; box-shadow: inset 0 4px 0 #b09a7a, 0 4px 0 #6a5a42; color: #2d2417; font-weight: bold; gap: 6px 10px; font-size: 0.95rem; font-family: 'Georgia', serif; }
         .bottom-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .bottom-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .bottom-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap;  }
         .psychiatrist-badge { background: #b09a7a; padding: 4px 16px; border-radius: 30px; border-bottom: 3px solid #6a5a42; font-size: 0.95rem; color: #1a1612; white-space: nowrap; }
         .info-text { background: #dac9b0; padding: 4px 14px; border-radius: 30px; color: #2d2417; font-size: 0.85rem; white-space: nowrap; border-bottom: 2px solid #8a7a5a; }
         .score-text { background: #dac9b0; padding: 4px 16px; border-radius: 30px; color: #2d2417; font-size: 1rem; font-weight: bold; white-space: nowrap; border-bottom: 3px solid #8a7a5a; }
@@ -123,7 +82,7 @@ button:focus-visible {
         /* === TWO-STEP SELECTION SCREENS === */
         #selectionScreen { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(26,22,18,0.92); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; border-radius: 24px; }
         #selectionScreen.hidden { display: none; }
-        .sel-container { max-width: 1100px; width: 100%; background: #cbb99e; padding: 28px 32px; border-radius: 24px; border: 6px solid #8a7a5a; box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 0 2px #e1cfb6; color: #2d2417; max-height: 90vh; overflow-y: auto; }
+        .sel-container { max-width: 1100px; width: 100%; background: #cbb99e; padding: 28px 32px; border-radius: 24px; border: 6px solid #8a7a5a; box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 0 2px #e1cfb6; color: #2d2417; max-height: 120vh; overflow-y: auto; }
         .sel-title { font-size: 2.8rem; text-align: center; color: #1a1612; text-shadow: 0 2px 0 #b09a7a; margin-bottom: 6px; letter-spacing: 2px; font-family: 'Georgia', serif; border-bottom: 3px solid #8a7a5a; padding-bottom: 10px; }
         .sel-sub { text-align: center; color: #4a3a2a; margin-bottom: 16px; font-size: 1.2rem; border-bottom: 2px solid #b09a7a; padding-bottom: 12px; font-style: italic; }
         .sel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px; }
@@ -221,8 +180,20 @@ button:focus-visible {
         .level-transition-content .lt-btn { background: #b09a7a; border: none; border-bottom: 5px solid #6a5a42; color: #1a1612; font-weight: bold; padding: 12px 36px; border-radius: 30px; font-size: 1.1rem; cursor: pointer; transition: 0.07s; text-shadow: 0 1px 0 #dac9b0; margin: 0 6px; font-family: 'Georgia', serif; }
         .level-transition-content .lt-btn:active { transform: translateY(2px); border-bottom-width: 2px; }
         .level-transition-content .lt-btn.lt-btn-success { background: #4a7a3a; border-bottom-color: #2a4a1a; color: #fff; text-shadow: none; }
-        @media (max-width: 700px) { .game-wrapper { flex-direction: column; align-items: center; max-height: none; } .left-panel { flex-direction: row; flex-wrap: wrap; width: 100%; min-width: auto; justify-content: center; gap: 4px; align-self: stretch; max-height: 100px; overflow-y: auto; } .left-panel .drug-pill { flex-direction: row; gap: 6px; padding: 4px 8px; min-height: 32px; width: auto; flex: 0 1 auto; font-size: 0.65rem; } .left-panel .color-dot { width: 20px; height: 20px; margin-bottom: 0; } .bottom-panel { flex-direction: column; align-items: stretch; gap: 4px; font-size: 0.8rem; } .bottom-left, .bottom-right { justify-content: center; flex-wrap: wrap; } .status-msg { min-width: auto; font-size: 0.75rem; } .game-container { min-width: 200px; } .book-entry { font-size: 0.8rem; } .book-entry .disease-name { min-width: 120px; } .tech-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); } .tech-tree-title { font-size: 1.3rem; } .gameover-content { padding: 24px 16px; } .gameover-content .go-title { font-size: 2rem; } .level-transition-content { padding: 24px 20px; } .level-transition-content .lt-title { font-size: 2rem; } .sel-levels { grid-template-columns: 1fr; } }
+        @media (max-width: 700px) { .game-wrapper { flex-direction: column; align-items: center; max-height: none; } .left-panel { flex-direction: row; flex-wrap: wrap; width: 100%; min-width: auto; justify-content: center; gap: 4px; align-self: stretch; max-height: 100px; overflow-y: auto; } .left-panel .drug-pill { flex-direction: row; gap: 6px; padding: 4px 12px; min-height: 32px; width: auto; flex: 0 1 auto; font-size: 0.65rem; } .left-panel .color-dot { width: 20px; height: 20px; margin-bottom: 0; } .bottom-panel { flex-direction: column; align-items: stretch; gap: 4px; font-size: 0.8rem;} .bottom-left, .bottom-right { justify-content: center; flex-wrap: wrap; } .status-msg { min-width: auto; font-size: 0.75rem; } .game-container { min-width: 200px; } .book-entry { font-size: 0.8rem; } .book-entry .disease-name { min-width: 120px; } .tech-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); } .tech-tree-title { font-size: 1.3rem; } .gameover-content { padding: 24px 16px; } .gameover-content .go-title { font-size: 2rem; } .level-transition-content { padding: 24px 20px; } .level-transition-content .lt-title { font-size: 2rem; } .sel-levels { grid-template-columns: 1fr; } }
         .staff-item.hidden-staff { display: none !important; }
+
+
+
+.bottom-panel{height:130px !important;}
+
+
+
+
+
+
+
+
     </style>
 </head>
 <body>
@@ -271,9 +242,9 @@ button:focus-visible {
                             <div class="tech-points" id="techPointsDisplay">🧪 0</div>
                         </div>
                         <div class="staff-panel" id="staffPanel">
-                            <div class="staff-item" id="staffOrderly2"><span class="icon">🧹</span> Санитар <span class="count" id="orderly2Count">0/0</span><button class="action-btn" id="hireOrderlyBtn2">5Ψ</button></div>
-                            <div class="staff-item" id="staffNurse"><span class="icon">👩‍⚕️</span> Медсестра <span class="count" id="nurseCount">0/0</span><button class="action-btn" id="hireNurseBtn">10Ψ</button></div>
-                            <div class="staff-item" id="staffOrderly"><span class="icon">💊</span> Ординатор <span class="count" id="orderlyCount">0/0</span><button class="action-btn" id="hireOrderlyBtn" disabled>🔒</button></div>
+                            <div class="staff-item hidden-staff" id="staffOrderly2"><span class="icon">🧹</span> Санитар <span class="count" id="orderly2Count">0/0</span><button class="action-btn" id="hireOrderlyBtn2">5Ψ</button></div>
+                            <div class="staff-item hidden-staff" id="staffNurse"><span class="icon">👩‍⚕️</span> Медсестра <span class="count" id="nurseCount">0/0</span><button class="action-btn" id="hireNurseBtn">10Ψ</button></div>
+                            <div class="staff-item hidden-staff" id="staffOrderly"><span class="icon">💊</span> Ординатор <span class="count" id="orderlyCount">0/0</span><button class="action-btn" id="hireOrderlyBtn" disabled>🔒</button></div>
                         </div>
                         <div class="time-indicator"><span class="time-icon" id="timeIcon">🌞</span><span class="time-text" id="timeText">День</span><span style="font-size:0.8rem;color:#5a4a32;" id="timeCycle">⚡</span></div>
                     </div>
@@ -1254,22 +1225,36 @@ button:focus-visible {
             }
 
             function updateStaffPanel() {
+    const staffPanel = document.getElementById('staffPanel');
                 const nurseItem = document.getElementById('staffNurse');
                 const orderlyItem = document.getElementById('staffOrderly');
                 const orderly2Item = document.getElementById('staffOrderly2');
                 
+ const hasAnyStaff = maxOrderlies2 > 0 || maxNurses > 0 || maxOrderlies > 0;
+    
+    // Показываем или скрываем всю панель
+    if (hasAnyStaff) {
+        staffPanel.classList.remove('hidden-staff-panel');
+    } else {
+        staffPanel.classList.add('hidden-staff-panel');
+    }
+
+
+                // Панель санитаров
                 if (maxOrderlies2 > 0) {
                     orderly2Item.classList.remove('hidden-staff');
                 } else {
                     orderly2Item.classList.add('hidden-staff');
                 }
                 
+                // Панель медсестер
                 if (maxNurses > 0) {
                     nurseItem.classList.remove('hidden-staff');
                 } else {
                     nurseItem.classList.add('hidden-staff');
                 }
                 
+                // Панель ординаторов
                 if (maxOrderlies > 0) {
                     orderlyItem.classList.remove('hidden-staff');
                 } else {
