@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Психиатр</title>
     <style>
         * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
@@ -776,10 +776,9 @@
                 const drugsToRestock = availableDrugs.filter(drug => drugInventory[drug] !== undefined);
                 if (drugsToRestock.length === 0) return;
                 
-                // Ускоренный приток для флуоксетина при изученном СИОЗС
                 let ssriBoostActive = researchedTechs.includes('tech_ssri');
                 let ssriDrug = 'флуоксетин';
-                let ssriRestockChance = ssriBoostActive ? 0.5 : 0.2; // увеличенный шанс появления флуоксетина
+                let ssriRestockChance = ssriBoostActive ? 0.5 : 0.2;
                 
                 let drugName;
                 if (ssriBoostActive && Math.random() < ssriRestockChance && availableDrugs.includes(ssriDrug)) {
@@ -908,7 +907,6 @@
                 drugLimit = nextLevel.drugLimit;
                 currentHealthRange = nextLevel.healthRange || [50, 80];
                 
-                // Уменьшаем количество пациентов на 2
                 currentTaskTarget = 3 + LEVELS.indexOf(nextLevel) - 2;
                 if (currentTaskTarget < 1) currentTaskTarget = 1;
                 currentMaxPatients = 6 + LEVELS.indexOf(nextLevel) - 2;
@@ -937,10 +935,8 @@
                 zLetters = [];
                 zSpawnCounter = 0;
 
-                // Восстанавливаем пул имён при переходе на новый уровень
                 namePool = shuffleArray([...ALL_NAMES]);
 
-                // Уменьшаем начальное количество пациентов на 2
                 const extraPatients = Math.floor(Math.random() * 3) + 1;
                 const totalInitial = Math.max(1, taskTarget + extraPatients - 2);
                 const initialCount = Math.min(totalInitial, maxPatients);
@@ -1045,7 +1041,7 @@
                     case 'staff_boost': techEffects.staffBoost = (techEffects.staffBoost || 0) + tech.value; break;
                     case 'ssri_boost': 
                         techEffects.ssriBoost = (techEffects.ssriBoost || 0) + tech.value; 
-                        techEffects.ssriRestockBoost = 0.3; // ускорение притока на 30%
+                        techEffects.ssriRestockBoost = 0.3;
                         break;
                     case 'wechsler_boost': techEffects.wechslerBoost = (techEffects.wechslerBoost || 0) + tech.value; break;
                     case 'dopamine_boost': techEffects.dopamineBoost = (techEffects.dopamineBoost || 0) + tech.value; break;
@@ -1249,7 +1245,6 @@
                         progressText = `<span class="level-progress">🔒 Требуется: ${required ? required.name : ''}</span>`;
                     }
                     
-                    // Отображаем скорректированное количество пациентов (уменьшенное на 2)
                     const levelIndex = LEVELS.indexOf(level);
                     const taskForLevel = Math.max(1, 3 + levelIndex - 2);
                     const maxForLevel = Math.max(2, 6 + levelIndex - 2);
@@ -1385,10 +1380,25 @@
                 return { ...candidates[0] };
             }
 
-            function isNight() { return (timeOfDay > 2100 || timeOfDay < 300) }
-            function isEvening() { return (timeOfDay > 1900 && timeOfDay < 2100) }
-            function getTimeIcon() { return isNight() ? '🌙' : (timeOfDay > 600 && timeOfDay < 1800 ? '🌞' : '🌅') }
-            function getTimeText() { return isNight() ? 'Ночь' : (timeOfDay > 600 && timeOfDay < 1800 ? 'День' : 'Вечер') }
+            // ===== ИСПРАВЛЕННАЯ ЛОГИКА ВРЕМЕНИ =====
+            // Утро: 300–600, День: 600–1800, Вечер: 1800–2100, Ночь: 2100–300
+            function isNight() { return (timeOfDay > 2100 || timeOfDay < 300); }
+            function isEvening() { return (timeOfDay >= 1800 && timeOfDay <= 2100); }
+            function isMorning() { return (timeOfDay >= 300 && timeOfDay < 600); }
+            function isDay() { return (timeOfDay >= 600 && timeOfDay < 1800); }
+            
+            function getTimeIcon() { 
+                if (isMorning()) return '🌅';
+                if (isDay()) return '🌞';
+                if (isEvening()) return '🌅';
+                return '🌙';
+            }
+            function getTimeText() { 
+                if (isMorning()) return 'Утро';
+                if (isDay()) return 'День';
+                if (isEvening()) return 'Вечер';
+                return 'Ночь';
+            }
 
             function resolveCollisions() {
                 const active = patients.filter(p => p.state !== 'healed' && !p.isSleeping && !p.isFighting);
@@ -1472,7 +1482,6 @@
                 }
             }
 
-            // ИСПРАВЛЕНИЕ: создаём пациента с именем из пула, а не с числами
             function createPatient() {
                 const gender = Math.random() < 0.5 ? 'male' : 'female';
                 const disease = getRandomDisease(gender);
@@ -1481,17 +1490,14 @@
                 do { x = random(70, W - 70); y = random(80, H - 80); attempts++; } while (attempts < 30 && isPositionBlocked(null, x, y));
                 const target = findNewTarget(null);
                 
-                // ИСПРАВЛЕНИЕ: берём имя из пула, если пул пуст — перемешиваем заново
                 let name = 'Пациент';
                 const maleNames = ['Алексей', 'Иван', 'Дмитрий', 'Сергей', 'Павел', 'Николай', 'Артём', 'Максим', 'Владимир', 'Андрей', 'Георгий', 'Михаил', 'Роман'];
                 const femaleNames = ['Мария', 'Екатерина', 'Анна', 'Ольга', 'Татьяна', 'Наталья', 'Юлия', 'Елена', 'Ирина', 'Ксения', 'София', 'Алиса'];
                 
-                // Если пул имён пуст — перемешиваем ALL_NAMES заново
                 if (namePool.length === 0) {
                     namePool = shuffleArray([...ALL_NAMES]);
                 }
                 
-                // Ищем подходящее имя в пуле
                 let foundName = null;
                 for (let i = 0; i < namePool.length; i++) {
                     const n = namePool[i];
@@ -1502,12 +1508,10 @@
                     }
                 }
                 
-                // Если подходящего имени нет — берём первое попавшееся
                 if (foundName === null && namePool.length > 0) {
                     foundName = namePool.pop();
                 }
                 
-                // Если всё ещё нет имени — генерируем из списка по полу (без чисел!)
                 if (foundName === null) {
                     const pool = gender === 'male' ? maleNames : femaleNames;
                     foundName = pool[randomInt(0, pool.length - 1)];
@@ -1530,7 +1534,6 @@
                 };
             }
 
-            // ИСПРАВЛЕНИЕ: функция для возврата имени в пул
             function returnNameToPool(name) {
                 if (name && name !== 'Пациент' && !namePool.includes(name)) {
                     namePool.push(name);
@@ -1582,7 +1585,7 @@
                     p1.health = Math.max(0, p1.health - damage);
                     if (p1.health <= 0) { 
                         p1.state = 'healed'; 
-                        returnNameToPool(p1.name); // ИСПРАВЛЕНИЕ: возвращаем имя
+                        returnNameToPool(p1.name);
                         score = Math.max(0, score - 3); 
                         statusMessage = '💀 ' + p1.name + ' погиб в драке! -3 Ψ'; 
                         updateUI(); 
@@ -1591,7 +1594,7 @@
                     }
                     if (p2.health <= 0) { 
                         p2.state = 'healed'; 
-                        returnNameToPool(p2.name); // ИСПРАВЛЕНИЕ: возвращаем имя
+                        returnNameToPool(p2.name);
                         score = Math.max(0, score - 3); 
                         statusMessage = '💀 ' + p2.name + ' погиб в драке! -3 Ψ'; 
                         updateUI(); 
@@ -1640,7 +1643,6 @@
                 const nurseBonus = 1 + getNurseBonus();
                 healAmount = healAmount * nurseBonus;
 
-                // Бонус психиатра Лабори (+35% к аминазину)
                 if (selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'aminazine' && drugName === 'аминазин') {
                     healAmount = healAmount * (1 + selectedDoc.bonus.value / 100);
                 }
@@ -1668,7 +1670,7 @@
                         statusMessage = sideEffectMessage;
                         if (patient.health <= 0) {
                             patient.state = 'healed';
-                            returnNameToPool(patient.name); // ИСПРАВЛЕНИЕ: возвращаем имя
+                            returnNameToPool(patient.name);
                             score = Math.max(0, score - 5);
                             statusMessage = '💀 ' + patient.name + ' умер от побочного эффекта! -5 Ψ';
                             updateUI();
@@ -1683,7 +1685,7 @@
                     const severityLabel = getSeverityLabel(disease.severity);
                     if (patient.health >= 100) {
                         patient.state = 'healed';
-                        returnNameToPool(patient.name); // ИСПРАВЛЕНИЕ: возвращаем имя
+                        returnNameToPool(patient.name);
                         const bonusPoints = 10 + Math.floor(disease.severity * 2);
                         score += bonusPoints;
                         const orderlyBonus = getOrderlyBonus();
@@ -1711,7 +1713,7 @@
                     statusMessage = '❌ ' + drugName + ' не лечит ' + disease.name + ' (-' + wrongDrugPenalty + '%)' + sideEffectMessage;
                     if (patient.health <= 0) {
                         patient.state = 'healed';
-                        returnNameToPool(patient.name); // ИСПРАВЛЕНИЕ: возвращаем имя
+                        returnNameToPool(patient.name);
                         score = Math.max(0, score - 5);
                         statusMessage = '💀 ' + patient.name + ' умер! -5 Ψ';
                         updateUI();
@@ -1733,7 +1735,6 @@
                 currentHealthRange = level.healthRange || [50, 80];
                 
                 const levelIndex = LEVELS.indexOf(level);
-                // Уменьшаем количество пациентов на 2
                 currentTaskTarget = Math.max(1, 3 + levelIndex - 2);
                 currentMaxPatients = Math.max(2, 6 + levelIndex - 2);
                 taskTarget = currentTaskTarget;
@@ -1750,11 +1751,9 @@
                 maxNurses = limits.nurses; maxOrderlies = limits.orderlies; maxOrderlies2 = limits.orderlies2;
                 nurseCount = 0; orderlyCount = 0; orderly2Count = 0;
 
-                // ИСПРАВЛЕНИЕ: инициализируем пул имён при старте уровня
                 namePool = shuffleArray([...ALL_NAMES]);
                 
                 patients = [];
-                // Уменьшаем начальное количество пациентов на 2
                 const extraPatients = Math.floor(Math.random() * 3) + 1;
                 const totalInitial = Math.max(1, taskTarget + extraPatients - 2);
                 const initialCount = Math.min(totalInitial, maxPatients);
@@ -1805,7 +1804,7 @@
                 document.getElementById('statusMsg').innerText = statusMessage + ' | Вылечено: ' + curedCount + '/' + taskTarget;
                 document.getElementById('timeIcon').textContent = getTimeIcon();
                 document.getElementById('timeText').textContent = getTimeText();
-                document.getElementById('timeCycle').textContent = isNight() ? '🌙' : '☀️';
+                document.getElementById('timeCycle').textContent = isNight() ? '🌙' : (isMorning() ? '🌅' : (isEvening() ? '🌅' : '☀️'));
             }
 
             function renderDrugPanel() {
@@ -2301,9 +2300,7 @@
                     frameCounter = 0;
                     spawnTimer++;
                     const activeCount = patients.filter(p => p.state !== 'healed').length;
-                    // Ускоренный спавн в 2 раза (уменьшаем spawnTimer порог)
                     const adjustedMaxPatients = Math.max(2, maxPatients - 2);
-                    // Спавн происходит каждые spawnInterval/2 кадров
                     if (spawnTimer >= spawnInterval / 2 && activeCount < adjustedMaxPatients && !levelCompleted && !gameOver) {
                         const newPatient = createPatient();
                         patients.push(newPatient);
@@ -2364,7 +2361,7 @@
                             p.health = Math.max(0, p.health - healthDropRate);
                             if (p.health <= 0) {
                                 p.state = 'healed';
-                                returnNameToPool(p.name); // ИСПРАВЛЕНИЕ: возвращаем имя
+                                returnNameToPool(p.name);
                                 score = Math.max(0, score - 5);
                                 statusMessage = '💀 ' + p.name + ' умер от болезни! -5 Ψ';
                                 updateUI();
@@ -2435,7 +2432,6 @@
             }
 
             // === СОБЫТИЯ ===
-            // Закрытие окон по Escape
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
                     const bookModal = document.getElementById('bookModal');
