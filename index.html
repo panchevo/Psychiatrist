@@ -311,6 +311,39 @@
 
     <script>
         (function() {
+            // === AUDIO ===
+            const audio = new Audio('music.mp3');
+            audio.loop = true;
+            audio.volume = 0.5;
+            let isAudioPlaying = false;
+            let isAudioPaused = false;
+
+            function startMusic() {
+                if (!isAudioPlaying) {
+                    audio.play().then(() => {
+                        isAudioPlaying = true;
+                        isAudioPaused = false;
+                    }).catch(err => console.warn('Audio play failed:', err));
+                } else if (isAudioPaused) {
+                    audio.play().then(() => {
+                        isAudioPaused = false;
+                    }).catch(err => console.warn('Audio resume failed:', err));
+                }
+            }
+
+            function toggleMusicPause() {
+                if (isAudioPlaying) {
+                    if (!isAudioPaused) {
+                        audio.pause();
+                        isAudioPaused = true;
+                    } else {
+                        audio.play().then(() => {
+                            isAudioPaused = false;
+                        }).catch(err => console.warn('Audio resume failed:', err));
+                    }
+                }
+            }
+
             // === SCALING ===
             const gameInner = document.getElementById('gameInner');
             const BASE_WIDTH = 1400, BASE_HEIGHT = 820;
@@ -1226,6 +1259,9 @@
                     if (isUnlocked) {
                         el.addEventListener('click', function() { 
                             if (isUnlocked) {
+                                // ЗАПУСКАЕМ МУЗЫКУ ПРИ КЛИКЕ НА УРОВЕНЬ
+                                startMusic();
+                                
                                 selectedLevelIndex = idx;
                                 renderLevelSelection();
                                 // Start game on click
@@ -2518,9 +2554,7 @@
                             }
                             
                             // АВТОМАТИЧЕСКАЯ РАЗБЛОКИРОВКА УРОВНЯ ПРИ ЗАГРУЗКЕ
-                            // Проверяем все уровни из сохранения и разблокируем их цепочку
                             if (data.completedLevels) {
-                                // Разблокируем все пройденные уровни
                                 Object.keys(data.completedLevels).forEach(levelId => {
                                     const lvl = LEVELS.find(l => l.id === levelId);
                                     if (lvl) {
@@ -2531,7 +2565,6 @@
                                     }
                                 });
                                 
-                                // Разблокируем все уровни, которые зависят от пройденных
                                 LEVELS.forEach(l => {
                                     if (l.requiredLevel && data.completedLevels[l.requiredLevel]) {
                                         l.unlocked = true;
@@ -2539,7 +2572,6 @@
                                             unlockedLevels.push(l.id);
                                         }
                                     }
-                                    // Если сам уровень есть в unlockedLevels из сохранения
                                     if (data.unlockedLevels && data.unlockedLevels.includes(l.id)) {
                                         l.unlocked = true;
                                         if (!unlockedLevels.includes(l.id)) {
@@ -2549,13 +2581,11 @@
                                 });
                             }
                             
-                            // Принудительно разблокируем загружаемый уровень
                             level.unlocked = true;
                             if (!unlockedLevels.includes(level.id)) {
                                 unlockedLevels.push(level.id);
                             }
                             
-                            // Также разблокируем все уровни, которые зависят от загружаемого
                             LEVELS.forEach(l => {
                                 if (l.requiredLevel === level.id) {
                                     l.unlocked = true;
@@ -2565,12 +2595,10 @@
                                 }
                             });
                             
-                            // Загружаем данные
                             currentLevel = level;
                             selectedDoc = PSYCHIATRISTS[data.docIndex] || PSYCHIATRISTS[0];
                             selectedLevel = level;
                             
-                            // Обновляем выбранные индексы для UI
                             selectedPsychIndex = Math.max(0, PSYCHIATRISTS.indexOf(selectedDoc));
                             selectedLevelIndex = Math.max(0, LEVELS.indexOf(level));
                             
@@ -2605,7 +2633,6 @@
                             maxOrderlies = limits.orderlies;
                             maxOrderlies2 = limits.orderlies2;
                             
-                            // Восстанавливаем пациентов
                             patients = (data.patients || []).map(p => ({
                                 ...p,
                                 targetX: p.targetX || 0,
@@ -2617,14 +2644,12 @@
                                 size: p.size || 18
                             }));
                             
-                            // Восстанавливаем связи fightTarget
                             (data.patients || []).forEach((p, idx) => {
                                 if (p.fightTarget !== undefined && p.fightTarget >= 0 && p.fightTarget < patients.length) {
                                     patients[idx].fightTarget = patients[p.fightTarget];
                                 }
                             });
                             
-                            // Восстанавливаем beds
                             if (data.beds) {
                                 data.beds.forEach((b, i) => {
                                     if (beds[i]) beds[i].occupied = b.occupied;
@@ -2636,11 +2661,9 @@
                             autoRestockCounter = data.autoRestockCounter || 0;
                             nextRestockTime = data.nextRestockTime || Math.floor(Math.random() * (AUTO_RESTOCK_MAX_INTERVAL - AUTO_RESTOCK_MIN_INTERVAL + 1)) + AUTO_RESTOCK_MIN_INTERVAL;
                             
-                            // Обновляем UI
                             document.getElementById('levelDisplay').textContent = '📍 ' + level.name + ' (' + level.desc + ')';
                             updateStaffPanel();
                             
-                            // Переключаемся в игровой режим
                             selectionScreen.classList.add('hidden');
                             gameWrapper.classList.add('active');
                             document.getElementById('gameoverModal').classList.remove('active');
@@ -2649,7 +2672,6 @@
                             gameActive = true;
                             isPaused = false;
                             
-                            // Обновляем выбор в меню (чтобы при выходе в меню было видно)
                             renderPsychSelection();
                             renderLevelSelection();
                             
@@ -2692,6 +2714,8 @@
                 }
                 if (e.key === ' ' || e.key === 'Space') {
                     e.preventDefault();
+                    // Переключение паузы и музыки
+                    toggleMusicPause();
                     if (gameActive && !gameOver && !pendingLevelTransition) {
                         isPaused = !isPaused;
                         statusMessage = isPaused ? '⏸️ ПАУЗА' : '▶️ Продолжение';
@@ -2701,16 +2725,15 @@
                 if (e.key === 'Enter') {
                     if (!selectionScreen.classList.contains('hidden')) {
                         if (stepPsych.classList.contains('active')) {
-                            // Select first psychiatrist and go to level selection
                             selectedDoc = PSYCHIATRISTS[selectedPsychIndex];
                             selectedDocDisplay.textContent = 'Выбран: ' + selectedDoc.name;
                             showStep('level');
                             renderLevelSelection();
                         } else if (stepLevel.classList.contains('active')) {
-                            // Start game with selected level
                             const doc = PSYCHIATRISTS[selectedPsychIndex];
                             const lvl = LEVELS[selectedLevelIndex];
                             if (doc && lvl && (lvl.unlocked || checkLevelUnlock(lvl.id))) {
+                                startMusic(); // Запуск музыки при старте игры через Enter
                                 selectedDoc = doc;
                                 selectedLevel = lvl;
                                 selectionScreen.classList.add('hidden');
@@ -2827,6 +2850,12 @@
                 selectionScreen.classList.remove('hidden');
                 showStep('psych');
                 renderPsychSelection();
+                // Останавливаем музыку при выходе в меню
+                if (isAudioPlaying) {
+                    audio.pause();
+                    isAudioPlaying = false;
+                    isAudioPaused = false;
+                }
             });
 
             // === КНОПКИ СОХРАНЕНИЯ/ЗАГРУЗКИ ===
@@ -2839,6 +2868,14 @@
 
             // === BUTTONS ===
             backToPsychBtn.addEventListener('click', onBackToPsych);
+
+            // Останавливаем музыку, если она играет, при загрузке страницы (на всякий случай)
+            window.addEventListener('beforeunload', function() {
+                if (isAudioPlaying) {
+                    audio.pause();
+                    isAudioPlaying = false;
+                }
+            });
 
         })();
     </script>
