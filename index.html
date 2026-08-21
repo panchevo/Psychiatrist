@@ -515,6 +515,7 @@
                 }
             ];
 
+            // НОВЫЕ ИССЛЕДОВАНИЯ + ОРДИНАТУРА УВЕЛИЧИВАЕТ В 2 РАЗА
             const TECH_TREE = [
                 { id: 'tech_psychopharmacology', name: 'Психофармакология', desc: '+15% эффективность всех препаратов', cost: 15, prereq: [], effect: 'drug_boost', value: 0.15 },
                 { id: 'tech_clinical_diagnosis', name: 'Клиническая диагностика', desc: 'Ускоренная диагностика пациентов', cost: 12, prereq: [], effect: 'diagnosis_speed', value: 0.2 },
@@ -541,7 +542,15 @@
                 { id: 'tech_cognitive_behavioral', name: 'Когнитивно-поведенческая терапия', desc: 'Пациенты с неврозами лечатся на 30% быстрее', cost: 28, prereq: ['tech_anxiety', 'tech_affective', 'tech_psychotherapy'], effect: 'category_boost', category: 'neurosis', value: 0.3 },
                 { id: 'tech_psychoanalysis', name: 'Психоанализ', desc: 'Глубинная терапия: +20% к лечению РЛ и неврозов', cost: 28, prereq: ['tech_personality', 'tech_affective', 'tech_psychotherapy'], effect: 'psychoanalysis_boost', value: 0.2 },
                 { id: 'tech_integrated_psychiatry', name: 'Интегративная психиатрия', desc: 'Все методы объединены: +25% общая эффективность', cost: 50, prereq: ['tech_neuropsychiatry', 'tech_social_psychiatry', 'tech_cognitive_behavioral', 'tech_psychoanalysis'], effect: 'mastery_boost', value: 0.25 },
-                { id: 'tech_psychiatry_leadership', name: 'Лидерство в психиатрии', desc: 'Персонал работает на 50% эффективнее', cost: 40, prereq: ['tech_social_psychiatry', 'tech_integrated_psychiatry'], effect: 'staff_boost', value: 0.5 }
+                { id: 'tech_psychiatry_leadership', name: 'Лидерство в психиатрии', desc: 'Персонал работает на 50% эффективнее', cost: 40, prereq: ['tech_social_psychiatry', 'tech_integrated_psychiatry'], effect: 'staff_boost', value: 0.5 },
+                // НОВЫЕ ИССЛЕДОВАНИЯ:
+                { id: 'tech_circadian_rhythms', name: 'Циркадные ритмы', desc: 'Уменьшает бессонницу у пациентов на 60%', cost: 18, prereq: ['tech_neurobiology'], effect: 'circadian_boost', value: 0.6 },
+                { id: 'tech_orderly_expertise', name: 'Устав санитаров', desc: 'Увеличивает эффективность санитаров на 40%', cost: 20, prereq: ['tech_ethics'], effect: 'orderly_boost', value: 0.4 },
+                { id: 'tech_physical_therapy', name: 'Лечебная физкультура', desc: '+15% к восстановлению здоровья пациентов', cost: 15, prereq: ['tech_psychotherapy'], effect: 'physical_therapy', value: 0.15 },
+                { id: 'tech_hypnotherapy', name: 'Гипнотерапия', desc: '+25% к лечению тревожных и невротических расстройств', cost: 22, prereq: ['tech_psychotherapy', 'tech_anxiety'], effect: 'hypnotherapy_boost', value: 0.25 },
+                { id: 'tech_nursing_care', name: 'Сестринское дело', desc: 'Медсестры могут делать уколы буйным и неспящим (автоматическое усыпление)', cost: 25, prereq: ['tech_ethics', 'tech_psychopharmacology'], effect: 'nursing_care', value: 1 },
+                { id: 'tech_residency', name: 'Ординатура', desc: 'Увеличивает количество ординаторов в 2 раза (от текущего лимита)', cost: 30, prereq: ['tech_psychiatry_leadership'], effect: 'residency_boost', value: 2 },
+                { id: 'tech_polytherapy', name: 'Политерапия', desc: 'Мгновенно добавляет 100% всех препаратов', cost: 40, prereq: ['tech_polypharmacy', 'tech_psychopharmacology'], effect: 'polytherapy', value: 1 }
             ];
 
             // === ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===
@@ -1056,6 +1065,30 @@
                     case 'affinity_boost': techEffects.affinityBoost = (techEffects.affinityBoost || 0) + tech.value; break;
                     case 'atypical_boost': techEffects.atypicalBoost = (techEffects.atypicalBoost || 0) + tech.value; break;
                     case 'forensic_boost': techEffects.forensicBoost = (techEffects.forensicBoost || 0) + tech.value; break;
+                    // НОВЫЕ ЭФФЕКТЫ
+                    case 'circadian_boost': techEffects.circadianBoost = (techEffects.circadianBoost || 0) + tech.value; break;
+                    case 'orderly_boost': techEffects.orderlyBoost = (techEffects.orderlyBoost || 0) + tech.value; break;
+                    case 'physical_therapy': techEffects.physicalTherapy = (techEffects.physicalTherapy || 0) + tech.value; break;
+                    case 'hypnotherapy_boost': techEffects.hypnotherapyBoost = (techEffects.hypnotherapyBoost || 0) + tech.value; break;
+                    case 'nursing_care': techEffects.nursingCare = true; break;
+                    case 'residency_boost': 
+                        // Увеличиваем лимит ординаторов в 2 раза (от текущего базового лимита уровня)
+                        if (currentLevel) {
+                            const baseLimits = getStaffLimits(currentLevel);
+                            maxOrderlies = Math.floor(baseLimits.orderlies * tech.value);
+                        }
+                        break;
+                    case 'polytherapy':
+                        if (drugInventory) {
+                            for (let drug in drugInventory) {
+                                if (availableDrugsList.includes(drug)) {
+                                    let current = drugInventory[drug] || 0;
+                                    let add = Math.floor(current * tech.value);
+                                    drugInventory[drug] = current + add;
+                                }
+                            }
+                        }
+                        break;
                 }
             }
 
@@ -1082,17 +1115,23 @@
                 if (techEffects.globalBoost) total += techEffects.globalBoost;
                 if (techEffects.masteryBoost) total += techEffects.masteryBoost;
                 if (techEffects.drugBoost) total += techEffects.drugBoost;
-                if (disease && techEffects.categoryBoosts && techEffects.categoryBoosts[disease.category]) {
-                    total += techEffects.categoryBoosts[disease.category];
-                }
-                if (disease && techEffects.psychoanalysisBoost && (disease.category === 'personality' || disease.category === 'neurosis')) {
-                    total += techEffects.psychoanalysisBoost;
-                }
-                if (disease && techEffects.ssriBoost && disease.treat.includes('флуоксетин')) {
-                    total += techEffects.ssriBoost;
-                }
-                if (disease && techEffects.atypicalBoost && disease.treat.some(d => ['кветиапин', 'оланзапин', 'рисперидон', 'клозапин'].includes(d))) {
-                    total += techEffects.atypicalBoost;
+                if (techEffects.physicalTherapy) total += techEffects.physicalTherapy;
+                if (disease) {
+                    if (techEffects.categoryBoosts && techEffects.categoryBoosts[disease.category]) {
+                        total += techEffects.categoryBoosts[disease.category];
+                    }
+                    if (techEffects.hypnotherapyBoost && (disease.category === 'anxiety' || disease.category === 'neurosis')) {
+                        total += techEffects.hypnotherapyBoost;
+                    }
+                    if (techEffects.psychoanalysisBoost && (disease.category === 'personality' || disease.category === 'neurosis')) {
+                        total += techEffects.psychoanalysisBoost;
+                    }
+                    if (techEffects.ssriBoost && disease.treat.includes('флуоксетин')) {
+                        total += techEffects.ssriBoost;
+                    }
+                    if (techEffects.atypicalBoost && disease.treat.some(d => ['кветиапин', 'оланзапин', 'рисперидон', 'клозапин'].includes(d))) {
+                        total += techEffects.atypicalBoost;
+                    }
                 }
                 return total;
             }
@@ -1107,6 +1146,24 @@
                 let reduction = techEffects.sideEffectReduction || 0;
                 if (techEffects.affinityBoost) reduction = 1;
                 return reduction;
+            }
+            function getCircadianBoost() { return techEffects.circadianBoost || 0; }
+            function getOrderlyBoost() { return (techEffects.orderlyBoost || 0) + (techEffects.staffBoost || 0); }
+            function getNurseBonus() { 
+                let bonus = nurseCount * 0.05;
+                if (techEffects.staffBoost) bonus += bonus * techEffects.staffBoost;
+                return bonus;
+            }
+            function getOrderlyBonus() { 
+                let bonus = orderlyCount * 0.5;
+                if (techEffects.staffBoost) bonus += bonus * techEffects.staffBoost;
+                return bonus;
+            }
+            function getOrderly2Bonus() { 
+                let bonus = orderly2Count * 0.05;
+                if (techEffects.staffBoost) bonus += bonus * techEffects.staffBoost;
+                if (techEffects.orderlyBoost) bonus += bonus * techEffects.orderlyBoost;
+                return bonus;
             }
 
             function hireNurse() {
@@ -1140,10 +1197,6 @@
                 statusMessage = '🧹 Санитар нанят! (замедляет ухудшение здоровья на ' + Math.round(getOrderly2Bonus() * 100) + '%)';
                 updateUI();
             }
-
-            function getNurseBonus() { return nurseCount * 0.05; }
-            function getOrderlyBonus() { return orderlyCount * 0.5; }
-            function getOrderly2Bonus() { return orderly2Count * 0.05; }
 
             function updateStaffPanel() {
                 const nurseItem = document.getElementById('staffNurse');
@@ -1259,12 +1312,10 @@
                     if (isUnlocked) {
                         el.addEventListener('click', function() { 
                             if (isUnlocked) {
-                                // ЗАПУСКАЕМ МУЗЫКУ ПРИ КЛИКЕ НА УРОВЕНЬ
                                 startMusic();
                                 
                                 selectedLevelIndex = idx;
                                 renderLevelSelection();
-                                // Start game on click
                                 const doc = PSYCHIATRISTS[selectedPsychIndex];
                                 const lvl = LEVELS[selectedLevelIndex];
                                 if (doc && lvl && (lvl.unlocked || checkLevelUnlock(lvl.id))) {
@@ -1637,7 +1688,17 @@
 
             function applyDrug(patient, drugName) {
                 if (gameOver || !patient || patient.state === 'healed') return false;
-                if (patient.isSleeping) { statusMessage = '💤 Пациент спит, подождите пробуждения'; updateUI(); return false; }
+                if (patient.isSleeping) { 
+                    if (techEffects.nursingCare && nurseCount > 0) {
+                        patient.isSleeping = false;
+                        statusMessage = '👩‍⚕️ Медсестра разбудила ' + patient.name + ' для лечения!';
+                        updateUI();
+                    } else {
+                        statusMessage = '💤 Пациент спит, подождите пробуждения';
+                        updateUI(); 
+                        return false;
+                    }
+                }
                 if (!drugInventory[drugName] || drugInventory[drugName] <= 0) {
                     statusMessage = '❌ Нет ' + drugName + '! Купите в аптеке!';
                     updateUI();
@@ -1762,7 +1823,13 @@
                 researchedTechs = []; techEffects = {};
                 
                 const limits = getStaffLimits(level);
-                maxNurses = limits.nurses; maxOrderlies = limits.orderlies; maxOrderlies2 = limits.orderlies2;
+                maxNurses = limits.nurses;
+                maxOrderlies = limits.orderlies;
+                // Если есть исследование "Ординатура", умножаем лимит на 2
+                if (researchedTechs.includes('tech_residency')) {
+                    maxOrderlies = Math.floor(maxOrderlies * 2);
+                }
+                maxOrderlies2 = limits.orderlies2;
                 nurseCount = 0; orderlyCount = 0; orderly2Count = 0;
 
                 namePool = shuffleArray([...ALL_NAMES]);
@@ -2399,13 +2466,16 @@
                     }
 
                     if (gameActive) {
+                        const circadianBoost = getCircadianBoost();
                         activePatients.forEach(function(p) {
                             if (p.isInjectedSleep) {
                                 p.injectedSleepTimer--;
                                 if (p.injectedSleepTimer <= 0) { p.isInjectedSleep = false; p.isSleeping = false; p.goingToBed = false; if (p.bedIndex >= 0) { beds[p.bedIndex].occupied = false; p.bedIndex = -1 } }
                                 return;
                             }
-                            if (evening && p.health > 50 && !p.isSleeping && !p.goingToBed && p.bedIndex < 0) {
+                            const sleepChance = evening && p.health > 50 ? 1 : 0;
+                            const circadianChance = circadianBoost > 0 ? circadianBoost : 0;
+                            if ((evening || (circadianBoost > 0 && Math.random() < circadianChance)) && p.health > 50 && !p.isSleeping && !p.goingToBed && p.bedIndex < 0) {
                                 for (let i = 0; i < beds.length; i++) {
                                     if (!beds[i].occupied) { p.bedIndex = i; p.bedTarget = { x: beds[i].x, y: beds[i].y - 5 }; p.goingToBed = true; beds[i].occupied = true; p.targetX = p.bedTarget.x; p.targetY = p.bedTarget.y; break; }
                                 }
@@ -2516,7 +2586,12 @@
                     fightChance: fightChance,
                     spawnInterval: spawnInterval,
                     drugPrice: drugPrice,
-                    drugLimit: drugLimit
+                    drugLimit: drugLimit,
+                    maxNurses: maxNurses,
+                    maxOrderlies: maxOrderlies,
+                    maxOrderlies2: maxOrderlies2,
+                    isAudioPlaying: isAudioPlaying,
+                    isAudioPaused: isAudioPaused
                 };
                 const json = JSON.stringify(saveData, null, 2);
                 const blob = new Blob([json], { type: 'application/json' });
@@ -2526,7 +2601,7 @@
                 a.download = `level_${currentLevel.id}.psy`;
                 a.click();
                 URL.revokeObjectURL(url);
-                statusMessage = '💾 Игра сохранена в файл!';
+                statusMessage = '💾 Игра сохранена в файл! (состояние музыки сохранено)';
                 updateUI();
             }
 
@@ -2620,6 +2695,10 @@
                             drugPrice = data.drugPrice || level.drugPrice;
                             drugLimit = data.drugLimit || level.drugLimit;
                             
+                            maxNurses = data.maxNurses || 2;
+                            maxOrderlies = data.maxOrderlies || 0;
+                            maxOrderlies2 = data.maxOrderlies2 || 0;
+                            
                             completedLevels = data.completedLevels || {};
                             
                             drugInventory = data.drugInventory || {};
@@ -2629,9 +2708,9 @@
                             availableDiseases = getAvailableDiseasesForLevel(level);
                             
                             const limits = getStaffLimits(level);
-                            maxNurses = limits.nurses;
-                            maxOrderlies = limits.orderlies;
-                            maxOrderlies2 = limits.orderlies2;
+                            if (!maxNurses) maxNurses = limits.nurses;
+                            if (!maxOrderlies) maxOrderlies = limits.orderlies;
+                            if (!maxOrderlies2) maxOrderlies2 = limits.orderlies2;
                             
                             patients = (data.patients || []).map(p => ({
                                 ...p,
@@ -2660,6 +2739,17 @@
                             spawnTimer = data.spawnTimer || 0;
                             autoRestockCounter = data.autoRestockCounter || 0;
                             nextRestockTime = data.nextRestockTime || Math.floor(Math.random() * (AUTO_RESTOCK_MAX_INTERVAL - AUTO_RESTOCK_MIN_INTERVAL + 1)) + AUTO_RESTOCK_MIN_INTERVAL;
+                            
+                            // Восстановление состояния музыки
+                            if (data.isAudioPlaying !== undefined) {
+                                isAudioPlaying = data.isAudioPlaying;
+                                isAudioPaused = data.isAudioPaused || false;
+                                if (isAudioPlaying && !isAudioPaused) {
+                                    audio.play().catch(() => {});
+                                } else if (isAudioPlaying && isAudioPaused) {
+                                    audio.pause();
+                                }
+                            }
                             
                             document.getElementById('levelDisplay').textContent = '📍 ' + level.name + ' (' + level.desc + ')';
                             updateStaffPanel();
@@ -2714,7 +2804,6 @@
                 }
                 if (e.key === ' ' || e.key === 'Space') {
                     e.preventDefault();
-                    // Переключение паузы и музыки
                     toggleMusicPause();
                     if (gameActive && !gameOver && !pendingLevelTransition) {
                         isPaused = !isPaused;
@@ -2733,7 +2822,7 @@
                             const doc = PSYCHIATRISTS[selectedPsychIndex];
                             const lvl = LEVELS[selectedLevelIndex];
                             if (doc && lvl && (lvl.unlocked || checkLevelUnlock(lvl.id))) {
-                                startMusic(); // Запуск музыки при старте игры через Enter
+                                startMusic();
                                 selectedDoc = doc;
                                 selectedLevel = lvl;
                                 selectionScreen.classList.add('hidden');
@@ -2743,12 +2832,10 @@
                         }
                     }
                 }
-                // Ctrl+S - сохранение
                 if ((e.ctrlKey || e.metaKey) && e.key === 's') {
                     e.preventDefault();
                     saveGame();
                 }
-                // Ctrl+O - загрузка
                 if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
                     e.preventDefault();
                     loadGame();
@@ -2850,7 +2937,6 @@
                 selectionScreen.classList.remove('hidden');
                 showStep('psych');
                 renderPsychSelection();
-                // Останавливаем музыку при выходе в меню
                 if (isAudioPlaying) {
                     audio.pause();
                     isAudioPlaying = false;
@@ -2869,7 +2955,6 @@
             // === BUTTONS ===
             backToPsychBtn.addEventListener('click', onBackToPsych);
 
-            // Останавливаем музыку, если она играет, при загрузке страницы (на всякий случай)
             window.addEventListener('beforeunload', function() {
                 if (isAudioPlaying) {
                     audio.pause();
