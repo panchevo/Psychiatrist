@@ -2596,7 +2596,8 @@
                     maxOrderlies: maxOrderlies,
                     maxOrderlies2: maxOrderlies2,
                     isAudioPlaying: isAudioPlaying,
-                    isAudioPaused: isAudioPaused
+                    isAudioPaused: isAudioPaused,
+                    isPaused: isPaused // <-- СОХРАНЯЕМ СОСТОЯНИЕ ПАУЗЫ
                 };
                 const json = JSON.stringify(saveData, null, 2);
                 const blob = new Blob([json], { type: 'application/json' });
@@ -2606,7 +2607,7 @@
                 a.download = `level_${currentLevel.id}.psy`;
                 a.click();
                 URL.revokeObjectURL(url);
-                statusMessage = '💾 Игра сохранена в файл! (состояние музыки сохранено)';
+                statusMessage = '💾 Игра сохранена в файл! (состояние паузы сохранено)';
                 updateUI();
             }
 
@@ -2709,6 +2710,13 @@
                             drugInventory = data.drugInventory || {};
                             techEffects = data.techEffects || {};
                             
+                            // ВОССТАНАВЛИВАЕМ СОСТОЯНИЕ ПАУЗЫ
+                            if (data.isPaused !== undefined) {
+                                isPaused = data.isPaused;
+                            } else {
+                                isPaused = false;
+                            }
+                            
                             availableDrugsList = getAvailableDrugsForLevel(level);
                             availableDiseases = getAvailableDiseasesForLevel(level);
                             
@@ -2766,7 +2774,6 @@
                             document.getElementById('levelTransitionModal').classList.remove('active');
                             gameOver = false;
                             gameActive = true;
-                            isPaused = false;
                             selectedPatient = null; // Снимаем выделение при загрузке
                             document.getElementById('diagnosisDisplay').innerHTML = '🔍 наведи на пациента';
                             
@@ -2781,7 +2788,7 @@
                             if (gameLoopId) cancelAnimationFrame(gameLoopId);
                             gameLoop();
                             
-                            statusMessage = '📂 Игра загружена! Уровень автоматически разблокирован.';
+                            statusMessage = '📂 Игра загружена! Уровень автоматически разблокирован.' + (isPaused ? ' (на паузе)' : '');
                             updateUI();
                         } catch (err) {
                             statusMessage = '❌ Ошибка загрузки: ' + err.message;
