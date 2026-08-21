@@ -1,0 +1,2846 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Психиатр</title>
+    <style>
+        * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
+        html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; background: #1a1612; font-family: 'Georgia', 'Times New Roman', serif; display: flex; justify-content: center; align-items: center; }
+        #gameScaler { position: relative; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; background: #1a1612; }
+        #gameInner { position: relative; width: 1400px; height: 820px; transform-origin: center center; display: flex; justify-content: center; align-items: center; background: #1a1612; }
+        .game-wrapper { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: none; gap: 8px; background: #b8a78c; padding: 12px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 0 0 2px #dac9b0; border-bottom: 6px solid #7a6a52; flex-wrap: wrap; justify-content: center; overflow: hidden; }
+        .game-wrapper.active { display: flex; }
+        .left-panel { background: #cbb99e; border-radius: 12px; padding: 10px 8px; box-shadow: inset 0 0 0 3px #a28d70, 0 4px 0 #6a5a42; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 130px; width: 150px; flex-shrink: 0; height: 100%; align-self: stretch; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #a28d70 #cbb99e; }
+        .left-panel::-webkit-scrollbar { width: 5px; }
+        .left-panel::-webkit-scrollbar-track { background: #cbb99e; }
+        .left-panel::-webkit-scrollbar-thumb { background: #a28d70; border-radius: 4px; }
+        .left-panel .drug-pill { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #e1cfb6; padding: 8px 4px; border-radius: 8px; border-bottom: 3px solid #8a7a5a; font-size: 0.8rem; color: #2d2417; cursor: grab; transition: 0.1s ease; box-shadow: inset 0 -2px 0 #b09a7a; width: 100%; text-align: center; line-height: 1.3; min-height: 65px; position: relative; font-family: 'Georgia', serif; }
+        .left-panel .drug-pill:active { cursor: grabbing; opacity: 0.6; }
+        .left-panel .drug-pill.dragging { opacity: 0.3; transform: scale(0.95); }
+        .left-panel .drug-pill.locked-drug { opacity: 0.4; cursor: not-allowed; filter: grayscale(0.8); }
+        .left-panel .drug-pill.locked-drug:hover::after { content: '🔒 Требуется уровень выше'; position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); background: #1a1612; color: #dac9b0; padding: 2px 8px; border-radius: 4px; font-size: 0.6rem; white-space: nowrap; z-index: 10; }
+        .left-panel .color-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #5a4a32; flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(255,215,140,0.5); margin-bottom: 2px; }
+        .left-panel .drug-label { font-size: 0.8rem; word-break: break-word; text-align: center; line-height: 1.2; max-width: 120px; font-weight: bold; color: #2d2417; }
+        .left-panel .drug-count { font-size: 0.75rem; color: #5a4a32; background: #dac9b0; padding: 0 10px; border-radius: 10px; margin-top: 2px; font-weight: bold; }
+        .pharmacy-pill { background: #b09a7a !important; border-bottom-color: #6a5a42 !important; font-weight: bold; color: #1a1612 !important; }
+        .pharmacy-pill .drug-label { color: #1a1612 !important; }
+        .game-container { flex: 1; min-width: 300px; max-width: 950px; position: relative; background: #dac9b0; border-radius: 12px; padding: 8px; box-shadow: inset 0 0 0 3px #a28d70, 0 8px 0 #6a5a42; }
+        .canvas-wrapper { position: relative; width: 100%; border-radius: 8px; overflow: hidden; box-shadow: inset 0 0 0 3px #8a7a5a, 0 8px 16px rgba(0,0,0,0.4); background: #b8a78c; touch-action: none; }
+        canvas { display: block; width: 100%; height: auto; aspect-ratio: 900 / 550; background: #cbb99e; touch-action: none; border-radius: 4px; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; gap: 8px; padding: 0 4px; flex-wrap: wrap; background: #cbb99e; border-radius: 8px; padding: 6px 12px; box-shadow: inset 0 0 0 2px #a28d70; }
+        .top-bar .book-btn-top, .top-bar .tech-btn-top, .top-bar .info-btn-top, .top-bar .save-btn-top, .top-bar .load-btn-top { background: #b09a7a; border: none; border-bottom: 4px solid #6a5a42; color: #1a1612; font-weight: bold; padding: 6px 18px; border-radius: 30px; cursor: pointer; font-size: 0.95rem; transition: 0.07s; text-shadow: 0 1px 0 #dac9b0; box-shadow: 0 4px 0 #4a3a2a; font-family: 'Georgia', serif; }
+        .top-bar .book-btn-top:active, .top-bar .tech-btn-top:active, .top-bar .info-btn-top:active, .top-bar .save-btn-top:active, .top-bar .load-btn-top:active { transform: translateY(2px); border-bottom-width: 2px; }
+        .top-bar .tech-btn-top:disabled, .top-bar .load-btn-top:disabled { opacity: 0.4; cursor: not-allowed; transform: translateY(2px); border-bottom-width: 2px; }
+        .top-score-bar { display: flex; align-items: center; gap: 6px; background: #dac9b0; padding: 4px 16px 4px 12px; border-radius: 30px; border-bottom: 3px solid #8a7a5a; }
+        .top-score-bar .psi-icon { font-size: 1.5rem; color: #4a3a2a; }
+        .top-score-bar .score-value { color: #2d2417; font-weight: bold; font-size: 1.3rem; min-width: 30px; text-align: center; }
+        .top-score-bar .score-label { color: #5a4a32; font-size: 0.8rem; }
+        .tech-points { background: #dac9b0; padding: 4px 16px; border-radius: 30px; color: #2d2417; font-weight: bold; font-size: 1rem; border-bottom: 3px solid #8a7a5a; }
+        .time-indicator { display: flex; align-items: center; gap: 8px; background: #dac9b0; padding: 4px 16px 4px 12px; border-radius: 30px; border-bottom: 3px solid #8a7a5a; color: #2d2417; font-weight: bold; font-size: 0.95rem; }
+        .time-indicator .time-icon { font-size: 1.5rem; line-height: 1; }
+        .time-indicator .time-text { min-width: 50px; text-align: center; }
+        .staff-panel { display: flex; gap: 6px; background: #dac9b0; padding: 4px 14px; border-radius: 30px; border-bottom: 3px solid #8a7a5a; font-size: 0.8rem; color: #2d2417; flex-wrap: wrap; font-family: 'Georgia', serif; }
+        .staff-panel .staff-item { display: flex; align-items: center; gap: 4px; background: #e1cfb6; padding: 2px 12px; border-radius: 20px; border-bottom: 2px solid #8a7a5a; font-size: 0.8rem; }
+        .staff-panel .staff-item .icon { font-size: 1rem; }
+        .staff-panel .staff-item .count { color: #2d2417; font-weight: bold; font-size: 0.9rem; }
+        .staff-panel .staff-item .action-btn { background: #b09a7a; border: none; border-bottom: 2px solid #6a5a42; color: #1a1612; padding: 0 10px; border-radius: 16px; cursor: pointer; font-size: 0.7rem; margin-left: 2px; font-family: 'Georgia', serif; font-weight: bold; }
+        .staff-panel .staff-item .action-btn:active { transform: translateY(1px); border-bottom-width: 1px; }
+        .staff-panel .staff-item .action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .bottom-panel { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-top: 8px; padding: 8px 16px; background: #cbb99e; border-radius: 30px; box-shadow: inset 0 4px 0 #b09a7a, 0 4px 0 #6a5a42; color: #2d2417; font-weight: bold; gap: 6px 10px; font-size: 0.95rem; font-family: 'Georgia', serif; }
+        .bottom-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .bottom-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .psychiatrist-badge { background: #b09a7a; padding: 4px 16px; border-radius: 30px; border-bottom: 3px solid #6a5a42; font-size: 0.95rem; color: #1a1612; white-space: nowrap; }
+        .info-text { background: #dac9b0; padding: 4px 14px; border-radius: 30px; color: #2d2417; font-size: 0.85rem; white-space: nowrap; border-bottom: 2px solid #8a7a5a; }
+        .score-text { background: #dac9b0; padding: 4px 16px; border-radius: 30px; color: #2d2417; font-size: 1rem; font-weight: bold; white-space: nowrap; border-bottom: 3px solid #8a7a5a; }
+        .status-msg { background: #dac9b0; padding: 4px 16px; border-radius: 30px; color: #2d2417; font-size: 0.85rem; min-width: 140px; text-align: center; white-space: nowrap; border-bottom: 2px solid #8a7a5a; font-weight: normal; }
+        button { background: #b09a7a; border: none; border-bottom: 4px solid #6a5a42; color: #1a1612; font-weight: bold; padding: 6px 18px; border-radius: 30px; cursor: pointer; font-size: 0.9rem; transition: 0.07s; text-shadow: 0 1px 0 #dac9b0; font-family: 'Georgia', serif; box-shadow: 0 4px 0 #4a3a2a; }
+        button:active { transform: translateY(2px); border-bottom-width: 2px; }
+        button:disabled { opacity: 0.4; cursor: not-allowed; transform: translateY(2px); border-bottom-width: 2px; }
+        
+        /* === TWO-STEP SELECTION SCREENS === */
+        #selectionScreen { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(26,22,18,0.92); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; border-radius: 24px; }
+        #selectionScreen.hidden { display: none; }
+        .sel-container { max-width: 1100px; width: 100%; background: #cbb99e; padding: 28px 32px; border-radius: 24px; border: 6px solid #8a7a5a; box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 0 2px #e1cfb6; color: #2d2417; max-height: 90vh; overflow-y: auto; }
+        .sel-title { font-size: 2.8rem; text-align: center; color: #1a1612; text-shadow: 0 2px 0 #b09a7a; margin-bottom: 6px; letter-spacing: 2px; font-family: 'Georgia', serif; border-bottom: 3px solid #8a7a5a; padding-bottom: 10px; }
+        .sel-sub { text-align: center; color: #4a3a2a; margin-bottom: 16px; font-size: 1.2rem; border-bottom: 2px solid #b09a7a; padding-bottom: 12px; font-style: italic; }
+        .sel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .sel-card { background: #e1cfb6; padding: 14px 12px; border-radius: 12px; border-bottom: 5px solid #8a7a5a; cursor: pointer; transition: 0.15s; text-align: center; box-shadow: inset 0 0 0 2px #dac9b0; color: #2d2417; }
+        .sel-card:hover { transform: scale(1.02); background: #f0dfc8; border-bottom-color: #4a3a2a; }
+        .sel-card.selected { border-bottom-color: #4a3a2a; background: #dac9b0; box-shadow: 0 0 20px rgba(74,58,42,0.3), inset 0 0 0 2px #b09a7a; cursor: pointer; }
+        .sel-card .name { font-weight: bold; font-size: 1.3rem; color: #1a1612; }
+        .sel-card .ability { font-size: 0.9rem; color: #4a3a2a; margin-top: 4px; line-height: 1.3; }
+        .sel-card .stats { font-size: 0.8rem; color: #5a4a32; margin-top: 4px; }
+        .sel-levels { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin: 12px 0 18px; }
+        .sel-level { background: #e1cfb6; padding: 12px 16px; border-radius: 12px; border-bottom: 4px solid #8a7a5a; cursor: pointer; transition: 0.15s; font-weight: bold; color: #2d2417; font-size: 1rem; text-align: center; font-family: 'Georgia', serif; position: relative; }
+        .sel-level:hover:not(.locked-level):not(.selected) { background: #f0dfc8; border-bottom-color: #4a3a2a; }
+        .sel-level.selected { border-bottom-color: #4a3a2a; background: #dac9b0; box-shadow: 0 0 20px rgba(74,58,42,0.2); cursor: pointer; }
+        .sel-level.locked-level { opacity: 0.5; cursor: not-allowed; filter: grayscale(0.6); }
+        .sel-level.locked-level::after { content: '🔒'; margin-left: 8px; }
+        .sel-level .desc { font-weight: normal; font-size: 0.8rem; color: #5a4a32; display: block; margin-top: 2px; }
+        .sel-level .level-progress { font-size: 0.7rem; color: #4a7a3a; display: block; margin-top: 2px; }
+        .sel-btn { display: block; width: 100%; padding: 16px; font-size: 1.4rem; background: #b09a7a; border: none; border-bottom: 6px solid #6a5a42; color: #1a1612; font-weight: bold; border-radius: 40px; cursor: pointer; transition: 0.1s; text-shadow: 0 2px 0 #dac9b0; letter-spacing: 2px; margin-top: 6px; font-family: 'Georgia', serif; }
+        .sel-btn:active { transform: translateY(3px); border-bottom-width: 3px; }
+        .sel-btn:disabled { opacity: 0.4; transform: translateY(2px); border-bottom-width: 4px; cursor: not-allowed; }
+        .sel-step { display: none; }
+        .sel-step.active { display: block; }
+        .sel-back { background: #8a7a6a; border-bottom-color: #5a4a3a; font-size: 1rem; padding: 8px 24px; margin-bottom: 12px; display: inline-block; width: auto; }
+        .sel-back:active { transform: translateY(2px); border-bottom-width: 3px; }
+        .sel-hint { text-align:center; margin-top:10px; color:#5a4a32; font-size:0.9rem; }
+        .sel-hint kbd { background:#dac9b0; padding:2px 10px; border-radius:4px; border:1px solid #8a7a5a; font-family:inherit; }
+        
+        .book-modal, .tech-tree-modal, .info-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .book-modal.active, .tech-tree-modal.active, .info-modal.active { display: flex; }
+        .book-content, .tech-tree-content, .info-content { background: #cbb99e; border: 6px solid #8a7a5a; border-radius: 20px; padding: 24px 30px; max-width: 850px; width: 92%; max-height: 88vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.9), inset 0 0 0 2px #e1cfb6; color: #2d2417; }
+        .book-title { font-size: 2.2rem; text-align: center; color: #1a1612; border-bottom: 3px solid #8a7a5a; padding-bottom: 12px; margin-bottom: 16px; font-weight: bold; text-shadow: 0 2px 0 #b09a7a; font-family: 'Georgia', serif; }
+        .book-subtitle { text-align: center; color: #4a3a2a; font-size: 1rem; margin-top: -6px; margin-bottom: 16px; font-style: italic; }
+        .book-stats-note { background: #dac9b0; padding: 12px 18px; border-radius: 12px; margin-bottom: 16px; font-size: 0.95rem; color: #2d2417; border-left: 6px solid #4a3a2a; line-height: 1.7; font-family: 'Georgia', serif; }
+        .book-entry { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid #b09a7a; align-items: center; flex-wrap: wrap; font-size: 0.95rem; }
+        .book-entry .disease-code { font-weight: bold; color: #1a1612; min-width: 70px; font-size: 0.95rem; }
+        .book-entry .disease-name { font-weight: bold; min-width: 200px; font-size: 0.95rem; color: #2d2417; }
+        .book-entry .disease-weight { color: #5a4a32; font-size: 0.8rem; min-width: 60px; background: #dac9b0; padding: 0 12px; border-radius: 16px; text-align: center; }
+        .book-entry .disease-severity { font-size: 0.8rem; min-width: 50px; background: #dac9b0; padding: 0 10px; border-radius: 16px; text-align: center; }
+        .book-entry .drug-list { color: #4a3a2a; font-size: 0.85rem; display: flex; flex-wrap: wrap; gap: 6px 10px; }
+        .book-entry .drug-list span { background: #e1cfb6; padding: 2px 14px; border-radius: 16px; border-bottom: 2px solid #8a7a5a; font-size: 0.8rem; }
+        .book-entry .drug-list span.locked-drug-text { opacity: 0.4; text-decoration: line-through; background: #b09a7a; }
+        .book-close, .tech-close, .info-close { display: block; margin: 18px auto 0; padding: 10px 50px; background: #b09a7a; border: none; border-bottom: 4px solid #6a5a42; color: #1a1612; border-radius: 30px; font-size: 1.1rem; cursor: pointer; font-weight: bold; font-family: 'Georgia', serif; }
+        .book-close:active, .tech-close:active, .info-close:active { transform: translateY(2px); border-bottom-width: 2px; }
+        .tech-tree-title { font-size: 1.8rem; text-align: center; color: #1a1612; border-bottom: 3px solid #8a7a5a; padding-bottom: 10px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; font-family: 'Georgia', serif; }
+        .tech-tree-title span { font-size: 1.1rem; color: #4a3a2a; }
+        .tech-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+        .tech-card { background: #e1cfb6; border-radius: 10px; padding: 12px 10px; border: 2px solid #8a7a5a; cursor: pointer; transition: 0.15s; text-align: center; position: relative; color: #2d2417; }
+        .tech-card:hover:not(.researched):not(.locked) { border-color: #4a3a2a; transform: scale(1.03); background: #f0dfc8; }
+        .tech-card.researched { border-color: #4a7a4a; background: #d0e0c0; }
+        .tech-card.researched .tech-name { color: #1a3a1a; }
+        .tech-card.locked { opacity: 0.6; cursor: not-allowed; border-color: #b09a7a; }
+        .tech-card.available { border-color: #4a3a2a; box-shadow: 0 0 15px rgba(74,58,42,0.2); }
+        .tech-card .tech-name { font-weight: bold; font-size: 1rem; color: #1a1612; }
+        .tech-card .tech-desc { font-size: 0.75rem; color: #4a3a2a; margin-top: 4px; line-height: 1.3; }
+        .tech-card .tech-cost { font-size: 0.8rem; color: #1a1612; margin-top: 4px; background: #dac9b0; padding: 2px 12px; border-radius: 16px; display: inline-block; }
+        .tech-card .tech-prereq { font-size: 0.65rem; color: #5a4a32; margin-top: 4px; font-style: italic; }
+        .tech-card .tech-status { font-size: 0.75rem; margin-top: 4px; padding: 2px 8px; border-radius: 12px; display: inline-block; }
+        .tech-card .tech-status.done { color: #1a3a1a; background: #d0e0c0; }
+        .tech-card .tech-status.avail { color: #1a1612; background: #f0dfc8; }
+        .tech-card .tech-status.lock { color: #5a4a32; background: #dac9b0; }
+        .gameover-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 4000; justify-content: center; align-items: center; backdrop-filter: blur(8px); }
+        .gameover-modal.active { display: flex; }
+        .gameover-content { background: #cbb99e; border: 6px solid #6a3a2a; border-radius: 24px; padding: 36px 44px; max-width: 480px; width: 90%; text-align: center; color: #2d2417; box-shadow: 0 0 60px rgba(106,58,42,0.3), inset 0 0 0 2px #e1cfb6; }
+        .gameover-content .go-title { font-size: 3rem; color: #4a1a1a; text-shadow: 0 0 30px rgba(74,26,26,0.2); margin-bottom: 8px; font-family: 'Georgia', serif; }
+        .gameover-content .go-sub { font-size: 1.2rem; color: #4a3a2a; margin-bottom: 16px; font-style: italic; }
+        .gameover-content .go-stats { background: #dac9b0; padding: 16px; border-radius: 12px; margin: 14px 0 20px; border: 2px solid #b09a7a; text-align: left; font-size: 1rem; line-height: 2; }
+        .gameover-content .go-stats span { color: #1a1612; font-weight: bold; }
+        .gameover-content .go-btn { background: #b09a7a; border: none; border-bottom: 5px solid #6a5a42; color: #1a1612; font-weight: bold; padding: 12px 36px; border-radius: 30px; font-size: 1.1rem; cursor: pointer; transition: 0.07s; text-shadow: 0 1px 0 #dac9b0; margin: 0 6px; font-family: 'Georgia', serif; }
+        .gameover-content .go-btn:active { transform: translateY(2px); border-bottom-width: 2px; }
+        .gameover-content .go-btn.go-btn-danger { background: #8a5a4a; border-bottom-color: #4a2a1a; }
+        .severity-indicator { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: bold; }
+        .severity-mild { background: #8aaa7a; color: #1a1a0a; }
+        .severity-moderate { background: #c9b84a; color: #1a1a0a; }
+        .severity-severe { background: #c98a3a; color: #1a0a0a; }
+        .severity-profound { background: #b05a3a; color: #fff; }
+        .severity-extreme { background: #7a2a5a; color: #fff; }
+        .drug-tooltip { display: none; position: fixed; background: #e1cfb6; border: 3px solid #4a3a2a; border-radius: 10px; padding: 10px 14px; color: #2d2417; font-size: 0.85rem; max-width: 240px; pointer-events: none; z-index: 600; box-shadow: 0 8px 30px rgba(0,0,0,0.6); line-height: 1.5; font-family: 'Georgia', serif; }
+        .drug-tooltip .tip-drug-name { font-weight: bold; color: #1a1612; font-size: 0.95rem; }
+        .drug-tooltip .tip-side-effect { color: #6a3a2a; margin-top: 4px; border-top: 1px solid #b09a7a; padding-top: 4px; font-style: italic; }
+        #tooltip { display: none; position: fixed; background: #e1cfb6; border: 3px solid #4a3a2a; border-radius: 10px; padding: 12px 16px; color: #2d2417; font-size: 0.9rem; max-width: 320px; pointer-events: none; z-index: 500; box-shadow: 0 8px 30px rgba(0,0,0,0.6); line-height: 1.6; font-family: 'Georgia', serif; }
+        #tooltip .tip-name { font-weight: bold; color: #1a1612; font-size: 1.05rem; margin-bottom: 2px; }
+        #tooltip .tip-disease { color: #4a3a2a; font-size: 0.9rem; }
+        #tooltip .tip-drugs { color: #1a1612; font-size: 0.85rem; margin-top: 4px; padding-top: 4px; border-top: 1px solid #b09a7a; }
+        #tooltip .tip-health { color: #3a6a3a; font-size: 0.9rem; margin-top: 2px; }
+        #tooltip .tip-status { color: #4a3a2a; font-size: 0.85rem; margin-top: 2px; }
+        #tooltip .tip-severity { color: #6a3a2a; font-size: 0.85rem; margin-top: 2px; }
+        .level-transition { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 5000; justify-content: center; align-items: center; backdrop-filter: blur(8px); }
+        .level-transition.active { display: flex; }
+        .level-transition-content { background: #cbb99e; border: 6px solid #4a7a3a; border-radius: 24px; padding: 36px 44px; max-width: 480px; width: 90%; text-align: center; color: #2d2417; box-shadow: 0 0 60px rgba(74,122,58,0.3), inset 0 0 0 2px #e1cfb6; animation: pulseGlow 1.5s ease-in-out infinite alternate; }
+        @keyframes pulseGlow { 0% { box-shadow: 0 0 30px rgba(74,122,58,0.2), inset 0 0 0 2px #e1cfb6; } 100% { box-shadow: 0 0 60px rgba(74,122,58,0.5), inset 0 0 0 2px #e1cfb6; } }
+        .level-transition-content .lt-title { font-size: 2.8rem; color: #1a3a1a; margin-bottom: 4px; font-family: 'Georgia', serif; }
+        .level-transition-content .lt-sub { font-size: 1.2rem; color: #3a5a2a; margin-bottom: 8px; }
+        .level-transition-content .lt-stats { background: #dac9b0; padding: 14px; border-radius: 12px; margin: 12px 0 18px; border: 2px solid #b09a7a; text-align: left; font-size: 0.95rem; line-height: 1.8; }
+        .level-transition-content .lt-stats span { color: #1a1612; font-weight: bold; }
+        .level-transition-content .lt-btn { background: #b09a7a; border: none; border-bottom: 5px solid #6a5a42; color: #1a1612; font-weight: bold; padding: 12px 36px; border-radius: 30px; font-size: 1.1rem; cursor: pointer; transition: 0.07s; text-shadow: 0 1px 0 #dac9b0; margin: 0 6px; font-family: 'Georgia', serif; }
+        .level-transition-content .lt-btn:active { transform: translateY(2px); border-bottom-width: 2px; }
+        .level-transition-content .lt-btn.lt-btn-success { background: #4a7a3a; border-bottom-color: #2a4a1a; color: #fff; text-shadow: none; }
+        @media (max-width: 700px) { .game-wrapper { flex-direction: column; align-items: center; max-height: none; } .left-panel { flex-direction: row; flex-wrap: wrap; width: 100%; min-width: auto; justify-content: center; gap: 4px; align-self: stretch; max-height: 100px; overflow-y: auto; } .left-panel .drug-pill { flex-direction: row; gap: 6px; padding: 4px 8px; min-height: 32px; width: auto; flex: 0 1 auto; font-size: 0.65rem; } .left-panel .color-dot { width: 20px; height: 20px; margin-bottom: 0; } .bottom-panel { flex-direction: column; align-items: stretch; gap: 4px; font-size: 0.8rem; } .bottom-left, .bottom-right { justify-content: center; flex-wrap: wrap; } .status-msg { min-width: auto; font-size: 0.75rem; } .game-container { min-width: 200px; } .book-entry { font-size: 0.8rem; } .book-entry .disease-name { min-width: 120px; } .tech-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); } .tech-tree-title { font-size: 1.3rem; } .gameover-content { padding: 24px 16px; } .gameover-content .go-title { font-size: 2rem; } .level-transition-content { padding: 24px 20px; } .level-transition-content .lt-title { font-size: 2rem; } .sel-levels { grid-template-columns: 1fr; } }
+        .staff-item.hidden-staff { display: none !important; }
+    </style>
+</head>
+<body>
+    <div id="gameScaler">
+        <div id="gameInner">
+            <!-- SELECTION SCREEN (TWO-STEP) -->
+            <div id="selectionScreen">
+                <div class="sel-container">
+                    <!-- STEP 1: Psychiatrist -->
+                    <div class="sel-step active" id="stepPsych">
+                        <div class="sel-title">⚜️ ВЫБОР ПСИХИАТРА</div>
+                        <div class="sel-sub">Нажмите на врача, чьими знаниями вы будете руководить.</div>
+                        <div class="sel-grid" id="psychGrid"></div>
+                        <div class="sel-hint">Нажмите на карточку врача, чтобы выбрать</div>
+                    </div>
+
+                    <!-- STEP 2: Level -->
+                    <div class="sel-step" id="stepLevel">
+                        <div class="sel-title">🏛️ ВЫБОР УРОВНЯ</div>
+                        <div class="sel-sub" id="selectedDocDisplay">Выбран: —</div>
+                        <div class="sel-levels" id="levelGrid"></div>
+                        <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+                            <button class="sel-btn sel-back" id="backToPsychBtn">◀ НАЗАД</button>
+                        </div>
+                        <div class="sel-hint">Нажмите на больницу (уровень), чтобы начать игру</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GAME WRAPPER -->
+            <div class="game-wrapper" id="gameWrapper">
+                <!-- LEFT PANEL -->
+                <div class="left-panel" id="drugPanel"></div>
+
+                <!-- MAIN CONTAINER -->
+                <div class="game-container">
+                    <!-- TOP BAR -->
+                    <div class="top-bar">
+                        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                            <button class="book-btn-top" id="bookBtnTop">📜 Справочник</button>
+                            <button class="tech-btn-top" id="techBtnTop">🔬 Исследования</button>
+                            <button class="info-btn-top" id="infoBtnTop">❓</button>
+                            <button class="save-btn-top" id="saveBtnTop">💾 Сохранить</button>
+                            <button class="load-btn-top" id="loadBtnTop">📂 Загрузить</button>
+                            <div class="top-score-bar"><span class="psi-icon">⚜️</span><span class="score-value" id="topScoreValue">0</span><span class="score-label">очков</span></div>
+                            <div class="tech-points" id="techPointsDisplay">🧪 0</div>
+                        </div>
+                        <div class="staff-panel" id="staffPanel">
+                            <div class="staff-item" id="staffNurse"><span class="icon">👩‍⚕️</span> Медсестра <span class="count" id="nurseCount">0/2</span><button class="action-btn" id="hireNurseBtn">10Ψ</button></div>
+                            <div class="staff-item" id="staffOrderly"><span class="icon">💊</span> Ординатор <span class="count" id="orderlyCount">0/0</span><button class="action-btn" id="hireOrderlyBtn" disabled>🔒</button></div>
+                            <div class="staff-item" id="staffOrderly2"><span class="icon">🧹</span> Санитар <span class="count" id="orderlyCount2">0/0</span><button class="action-btn" id="hireOrderlyBtn2" disabled>🔒</button></div>
+                        </div>
+                        <div class="time-indicator"><span class="time-icon" id="timeIcon">🌞</span><span class="time-text" id="timeText">День</span><span style="font-size:0.8rem;color:#5a4a32;" id="timeCycle">⚡</span></div>
+                    </div>
+
+                    <!-- CANVAS -->
+                    <div class="canvas-wrapper"><canvas id="gameCanvas" width="900" height="550"></canvas></div>
+
+                    <!-- BOTTOM PANEL -->
+                    <div class="bottom-panel">
+                        <div class="bottom-left">
+                            <span class="psychiatrist-badge" id="docDisplay">🧠 Фрейд</span>
+                            <span class="score-text" id="scoreDisplay">Ψ 0</span>
+                            <span class="info-text" id="patientCount">👥 0</span>
+                            <span class="info-text" id="diagnosisDisplay">🔍 наведи на пациента</span>
+                            <span class="info-text" id="levelDisplay">📍 уровень</span>
+                        </div>
+                        <div class="bottom-right">
+                            <button id="restartBtn">⚔️ Новая игра</button>
+                            <div class="status-msg" id="statusMsg">⚡ лечите пациентов</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOOLTIPS -->
+            <div id="tooltip"><div class="tip-name" id="tipName">Имя</div><div class="tip-disease" id="tipDisease">Диагноз</div><div class="tip-health" id="tipHealth">❤️ Здоровье: 100%</div><div class="tip-drugs" id="tipDrugs">💊 Лечить: препараты</div><div class="tip-status" id="tipStatus">Статус</div><div class="tip-severity" id="tipSeverity">⚠️ Тяжесть: средняя</div></div>
+            <div class="drug-tooltip" id="drugTooltip"><div class="tip-drug-name" id="tipDrugName">Препарат</div><div class="tip-side-effect" id="tipDrugSideEffect">⚠️ Побочный эффект: ...</div></div>
+
+            <!-- BOOK MODAL -->
+            <div class="book-modal" id="bookModal"><div class="book-content" id="bookContent"><div class="book-title">📜 Справочник психиатра</div><div class="book-subtitle">Все психические расстройства МКБ-10</div><div class="book-stats-note">⚡ <strong>Вес</strong> — частота появления: чем меньше вес, тем реже болезнь.<br>📊 <strong>Тяжесть</strong> — сложность лечения: 1-5 (1 — лёгкое, 5 — крайне тяжёлое).<br>💊 Чем тяжелее расстройство, тем меньше % здоровья восстанавливается за один приём препарата.<br>🌙 Ночью пациенты с <strong>здоровьем > 50</strong> ложатся спать.<br>🏆 <strong>Очки (Ψ)</strong> +10 за вылеченного, -5 за смерть.<br>🧪 <strong>Очки исследований</strong> +2 за вылеченного + бонус от ординаторов.<br>👆 <strong>Наведи на пациента</strong> — увидишь, чем его лечить!</div><div id="bookEntries"></div><button class="book-close" id="bookCloseBtn">Закрыть</button></div></div>
+
+            <!-- TECH TREE MODAL -->
+            <div class="tech-tree-modal" id="techTreeModal">
+                <div class="tech-tree-content">
+                    <div class="tech-tree-title"><span>🔬 ДЕРЕВО ИССЛЕДОВАНИЙ</span><span>🧪 <span id="techPointsModal">0</span> очков</span></div>
+                    <div class="tech-grid" id="techGrid"></div>
+                    <button class="tech-close" id="techCloseBtn">Закрыть</button>
+                </div>
+            </div>
+
+            <!-- INFO MODAL -->
+            <div class="info-modal" id="infoModal">
+                <div class="info-content" style="max-width:480px; text-align:center;">
+                    <div style="font-size:3rem; margin-bottom:8px;">🧠</div>
+                    <div style="font-size:1.6rem; font-weight:bold; color:#1a1612; border-bottom:2px solid #8a7a5a; padding-bottom:10px; margin-bottom:16px;">Об игре</div>
+                    <div style="font-size:1.1rem; line-height:1.8; color:#2d2417;">
+                        <p><strong>Автор:</strong> Панченко М. А.</p>
+                        <p><strong>Email:</strong> <a href="mailto:mercury.nosov@gmail.com" style="color:#4a3a2a;">mercury.nosov@gmail.com</a></p>
+                        <p style="margin-top:12px; font-size:0.9rem; color:#5a4a32;">Управление: лечите пациентов, перетаскивая препараты или нажимая на них.</p>
+                        <p style="font-size:0.9rem; color:#5a4a32;"><kbd>Пробел</kbd> — пауза, <kbd>Esc</kbd> — закрыть окна</p>
+                        <p style="font-size:0.9rem; color:#5a4a32;"><kbd>Ctrl+S</kbd> — сохранить, <kbd>Ctrl+O</kbd> — загрузить</p>
+                    </div>
+                    <button class="info-close" id="infoCloseBtn">Закрыть</button>
+                </div>
+            </div>
+
+            <!-- LEVEL TRANSITION MODAL -->
+            <div class="level-transition" id="levelTransitionModal">
+                <div class="level-transition-content">
+                    <div class="lt-title">🎉 УРОВЕНЬ ПРОЙДЕН!</div>
+                    <div class="lt-sub" id="ltLevelName">—</div>
+                    <div class="lt-stats" id="ltStats">
+                        <div>Ψ Очков: <span id="ltScore">0</span></div>
+                        <div>🧪 Очков исследований: <span id="ltTech">0</span></div>
+                        <div>✅ Вылечено пациентов: <span id="ltCured">0</span></div>
+                        <div>📋 Цель: <span id="ltTask">0</span></div>
+                        <div style="margin-top:6px;border-top:1px solid #b09a7a;padding-top:6px;">⬆️ Следующий уровень: <span id="ltNextLevel">—</span></div>
+                    </div>
+                    <div>
+                        <button class="lt-btn lt-btn-success" id="ltNextBtn">➡️ Продолжить</button>
+                        <button class="lt-btn" id="ltStayBtn">⏸️ Остаться</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GAME OVER MODAL -->
+            <div class="gameover-modal" id="gameoverModal">
+                <div class="gameover-content">
+                    <div class="go-title">💀 ИГРА ОКОНЧЕНА</div>
+                    <div class="go-sub">Пациент умер... Ваша лицензия отозвана!</div>
+                    <div class="go-stats" id="goStats">
+                        <div>👨‍⚕️ Врач: <span id="goDoc">—</span></div>
+                        <div>🏥 Больница: <span id="goLevel">—</span></div>
+                        <div>Ψ Очков: <span id="goScore">0</span></div>
+                        <div>🧪 Очков исследований: <span id="goTech">0</span></div>
+                        <div>✅ Вылечено: <span id="goCured">0</span></div>
+                        <div>📋 Задача: <span id="goTask">0</span></div>
+                    </div>
+                    <div>
+                        <button class="go-btn" id="goRestartBtn">🔄 Заново</button>
+                        <button class="go-btn go-btn-danger" id="goMenuBtn">🏠 В меню</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // === SCALING ===
+            const gameInner = document.getElementById('gameInner');
+            const BASE_WIDTH = 1400, BASE_HEIGHT = 820;
+
+            function resizeGame() {
+                const winW = window.innerWidth;
+                const winH = window.innerHeight;
+                const scaleX = winW / BASE_WIDTH;
+                const scaleY = winH / BASE_HEIGHT;
+                const scale = Math.min(scaleX, scaleY);
+                gameInner.style.transform = `scale(${scale})`;
+                gameInner.style.transformOrigin = 'center center';
+            }
+            window.addEventListener('resize', resizeGame);
+            window.addEventListener('orientationchange', function() { setTimeout(resizeGame, 300); });
+            resizeGame();
+
+            // === DATA ===
+            const PSYCHIATRISTS = [
+                { name: 'Фрейд', ability: '+10% к лечению неврозов', iq: 85, empathy: 80, speed: 1.0, bonus: { type: 'neurosis', value: 10 } },
+                { name: 'Крепелин', ability: '+20% к лечению всех видов шизофрении', iq: 92, empathy: 65, speed: 0.9, bonus: { type: 'schizophrenia', value: 20 } },
+                { name: 'Юнг', ability: '+15% к лечению психосоматических расстройств', iq: 88, empathy: 78, speed: 0.95, bonus: { type: 'psychosomatic', value: 15 } },
+                { name: 'Блейлер', ability: '+10% к лечению шизотипических расстройств', iq: 79, empathy: 70, speed: 0.85, bonus: { type: 'schizotypal', value: 10 } },
+                { name: 'Абрахам', ability: '+20% к лечению депрессивных эпизодов', iq: 76, empathy: 88, speed: 0.8, bonus: { type: 'depression', value: 20 } },
+                { name: 'Салливан', ability: '+15% к лечению тревожных расстройств', iq: 81, empathy: 75, speed: 0.9, bonus: { type: 'anxiety', value: 15 } },
+                { name: 'Майер', ability: '+20% к лечению расстройств личности', iq: 70, empathy: 82, speed: 0.75, bonus: { type: 'personality', value: 20 } },
+                { name: 'Шнайдер', ability: '+15% к лечению бредовых расстройств', iq: 89, empathy: 60, speed: 0.85, bonus: { type: 'delusional', value: 15 } },
+                { name: 'Райх', ability: '+20% к лечению психосексуальных расстройств', iq: 73, empathy: 79, speed: 0.8, bonus: { type: 'sexual', value: 20 } },
+                { name: 'Линч', ability: '+15% к лечению детских расстройств развития', iq: 68, empathy: 90, speed: 0.7, bonus: { type: 'developmental', value: 15 } },
+                { name: 'Личко', ability: '+25% к лечению психопатий', iq: 78, empathy: 72, speed: 0.85, bonus: { type: 'personality', value: 25 } },
+                { name: 'Лабори', ability: '+35% к эффективности аминазина', iq: 82, empathy: 70, speed: 0.8, bonus: { type: 'aminazine', value: 35 } }
+            ];
+
+            const LEVELS = [
+                { 
+                    id: 'bechtereva', name: 'Бехтерева', desc: 'Неврозы', 
+                    fightChance: 0.003, spawnInterval: 12, drugPrice: 5, drugLimit: 35, 
+                    task: 'Вылечить 3 пациентов', taskTarget: 3, healthRange: [70, 95], 
+                    unlocked: true, requiredLevel: null, 
+                    availableDrugs: ['глицин'], diseaseCount: 5, 
+                    staffLimits: { nurses: 2, orderlies: 0, orderlies2: 0 },
+                    theme: 'bechtereva' 
+                },
+                { 
+                    id: 'suhanova', name: 'Суханова', desc: 'Тревожные расстройства', 
+                    fightChance: 0.005, spawnInterval: 12, drugPrice: 6, drugLimit: 30, 
+                    task: 'Вылечить 4 пациентов', taskTarget: 4, healthRange: [60, 90], 
+                    unlocked: false, requiredLevel: 'bechtereva', 
+                    availableDrugs: ['глицин', 'флуоксетин'], diseaseCount: 8, 
+                    staffLimits: { nurses: 3, orderlies: 0, orderlies2: 0 },
+                    theme: 'suhanova' 
+                },
+                { 
+                    id: 'korsakov', name: 'Корсаков', desc: 'Психозы и деменции', 
+                    fightChance: 0.008, spawnInterval: 11, drugPrice: 7, drugLimit: 28, 
+                    task: 'Вылечить 5 пациентов', taskTarget: 5, healthRange: [55, 85], 
+                    unlocked: false, requiredLevel: 'suhanova', 
+                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин'], diseaseCount: 12, 
+                    staffLimits: { nurses: 4, orderlies: 1, orderlies2: 0 },
+                    theme: 'korsakov' 
+                },
+                { 
+                    id: 'balinsky', name: 'Балинский', desc: 'Психосоматика', 
+                    fightChance: 0.006, spawnInterval: 11, drugPrice: 9, drugLimit: 22, 
+                    task: 'Вылечить 6 пациентов', taskTarget: 6, healthRange: [55, 85], 
+                    unlocked: false, requiredLevel: 'korsakov', 
+                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин'], diseaseCount: 16, 
+                    staffLimits: { nurses: 4, orderlies: 2, orderlies2: 0 },
+                    theme: 'balinsky' 
+                },
+                { 
+                    id: 'gannushkina', name: 'Ганнушкина', desc: 'Расстройства личности', 
+                    fightChance: 0.01, spawnInterval: 10, drugPrice: 8, drugLimit: 25, 
+                    task: 'Вылечить 7 пациентов', taskTarget: 7, healthRange: [50, 80], 
+                    unlocked: false, requiredLevel: 'balinsky', 
+                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин'], diseaseCount: 20, 
+                    staffLimits: { nurses: 5, orderlies: 2, orderlies2: 0 },
+                    theme: 'gannushkina' 
+                },
+                { 
+                    id: 'osipova', name: 'Осипова', desc: 'Шизофрения', 
+                    fightChance: 0.012, spawnInterval: 10, drugPrice: 10, drugLimit: 20, 
+                    task: 'Вылечить 8 пациентов', taskTarget: 8, healthRange: [45, 75], 
+                    unlocked: false, requiredLevel: 'gannushkina', 
+                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол'], diseaseCount: 25, 
+                    staffLimits: { nurses: 5, orderlies: 3, orderlies2: 0 },
+                    theme: 'osipova' 
+                },
+                { 
+                    id: 'zhuravsky', name: 'Журавский', desc: 'Аффективные расстройства', 
+                    fightChance: 0.009, spawnInterval: 9, drugPrice: 11, drugLimit: 24, 
+                    task: 'Вылечить 9 пациентов', taskTarget: 9, healthRange: [50, 80], 
+                    unlocked: false, requiredLevel: 'osipova', 
+                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон'], diseaseCount: 30, 
+                    staffLimits: { nurses: 6, orderlies: 3, orderlies2: 2 },
+                    theme: 'zhuravsky' 
+                },
+                { 
+                    id: 'snezhnevsky', name: 'Снежневский', desc: 'Шизоаффективные расстройства', 
+                    fightChance: 0.02, spawnInterval: 9, drugPrice: 14, drugLimit: 12, 
+                    task: 'Вылечить 10 пациентов', taskTarget: 10, healthRange: [35, 65], 
+                    unlocked: false, requiredLevel: 'zhuravsky', 
+                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин'], diseaseCount: 35, 
+                    staffLimits: { nurses: 6, orderlies: 4, orderlies2: 3 },
+                    theme: 'snezhnevsky' 
+                },
+                { 
+                    id: 'kashchenko', name: 'Кащенко', desc: 'Смешанные расстройства', 
+                    fightChance: 0.018, spawnInterval: 9, drugPrice: 12, drugLimit: 18, 
+                    task: 'Вылечить 12 пациентов', taskTarget: 12, healthRange: [40, 70], 
+                    unlocked: false, requiredLevel: 'snezhnevsky', 
+                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит'], diseaseCount: 40, 
+                    staffLimits: { nurses: 7, orderlies: 4, orderlies2: 4 },
+                    theme: 'kashchenko' 
+                },
+                { 
+                    id: 'skvortsova-stepanova', name: 'Скворцова-Степанова', desc: 'Резистентные формы', 
+                    fightChance: 0.025, spawnInterval: 9, drugPrice: 15, drugLimit: 10, 
+                    task: 'Вылечить 15 пациентов', taskTarget: 15, healthRange: [30, 60], 
+                    unlocked: false, requiredLevel: 'kashchenko', 
+                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 50, 
+                    staffLimits: { nurses: 7, orderlies: 5, orderlies2: 5 },
+                    theme: 'skvortsova' 
+                },
+                { 
+                    id: 'gilyarovsky', name: 'Гиляровский', desc: 'Психопатии', 
+                    fightChance: 0.035, spawnInterval: 8, drugPrice: 18, drugLimit: 8, 
+                    task: 'Вылечить 20 пациентов', taskTarget: 20, healthRange: [25, 55], 
+                    unlocked: false, requiredLevel: 'skvortsova-stepanova', 
+                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 55, 
+                    staffLimits: { nurses: 8, orderlies: 5, orderlies2: 6 },
+                    theme: 'gilyarovsky' 
+                },
+                { 
+                    id: 'serbsky', name: 'Сербский', desc: 'Судебная психиатрия', 
+                    fightChance: 0.04, spawnInterval: 8, drugPrice: 20, drugLimit: 6, 
+                    task: 'Вылечить 25 пациентов', taskTarget: 25, healthRange: [20, 50], 
+                    unlocked: false, requiredLevel: 'gilyarovsky', 
+                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 60, 
+                    staffLimits: { nurses: 8, orderlies: 5, orderlies2: 7 },
+                    theme: 'serbsky' 
+                },
+                { 
+                    id: 'kandinsky', name: 'Кандинский', desc: 'Бредовые расстройства', 
+                    fightChance: 0.045, spawnInterval: 8, drugPrice: 22, drugLimit: 5, 
+                    task: 'Вылечить 30 пациентов', taskTarget: 30, healthRange: [15, 45], 
+                    unlocked: false, requiredLevel: 'serbsky', 
+                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 65, 
+                    staffLimits: { nurses: 8, orderlies: 5, orderlies2: 8 },
+                    theme: 'kandinsky' 
+                },
+                { 
+                    id: 'sukhanov', name: 'Суханов', desc: 'Редкие синдромы', 
+                    fightChance: 0.05, spawnInterval: 7, drugPrice: 25, drugLimit: 4, 
+                    task: 'Вылечить 35 пациентов', taskTarget: 35, healthRange: [10, 40], 
+                    unlocked: false, requiredLevel: 'kandinsky', 
+                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 70, 
+                    staffLimits: { nurses: 8, orderlies: 5, orderlies2: 9 },
+                    theme: 'sukhanov' 
+                },
+                { 
+                    id: 'arsenalnaya', name: 'Арсенальная', desc: 'Особо опасные расстройства', 
+                    fightChance: 0.08, spawnInterval: 6, drugPrice: 30, drugLimit: 3, 
+                    task: 'Вылечить 40 пациентов', taskTarget: 40, healthRange: [5, 30], 
+                    unlocked: false, requiredLevel: 'sukhanov', 
+                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 75, 
+                    staffLimits: { nurses: 8, orderlies: 5, orderlies2: 10 },
+                    theme: 'arsenalnaya' 
+                }
+            ];
+
+            const TECH_TREE = [
+                { id: 'tech_psychopharmacology', name: 'Психофармакология', desc: '+15% эффективность всех препаратов', cost: 15, prereq: [], effect: 'drug_boost', value: 0.15 },
+                { id: 'tech_clinical_diagnosis', name: 'Клиническая диагностика', desc: 'Ускоренная диагностика пациентов', cost: 12, prereq: [], effect: 'diagnosis_speed', value: 0.2 },
+                { id: 'tech_psychotherapy', name: 'Психотерапия', desc: 'Пациенты восстанавливаются на 20% быстрее', cost: 10, prereq: [], effect: 'heal_speed', value: 0.2 },
+                { id: 'tech_neurobiology', name: 'Нейробиология', desc: 'Уменьшение побочных эффектов на 30%', cost: 14, prereq: [], effect: 'side_effect_reduction', value: 0.3 },
+                { id: 'tech_ethics', name: 'Медицинская этика', desc: 'Пациенты реже вступают в конфликты', cost: 8, prereq: [], effect: 'fight_reduction', value: 0.3 },
+                { id: 'tech_ssri', name: 'СИОЗС', desc: 'Увеличивает эффективность флуоксетина на 25% и ускоряет его приток на 30%', cost: 20, prereq: ['tech_psychopharmacology'], effect: 'ssri_boost', value: 0.25 },
+                { id: 'tech_wechsler', name: 'Тест Векслера', desc: 'Увеличивает скорость лечения расстройств умственной отсталости и деменции', cost: 18, prereq: ['tech_clinical_diagnosis'], effect: 'wechsler_boost', value: 0.2 },
+                { id: 'tech_dopamine', name: 'Дофаминовая теория', desc: 'Уменьшает скорость падения здоровья людей с шизофренией на 70%', cost: 25, prereq: ['tech_neurobiology'], effect: 'dopamine_boost', value: 0.7 },
+                { id: 'tech_polypharmacy', name: 'Полипрагмазия', desc: 'Ускоряет приток препаратов на 30%', cost: 15, prereq: ['tech_psychopharmacology'], effect: 'polypharmacy_boost', value: 0.3 },
+                { id: 'tech_placebo', name: 'Эффект плацебо', desc: 'Мгновенно добавляет всех препаратов (50% от текущего количества)', cost: 30, prereq: ['tech_psychotherapy'], effect: 'placebo_effect', value: 0.5 },
+                { id: 'tech_extrapyramidal', name: 'Экстрапирамидные расстройства', desc: 'Убирает побочные эффекты от препаратов', cost: 22, prereq: ['tech_neurobiology', 'tech_psychopharmacology'], effect: 'affinity_boost', value: 1 },
+                { id: 'tech_atypical', name: 'Атипичные антипсихотики', desc: 'Увеличивает эффективность атипичных антипсихотиков на 15%', cost: 20, prereq: ['tech_psychopharmacology'], effect: 'atypical_boost', value: 0.15 },
+                { id: 'tech_forensic', name: 'Судебная психиатрия', desc: 'Пациенты на 50% меньше дерутся', cost: 28, prereq: ['tech_ethics', 'tech_clinical_diagnosis'], effect: 'forensic_boost', value: 0.5 },
+                { id: 'tech_psychosis', name: 'Психотические расстройства', desc: '+25% эффективность лечения шизофрении и бреда', cost: 25, prereq: ['tech_psychopharmacology', 'tech_clinical_diagnosis'], effect: 'category_boost', category: 'schizophrenia', value: 0.25 },
+                { id: 'tech_affective', name: 'Аффективные расстройства', desc: '+25% эффективность лечения депрессии и биполярных', cost: 25, prereq: ['tech_psychopharmacology', 'tech_psychotherapy'], effect: 'category_boost', category: 'depression', value: 0.25 },
+                { id: 'tech_anxiety', name: 'Тревожные расстройства', desc: '+25% эффективность лечения тревожных и ОКР', cost: 22, prereq: ['tech_psychotherapy', 'tech_clinical_diagnosis'], effect: 'category_boost', category: 'anxiety', value: 0.25 },
+                { id: 'tech_personality', name: 'Расстройства личности', desc: '+25% эффективность лечения РЛ', cost: 22, prereq: ['tech_psychotherapy', 'tech_neurobiology'], effect: 'category_boost', category: 'personality', value: 0.25 },
+                { id: 'tech_somatic', name: 'Психосоматика', desc: '+25% эффективность лечения психосоматических', cost: 20, prereq: ['tech_neurobiology', 'tech_clinical_diagnosis'], effect: 'category_boost', category: 'psychosomatic', value: 0.25 },
+                { id: 'tech_developmental', name: 'Детская психиатрия', desc: '+25% эффективность лечения расстройств развития', cost: 20, prereq: ['tech_psychopharmacology', 'tech_ethics'], effect: 'category_boost', category: 'developmental', value: 0.25 },
+                { id: 'tech_sexual', name: 'Сексология', desc: '+25% эффективность лечения сексуальных расстройств', cost: 18, prereq: ['tech_neurobiology', 'tech_ethics'], effect: 'category_boost', category: 'sexual', value: 0.25 },
+                { id: 'tech_neuropsychiatry', name: 'Нейропсихиатрия', desc: 'Общий бонус +20% ко всем видам лечения', cost: 35, prereq: ['tech_psychosis', 'tech_affective', 'tech_neurobiology'], effect: 'global_boost', value: 0.2 },
+                { id: 'tech_social_psychiatry', name: 'Социальная психиатрия', desc: 'Пациенты быстрее адаптируются, +15% к выздоровлению', cost: 30, prereq: ['tech_anxiety', 'tech_personality', 'tech_ethics'], effect: 'social_boost', value: 0.15 },
+                { id: 'tech_cognitive_behavioral', name: 'Когнитивно-поведенческая терапия', desc: 'Пациенты с неврозами лечатся на 30% быстрее', cost: 28, prereq: ['tech_anxiety', 'tech_affective', 'tech_psychotherapy'], effect: 'category_boost', category: 'neurosis', value: 0.3 },
+                { id: 'tech_psychoanalysis', name: 'Психоанализ', desc: 'Глубинная терапия: +20% к лечению РЛ и неврозов', cost: 28, prereq: ['tech_personality', 'tech_affective', 'tech_psychotherapy'], effect: 'psychoanalysis_boost', value: 0.2 },
+                { id: 'tech_integrated_psychiatry', name: 'Интегративная психиатрия', desc: 'Все методы объединены: +25% общая эффективность', cost: 50, prereq: ['tech_neuropsychiatry', 'tech_social_psychiatry', 'tech_cognitive_behavioral', 'tech_psychoanalysis'], effect: 'mastery_boost', value: 0.25 },
+                { id: 'tech_psychiatry_leadership', name: 'Лидерство в психиатрии', desc: 'Персонал работает на 50% эффективнее', cost: 40, prereq: ['tech_social_psychiatry', 'tech_integrated_psychiatry'], effect: 'staff_boost', value: 0.5 }
+            ];
+
+            // === ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===
+            const ALL_DRUGS = [
+                { name: 'глицин', color: '#90a4ae', sideEffect: 'минимальные' },
+                { name: 'флуоксетин', color: '#ce93d8', sideEffect: 'бессонница, тревожность' },
+                { name: 'аминазин', color: '#e57373', sideEffect: 'сонливость, сухость во рту' },
+                { name: 'кветиапин', color: '#4dd0e1', sideEffect: 'сонливость, сухость во рту' },
+                { name: 'оланзапин', color: '#81c784', sideEffect: 'увеличение веса, седация' },
+                { name: 'галоперидол', color: '#64b5f6', sideEffect: 'экстрапирамидные расстройства' },
+                { name: 'рисперидон', color: '#ef9a9a', sideEffect: 'увеличение пролактина' },
+                { name: 'клозапин', color: '#ffb74d', sideEffect: 'агранулоцитоз, седация' },
+                { name: 'седалит', color: '#ff8a65', sideEffect: 'угнетение ЦНС, привыкание' },
+                { name: 'циклодол', color: '#aed581', sideEffect: 'запор, сухость во рту' }
+            ];
+
+            const DRUG_RARITY = {
+                'глицин': 1,
+                'флуоксетин': 1,
+                'аминазин': 1,
+                'кветиапин': 1,
+                'оланзапин': 2,
+                'галоперидол': 2,
+                'рисперидон': 2,
+                'клозапин': 3,
+                'седалит': 3,
+                'циклодол': 3
+            };
+
+            const ALL_NAMES = [
+                'Алексей', 'Мария', 'Иван', 'Екатерина', 'Дмитрий', 'Анна', 'Сергей', 'Ольга', 'Павел', 'Татьяна',
+                'Николай', 'Наталья', 'Артём', 'Юлия', 'Максим', 'Елена', 'Владимир', 'Ирина', 'Андрей', 'Ксения',
+                'Георгий', 'София', 'Михаил', 'Алиса', 'Роман', 'Анастасия', 'Евгений', 'Виктория', 'Игорь', 'Полина',
+                'Василий', 'Дарья', 'Григорий', 'Марина', 'Анатолий', 'Светлана', 'Пётр', 'Юрий', 'Вероника', 'Антон',
+                'Никита', 'Тимофей', 'Константин', 'Александра', 'Кирилл', 'Оксана', 'Вячеслав', 'Лидия', 'Семён', 'Валентина'
+            ];
+
+            const ALL_DISEASES = [
+                { code: 'F32.0', name: 'Лёгкий депрессивный эпизод', treat: ['флуоксетин', 'глицин'], weight: 6, category: 'depression', severity: 1, gender: 'neutral' },
+                { code: 'F32.1', name: 'Умеренный депрессивный эпизод', treat: ['флуоксетин', 'кветиапин'], weight: 5, category: 'depression', severity: 2, gender: 'neutral' },
+                { code: 'F32.2', name: 'Тяжёлый депрессивный эпизод', treat: ['флуоксетин', 'кветиапин', 'оланзапин'], weight: 4, category: 'depression', severity: 3, gender: 'neutral' },
+                { code: 'F33.0', name: 'Рекуррентное депрессивное (лёгкое)', treat: ['флуоксетин', 'глицин'], weight: 4, category: 'depression', severity: 1, gender: 'neutral' },
+                { code: 'F33.1', name: 'Рекуррентное депрессивное (умеренное)', treat: ['флуоксетин', 'кветиапин'], weight: 4, category: 'depression', severity: 2, gender: 'neutral' },
+                { code: 'F34.1', name: 'Дистимия', treat: ['флуоксетин', 'глицин'], weight: 4, category: 'depression', severity: 1, gender: 'neutral' },
+                { code: 'F40.0', name: 'Агорафобия', treat: ['аминазин', 'кветиапин'], weight: 4, category: 'anxiety', severity: 2, gender: 'neutral' },
+                { code: 'F40.1', name: 'Социофобия', treat: ['аминазин', 'кветиапин'], weight: 5, category: 'anxiety', severity: 2, gender: 'neutral' },
+                { code: 'F41.0', name: 'Паническое расстройство', treat: ['флуоксетин', 'кветиапин'], weight: 5, category: 'anxiety', severity: 2, gender: 'neutral' },
+                { code: 'F41.1', name: 'Генерализованное тревожное', treat: ['флуоксетин', 'кветиапин'], weight: 6, category: 'anxiety', severity: 2, gender: 'neutral' },
+                { code: 'F43.0', name: 'Острая реакция на стресс', treat: ['аминазин', 'кветиапин'], weight: 4, category: 'anxiety', severity: 2, gender: 'neutral' },
+                { code: 'F43.1', name: 'ПТСР', treat: ['флуоксетин', 'кветиапин'], weight: 4, category: 'anxiety', severity: 3, gender: 'neutral' },
+                { code: 'F30.1', name: 'Мания без психотических симптомов', treat: ['галоперидол', 'кветиапин'], weight: 3, category: 'neurosis', severity: 3, gender: 'neutral' },
+                { code: 'F31.0', name: 'Биполярное I (гипомания)', treat: ['кветиапин', 'оланзапин'], weight: 3, category: 'neurosis', severity: 3, gender: 'neutral' },
+                { code: 'F31.7', name: 'Биполярное I (ремиссия)', treat: ['кветиапин', 'флуоксетин'], weight: 3, category: 'neurosis', severity: 2, gender: 'neutral' },
+                { code: 'F34.0', name: 'Циклотимия', treat: ['кветиапин', 'оланзапин'], weight: 3, category: 'neurosis', severity: 2, gender: 'neutral' },
+                { code: 'F42.0', name: 'ОКР (обсессии)', treat: ['клозапин', 'флуоксетин', 'рисперидон'], weight: 4, category: 'neurosis', severity: 3, gender: 'neutral' },
+                { code: 'F42.1', name: 'ОКР (компульсии)', treat: ['клозапин', 'флуоксетин', 'рисперидон'], weight: 4, category: 'neurosis', severity: 3, gender: 'neutral' },
+                { code: 'F48.0', name: 'Неврастения', treat: ['флуоксетин', 'глицин'], weight: 4, category: 'neurosis', severity: 2, gender: 'neutral' },
+                { code: 'F50.0', name: 'Нервная анорексия', treat: ['флуоксетин', 'глицин'], weight: 6, category: 'psychosomatic', severity: 3, gender: 'female' },
+                { code: 'F50.2', name: 'Булимия', treat: ['флуоксетин', 'кветиапин'], weight: 6, category: 'psychosomatic', severity: 2, gender: 'female' },
+                { code: 'F45.0', name: 'Соматизированное расстройство', treat: ['флуоксетин', 'кветиапин'], weight: 3, category: 'psychosomatic', severity: 2, gender: 'neutral' },
+                { code: 'F45.1', name: 'Ипохондрическое расстройство', treat: ['флуоксетин', 'кветиапин'], weight: 3, category: 'psychosomatic', severity: 2, gender: 'neutral' },
+                { code: 'F51.0', name: 'Бессонница неорганическая', treat: ['седалит', 'кветиапин'], weight: 4, category: 'psychosomatic', severity: 1, gender: 'neutral' },
+                { code: 'F60.3', name: 'Пограничное РЛ', treat: ['кветиапин', 'оланзапин'], weight: 5, category: 'personality', severity: 5, gender: 'female' },
+                { code: 'F60.0', name: 'Параноидное РЛ', treat: ['галоперидол', 'рисперидон', 'кветиапин'], weight: 4, category: 'personality', severity: 4, gender: 'male' },
+                { code: 'F60.1', name: 'Шизоидное РЛ', treat: ['оланзапин', 'рисперидон', 'кветиапин'], weight: 3, category: 'personality', severity: 3, gender: 'male' },
+                { code: 'F60.5', name: 'Ананкастное РЛ', treat: ['клозапин', 'флуоксетин', 'рисперидон'], weight: 3, category: 'personality', severity: 3, gender: 'neutral' },
+                { code: 'F60.6', name: 'Тревожное РЛ', treat: ['флуоксетин', 'кветиапин'], weight: 3, category: 'personality', severity: 2, gender: 'neutral' },
+                { code: 'F20.0', name: 'Параноидная шизофрения', treat: ['галоперидол', 'оланзапин', 'рисперидон'], weight: 5, category: 'schizophrenia', severity: 4, gender: 'male' },
+                { code: 'F20.1', name: 'Гебефреническая шизофрения', treat: ['клозапин', 'оланзапин', 'кветиапин'], weight: 3, category: 'schizophrenia', severity: 5, gender: 'male' },
+                { code: 'F20.3', name: 'Недифференцированная шизофрения', treat: ['клозапин', 'галоперидол', 'кветиапин'], weight: 3, category: 'schizophrenia', severity: 4, gender: 'neutral' },
+                { code: 'F25.0', name: 'Шизоаффективное (маниакальный)', treat: ['клозапин', 'галоперидол', 'кветиапин'], weight: 3, category: 'schizophrenia', severity: 4, gender: 'neutral' },
+                { code: 'F22.0', name: 'Бредовое расстройство', treat: ['галоперидол', 'рисперидон', 'оланзапин'], weight: 4, category: 'delusional', severity: 3, gender: 'male' },
+                { code: 'F23.0', name: 'Острое полиморфное психотическое', treat: ['галоперидол', 'оланзапин', 'кветиапин'], weight: 2, category: 'delusional', severity: 4, gender: 'neutral' },
+                { code: 'F24', name: 'Индуцированное бредовое расстройство', treat: ['галоперидол', 'рисперидон', 'кветиапин'], weight: 1, category: 'delusional', severity: 3, gender: 'neutral' },
+                { code: 'F21', name: 'Шизотипическое расстройство', treat: ['галоперидол', 'рисперидон', 'кветиапин'], weight: 2, category: 'schizotypal', severity: 3, gender: 'neutral' },
+                { code: 'F84.0', name: 'Аутизм', treat: ['рисперидон', 'оланзапин', 'кветиапин'], weight: 2, category: 'developmental', severity: 4, gender: 'neutral' },
+                { code: 'F84.3', name: 'Синдром Аспергера', treat: ['рисперидон', 'оланзапин', 'кветиапин'], weight: 2, category: 'developmental', severity: 3, gender: 'neutral' },
+                { code: 'F90.0', name: 'СДВГ (невнимательность)', treat: ['аминазин', 'кветиапин'], weight: 4, category: 'developmental', severity: 2, gender: 'neutral' },
+                { code: 'F95.2', name: 'Синдром Туретта', treat: ['галоперидол', 'рисперидон', 'кветиапин'], weight: 1, category: 'developmental', severity: 4, gender: 'neutral' },
+                { code: 'F52.4', name: 'Преждевременная эякуляция', treat: ['седалит', 'глицин', 'кветиапин'], weight: 4, category: 'sexual', severity: 1, gender: 'male' }
+            ];
+
+            // === ИГРОВЫЕ ПЕРЕМЕННЫЕ ===
+            let selectedPsychIndex = 0, selectedLevelIndex = 0, selectedDoc = null, selectedLevel = null;
+            let unlockedLevels = ['bechtereva'];
+            let completedLevels = {};
+            
+            const selectionScreen = document.getElementById('selectionScreen');
+            const gameWrapper = document.getElementById('gameWrapper');
+            const psychGrid = document.getElementById('psychGrid');
+            const levelGrid = document.getElementById('levelGrid');
+            const backToPsychBtn = document.getElementById('backToPsychBtn');
+            const stepPsych = document.getElementById('stepPsych');
+            const stepLevel = document.getElementById('stepLevel');
+            const selectedDocDisplay = document.getElementById('selectedDocDisplay');
+
+            let drugInventory = {};
+            let techPoints = 0;
+            let researchedTechs = [];
+            let techEffects = {};
+            let availableDrugsList = [];
+            let availableDiseases = [];
+            let pendingLevelTransition = false;
+            let nextLevelData = null;
+
+            let gameOver = false;
+            let gameLoopId = null;
+            let zSpawnCounter = 0;
+            
+            let currentTaskTarget = 3;
+            let currentMaxPatients = 6;
+
+            let nurseCount = 0;
+            let orderlyCount = 0;
+            let orderly2Count = 0;
+            
+            let maxNurses = 2;
+            let maxOrderlies = 0;
+            let maxOrderlies2 = 0;
+
+            let autoRestockCounter = 0;
+            const AUTO_RESTOCK_MIN_INTERVAL = 10;
+            const AUTO_RESTOCK_MAX_INTERVAL = 15;
+            let nextRestockTime = 0;
+
+            let isPaused = false;
+
+            const MIN_PATIENT_DISTANCE = 40;
+            const SEPARATION_STRENGTH = 0.8;
+            const MAX_SEPARATION_ITERATIONS = 5;
+            const STUCK_THRESHOLD = 20;
+
+            const LEVEL_THEMES = {
+                'bechtereva': { bg: ['#4a7a5a', '#3a5a4a'], border: '#3a5a2a', bedColor: '#4a6a3a', decor: 'flowers' },
+                'suhanova': { bg: ['#c9b89a', '#b09a7a'], border: '#8a7a5a', bedColor: '#6a5a4a', decor: 'wood' },
+                'korsakov': { bg: ['#3a3a3a', '#2a2a2a'], border: '#5a4a3a', bedColor: '#4a3a2a', decor: 'dark' },
+                'balinsky': { bg: ['#8a7a6a', '#6a5a4a'], border: '#6a5a4a', bedColor: '#5a4a3a', decor: 'warm' },
+                'gannushkina': { bg: ['#7a8a7a', '#5a6a5a'], border: '#5a6a5a', bedColor: '#4a5a3a', decor: 'tiles' },
+                'osipova': { bg: ['#f0f0f0', '#d0d0d0'], border: '#b0b0b0', bedColor: '#c0c0c0', decor: 'sterile' },
+                'zhuravsky': { bg: ['#5a4a7a', '#4a3a6a'], border: '#4a3a5a', bedColor: '#5a4a6a', decor: 'experimental' },
+                'snezhnevsky': { bg: ['#2a2a3a', '#1a1a2a'], border: '#4a3a4a', bedColor: '#3a2a3a', decor: 'dark_corridor' },
+                'kashchenko': { bg: ['#4a4a4a', '#3a3a3a'], border: '#6a5a5a', bedColor: '#4a3a3a', decor: 'classic' },
+                'skvortsova': { bg: ['#2a2a2a', '#1a1a1a'], border: '#4a4a4a', bedColor: '#3a3a3a', decor: 'minimal' },
+                'gilyarovsky': { bg: ['#3a2a2a', '#2a1a1a'], border: '#5a3a3a', bedColor: '#3a2a2a', decor: 'dark_psychopathy' },
+                'serbsky': { bg: ['#4a4a3a', '#3a3a2a'], border: '#6a5a4a', bedColor: '#4a3a3a', decor: 'forensic' },
+                'kandinsky': { bg: ['#3a2a4a', '#2a1a3a'], border: '#5a3a5a', bedColor: '#3a2a4a', decor: 'chaotic' },
+                'sukhanov': { bg: ['#e8e8e8', '#d0d0d0'], border: '#b0b0b0', bedColor: '#c8c8c8', decor: 'sterile_rare' },
+                'arsenalnaya': { bg: ['#1a1a1a', '#0a0a0a'], border: '#3a2a2a', bedColor: '#2a1a1a', decor: 'maximum_security' }
+            };
+
+            function getStaffLimits(level) {
+                if (!level || !level.staffLimits) return { nurses: 2, orderlies: 0, orderlies2: 0 };
+                return level.staffLimits;
+            }
+
+            function shuffleArray(arr) {
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                return arr;
+            }
+
+            function getDiseasesForAvailableDrugs(availableDrugs, count) {
+                let candidates = ALL_DISEASES.filter(disease => {
+                    return disease.treat.some(drug => availableDrugs.includes(drug));
+                });
+                if (candidates.length < count) {
+                    candidates = ALL_DISEASES.slice();
+                }
+                candidates = shuffleArray([...candidates]);
+                return candidates.slice(0, Math.min(count, candidates.length));
+            }
+
+            function getAvailableDrugsForLevel(level) {
+                if (!level) return ['глицин'];
+                return level.availableDrugs || ['глицин'];
+            }
+
+            function getAvailableDiseasesForLevel(level) {
+                if (!level) return ALL_DISEASES.slice(0, 5);
+                const availableDrugs = getAvailableDrugsForLevel(level);
+                const count = level.diseaseCount || 5;
+                return getDiseasesForAvailableDrugs(availableDrugs, count);
+            }
+
+            function getPharmacyStock(level) {
+                let base = 20;
+                const name = level.name;
+                if (name.includes('Бехтерева')) base = 35;
+                else if (name.includes('Кащенко')) base = 18;
+                else if (name.includes('Скворцова-Степанова')) base = 10;
+                else if (name.includes('Снежневский')) base = 12;
+                else if (name.includes('Ганнушкина')) base = 25;
+                else if (name.includes('Корсаков')) base = 28;
+                else if (name.includes('Суханова')) base = 30;
+                else if (name.includes('Балинский')) base = 22;
+                else if (name.includes('Осипова')) base = 20;
+                else if (name.includes('Журавский')) base = 24;
+                else if (name.includes('Гиляровский')) base = 8;
+                else if (name.includes('Сербский')) base = 6;
+                else if (name.includes('Кандинский')) base = 5;
+                else if (name.includes('Суханов')) base = 4;
+                else if (name.includes('Арсенальная')) base = 3;
+                return base;
+            }
+
+            function initDrugInventory(level) {
+                const stock = getPharmacyStock(level);
+                const inv = {};
+                const availableDrugs = getAvailableDrugsForLevel(level);
+                ALL_DRUGS.forEach(d => {
+                    if (availableDrugs.includes(d.name)) {
+                        let count = Math.floor(stock * (0.5 + Math.random() * 0.5));
+                        if (d.name === 'глицин') count = Math.floor(stock * (0.8 + Math.random() * 0.2));
+                        if (count < 1) count = 1;
+                        inv[d.name] = count;
+                    } else {
+                        inv[d.name] = 0;
+                    }
+                });
+                return inv;
+            }
+
+            function autoRestockDrugs() {
+                if (gameOver || !gameActive) return;
+                const availableDrugs = getAvailableDrugsForLevel(currentLevel);
+                const drugsToRestock = availableDrugs.filter(drug => drugInventory[drug] !== undefined);
+                if (drugsToRestock.length === 0) return;
+                
+                let ssriBoostActive = researchedTechs.includes('tech_ssri');
+                let ssriDrug = 'флуоксетин';
+                let ssriRestockChance = ssriBoostActive ? 0.5 : 0.2;
+                
+                let drugName;
+                if (ssriBoostActive && Math.random() < ssriRestockChance && availableDrugs.includes(ssriDrug)) {
+                    drugName = ssriDrug;
+                } else {
+                    const randomIndex = Math.floor(Math.random() * drugsToRestock.length);
+                    drugName = drugsToRestock[randomIndex];
+                }
+                
+                drugInventory[drugName] = (drugInventory[drugName] || 0) + 1;
+                statusMessage = '💊 +1 ' + drugName + ' в аптеке (автопополнение)';
+                updateUI();
+                renderDrugPanel();
+            }
+
+            function getWeightedRandomDrug() {
+                const availableDrugs = getAvailableDrugsForLevel(currentLevel);
+                if (availableDrugs.length === 0) return null;
+                
+                let weightedPool = [];
+                for (let drugName of availableDrugs) {
+                    const weight = DRUG_RARITY[drugName] || 1;
+                    weightedPool.push({ name: drugName, weight: weight });
+                }
+                
+                const totalWeight = weightedPool.reduce((sum, item) => sum + item.weight, 0);
+                let random = Math.random() * totalWeight;
+                
+                for (let item of weightedPool) {
+                    random -= item.weight;
+                    if (random <= 0) {
+                        return item.name;
+                    }
+                }
+                return weightedPool[0]?.name || null;
+            }
+
+            function checkLevelUnlock(levelId) {
+                const level = LEVELS.find(l => l.id === levelId);
+                if (!level) return false;
+                if (level.unlocked) return true;
+                if (!level.requiredLevel) return false;
+                return completedLevels[level.requiredLevel] === true;
+            }
+
+            function completeLevel(levelId) {
+                completedLevels[levelId] = true;
+                LEVELS.forEach(l => {
+                    if (l.requiredLevel === levelId && !l.unlocked) {
+                        l.unlocked = true;
+                        unlockedLevels.push(l.id);
+                    }
+                });
+                renderLevelSelection();
+                showLevelTransition(levelId);
+            }
+
+            function showLevelTransition(levelId) {
+                const currentIdx = LEVELS.findIndex(l => l.id === levelId);
+                let nextLevel = null;
+                let nextLevelName = '🏆 Все уровни пройдены!';
+                
+                if (currentIdx !== -1 && currentIdx < LEVELS.length - 1) {
+                    const candidate = LEVELS[currentIdx + 1];
+                    if (candidate.unlocked || checkLevelUnlock(candidate.id)) {
+                        nextLevel = candidate;
+                        nextLevelName = candidate.name + ' (' + candidate.desc + ')';
+                    } else {
+                        nextLevelName = '🔒 ' + candidate.name + ' (требуется разблокировка)';
+                    }
+                }
+
+                const modal = document.getElementById('levelTransitionModal');
+                document.getElementById('ltLevelName').textContent = currentLevel ? currentLevel.name + ' (' + currentLevel.desc + ')' : '—';
+                document.getElementById('ltScore').textContent = score;
+                document.getElementById('ltTech').textContent = techPoints;
+                document.getElementById('ltCured').textContent = curedCount;
+                document.getElementById('ltTask').textContent = currentTaskTarget;
+                document.getElementById('ltNextLevel').textContent = nextLevelName;
+
+                if (nextLevel) {
+                    document.getElementById('ltNextBtn').style.display = 'inline-block';
+                    document.getElementById('ltNextBtn').textContent = '➡️ Перейти на ' + nextLevel.name;
+                } else {
+                    document.getElementById('ltNextBtn').style.display = 'none';
+                }
+
+                modal.classList.add('active');
+                pendingLevelTransition = true;
+                nextLevelData = nextLevel;
+                
+                gameActive = false;
+                if (gameLoopId) { 
+                    cancelAnimationFrame(gameLoopId);
+                    gameLoopId = null; 
+                }
+            }
+
+            function goToNextLevel() {
+                const currentIdx = LEVELS.findIndex(l => l.id === currentLevel.id);
+                if (currentIdx === -1 || currentIdx >= LEVELS.length - 1) {
+                    showGameWin();
+                    return;
+                }
+
+                const nextLevel = LEVELS[currentIdx + 1];
+                if (!nextLevel.unlocked && !checkLevelUnlock(nextLevel.id)) {
+                    statusMessage = '⚠️ Следующий уровень ещё не доступен!';
+                    updateUI();
+                    return;
+                }
+
+                hideDrugTooltip();
+
+                selectedLevel = nextLevel;
+                currentLevel = nextLevel;
+                completedLevels[nextLevel.id] = false;
+
+                availableDrugsList = getAvailableDrugsForLevel(nextLevel);
+                availableDiseases = getAvailableDiseasesForLevel(nextLevel);
+                drugInventory = initDrugInventory(nextLevel);
+
+                fightChance = nextLevel.fightChance * (1 - getFightReduction());
+                spawnInterval = nextLevel.spawnInterval;
+                drugPrice = nextLevel.drugPrice;
+                drugLimit = nextLevel.drugLimit;
+                currentHealthRange = nextLevel.healthRange || [50, 80];
+                
+                currentTaskTarget = 3 + LEVELS.indexOf(nextLevel) - 2;
+                if (currentTaskTarget < 1) currentTaskTarget = 1;
+                currentMaxPatients = 6 + LEVELS.indexOf(nextLevel) - 2;
+                if (currentMaxPatients < 2) currentMaxPatients = 2;
+                
+                taskTarget = currentTaskTarget;
+                maxPatients = currentMaxPatients;
+                
+                score = 0;
+                nurseCount = 0;
+                orderlyCount = 0;
+                orderly2Count = 0;
+                
+                const limits = getStaffLimits(nextLevel);
+                maxNurses = limits.nurses;
+                maxOrderlies = limits.orderlies;
+                maxOrderlies2 = limits.orderlies2;
+                
+                curedCount = 0;
+                levelCompleted = false;
+                pendingLevelTransition = false;
+
+                timeOfDay = 600;
+
+                patients = [];
+                zLetters = [];
+                zSpawnCounter = 0;
+
+                namePool = shuffleArray([...ALL_NAMES]);
+
+                const extraPatients = Math.floor(Math.random() * 3) + 1;
+                const totalInitial = Math.max(1, taskTarget + extraPatients - 2);
+                const initialCount = Math.min(totalInitial, maxPatients);
+                for (let i = 0; i < initialCount; i++) {
+                    patients.push(createPatient());
+                }
+                
+                if (totalInitial > maxPatients) {
+                    statusMessage = '⚠️ На уровне может быть максимум ' + maxPatients + ' пациентов. Создано ' + initialCount + '.';
+                } else {
+                    statusMessage = '🏥 Появилось ' + initialCount + ' пациентов (нужно вылечить ' + taskTarget + ')';
+                }
+
+                document.getElementById('levelDisplay').textContent = '📍 ' + nextLevel.name + ' (' + nextLevel.desc + ')';
+                
+                updateStaffPanel();
+                
+                updateUI();
+                renderDrugPanel();
+                renderBook();
+                renderTechTree();
+
+                document.getElementById('levelTransitionModal').classList.remove('active');
+
+                gameActive = true;
+                if (!gameLoopId) {
+                    gameLoop();
+                }
+            }
+
+            function showGameWin() {
+                gameActive = false;
+                if (gameLoopId) { 
+                    cancelAnimationFrame(gameLoopId);
+                    gameLoopId = null; 
+                }
+                
+                const modal = document.getElementById('gameoverModal');
+                document.getElementById('goDoc').textContent = selectedDoc ? selectedDoc.name : '—';
+                document.getElementById('goLevel').textContent = '🏆 ВСЕ УРОВНИ ПРОЙДЕНЫ!';
+                document.getElementById('goScore').textContent = score;
+                document.getElementById('goTech').textContent = techPoints;
+                document.getElementById('goCured').textContent = curedCount;
+                document.getElementById('goTask').textContent = taskTarget;
+                document.querySelector('.go-title').textContent = '🏆 ПОБЕДА!';
+                document.querySelector('.go-sub').textContent = 'Вы прошли все уровни! Вы — настоящий психиатр!';
+                modal.classList.add('active');
+            }
+
+            function getHealDifficulty(severity) {
+                const difficultyMap = { 1: 0.7, 2: 0.6, 3: 0.45, 4: 0.3, 5: 0.2 };
+                return difficultyMap[severity] || 0.7;
+            }
+
+            function getSeverityLabel(severity) {
+                const labels = { 1: 'Лёгкое', 2: 'Средней тяжести', 3: 'Тяжёлое', 4: 'Очень тяжёлое', 5: 'Крайне тяжёлое' };
+                return labels[severity] || 'Неизвестно';
+            }
+
+            function getSeverityClass(severity) {
+                const classes = { 1: 'severity-mild', 2: 'severity-moderate', 3: 'severity-severe', 4: 'severity-profound', 5: 'severity-extreme' };
+                return classes[severity] || '';
+            }
+
+            function getTechStatus(techId) {
+                if (researchedTechs.includes(techId)) return 'researched';
+                const tech = TECH_TREE.find(t => t.id === techId);
+                if (!tech) return 'locked';
+                const allPrereqMet = tech.prereq.every(p => researchedTechs.includes(p));
+                if (allPrereqMet) return 'available';
+                return 'locked';
+            }
+
+            function getTechCost(techId) {
+                const tech = TECH_TREE.find(t => t.id === techId);
+                if (!tech) return 999;
+                return tech.cost;
+            }
+
+            function canResearchTech(techId) {
+                const status = getTechStatus(techId);
+                if (status === 'researched') return false;
+                if (status === 'locked') return false;
+                const cost = getTechCost(techId);
+                return techPoints >= cost;
+            }
+
+            function applyTechEffect(tech) {
+                if (!tech.effect) return;
+                switch (tech.effect) {
+                    case 'drug_boost': techEffects.drugBoost = (techEffects.drugBoost || 0) + tech.value; break;
+                    case 'diagnosis_speed': techEffects.diagnosisSpeed = (techEffects.diagnosisSpeed || 0) + tech.value; break;
+                    case 'heal_speed': techEffects.healSpeed = (techEffects.healSpeed || 0) + tech.value; break;
+                    case 'side_effect_reduction': techEffects.sideEffectReduction = (techEffects.sideEffectReduction || 0) + tech.value; break;
+                    case 'fight_reduction': techEffects.fightReduction = (techEffects.fightReduction || 0) + tech.value; break;
+                    case 'category_boost': if (!techEffects.categoryBoosts) techEffects.categoryBoosts = {};
+                        techEffects.categoryBoosts[tech.category] = (techEffects.categoryBoosts[tech.category] || 0) + tech.value; break;
+                    case 'global_boost': techEffects.globalBoost = (techEffects.globalBoost || 0) + tech.value; break;
+                    case 'social_boost': techEffects.socialBoost = (techEffects.socialBoost || 0) + tech.value; break;
+                    case 'psychoanalysis_boost': techEffects.psychoanalysisBoost = (techEffects.psychoanalysisBoost || 0) + tech.value; break;
+                    case 'mastery_boost': techEffects.masteryBoost = (techEffects.masteryBoost || 0) + tech.value; break;
+                    case 'staff_boost': techEffects.staffBoost = (techEffects.staffBoost || 0) + tech.value; break;
+                    case 'ssri_boost': 
+                        techEffects.ssriBoost = (techEffects.ssriBoost || 0) + tech.value; 
+                        techEffects.ssriRestockBoost = 0.3;
+                        break;
+                    case 'wechsler_boost': techEffects.wechslerBoost = (techEffects.wechslerBoost || 0) + tech.value; break;
+                    case 'dopamine_boost': techEffects.dopamineBoost = (techEffects.dopamineBoost || 0) + tech.value; break;
+                    case 'polypharmacy_boost': techEffects.polypharmacyBoost = (techEffects.polypharmacyBoost || 0) + tech.value; break;
+                    case 'placebo_effect': 
+                        if (drugInventory) {
+                            for (let drug in drugInventory) {
+                                if (availableDrugsList.includes(drug)) {
+                                    let current = drugInventory[drug] || 0;
+                                    let add = Math.floor(current * tech.value);
+                                    drugInventory[drug] = current + add;
+                                }
+                            }
+                        }
+                        break;
+                    case 'affinity_boost': techEffects.affinityBoost = (techEffects.affinityBoost || 0) + tech.value; break;
+                    case 'atypical_boost': techEffects.atypicalBoost = (techEffects.atypicalBoost || 0) + tech.value; break;
+                    case 'forensic_boost': techEffects.forensicBoost = (techEffects.forensicBoost || 0) + tech.value; break;
+                }
+            }
+
+            function researchTech(techId) {
+                if (!canResearchTech(techId)) return false;
+                const tech = TECH_TREE.find(t => t.id === techId);
+                if (!tech) return false;
+                const cost = tech.cost;
+                techPoints -= cost;
+                researchedTechs.push(techId);
+                applyTechEffect(tech);
+                renderTechTree();
+                updateUI();
+                return true;
+            }
+
+            function getCategoryBoost(category) {
+                if (!techEffects.categoryBoosts) return 0;
+                return techEffects.categoryBoosts[category] || 0;
+            }
+
+            function getTotalHealBoost(disease) {
+                let total = 1.0;
+                if (techEffects.globalBoost) total += techEffects.globalBoost;
+                if (techEffects.masteryBoost) total += techEffects.masteryBoost;
+                if (techEffects.drugBoost) total += techEffects.drugBoost;
+                if (disease && techEffects.categoryBoosts && techEffects.categoryBoosts[disease.category]) {
+                    total += techEffects.categoryBoosts[disease.category];
+                }
+                if (disease && techEffects.psychoanalysisBoost && (disease.category === 'personality' || disease.category === 'neurosis')) {
+                    total += techEffects.psychoanalysisBoost;
+                }
+                if (disease && techEffects.ssriBoost && disease.treat.includes('флуоксетин')) {
+                    total += techEffects.ssriBoost;
+                }
+                if (disease && techEffects.atypicalBoost && disease.treat.some(d => ['кветиапин', 'оланзапин', 'рисперидон', 'клозапин'].includes(d))) {
+                    total += techEffects.atypicalBoost;
+                }
+                return total;
+            }
+
+            function getStaffBoost() { return techEffects.staffBoost || 0; }
+            function getFightReduction() { 
+                let reduction = techEffects.fightReduction || 0;
+                if (techEffects.forensicBoost) reduction += techEffects.forensicBoost;
+                return reduction;
+            }
+            function getSideEffectReduction() { 
+                let reduction = techEffects.sideEffectReduction || 0;
+                if (techEffects.affinityBoost) reduction = 1;
+                return reduction;
+            }
+
+            function hireNurse() {
+                if (gameOver) return;
+                if (nurseCount >= maxNurses) { statusMessage = '❌ Максимум ' + maxNurses + ' медсестёр'; updateUI(); return; }
+                if (score < 10) { statusMessage = '❌ Недостаточно очков! Нужно 10 Ψ'; updateUI(); return; }
+                score -= 10;
+                nurseCount++;
+                statusMessage = '👩‍⚕️ Медсестра нанята! (+' + Math.round(getNurseBonus() * 100) + '% к силе препаратов)';
+                updateUI();
+            }
+
+            function hireOrderly() {
+                if (gameOver) return;
+                if (maxOrderlies === 0) { statusMessage = '❌ Ординаторы пока не доступны'; updateUI(); return; }
+                if (orderlyCount >= maxOrderlies) { statusMessage = '❌ Максимум ' + maxOrderlies + ' ординаторов'; updateUI(); return; }
+                if (score < 25) { statusMessage = '❌ Недостаточно очков! Нужно 25 Ψ'; updateUI(); return; }
+                score -= 25;
+                orderlyCount++;
+                statusMessage = '💊 Ординатор нанят! (+' + Math.round(getOrderlyBonus() * 2) + '🧪 за вылеченного)';
+                updateUI();
+            }
+
+            function hireOrderly2() {
+                if (gameOver) return;
+                if (maxOrderlies2 === 0) { statusMessage = '❌ Санитары пока не доступны'; updateUI(); return; }
+                if (orderly2Count >= maxOrderlies2) { statusMessage = '❌ Максимум ' + maxOrderlies2 + ' санитаров'; updateUI(); return; }
+                if (score < 5) { statusMessage = '❌ Недостаточно очков! Нужно 5 Ψ'; updateUI(); return; }
+                score -= 5;
+                orderly2Count++;
+                statusMessage = '🧹 Санитар нанят! (замедляет ухудшение здоровья на ' + Math.round(getOrderly2Bonus() * 100) + '%)';
+                updateUI();
+            }
+
+            function getNurseBonus() { return nurseCount * 0.05; }
+            function getOrderlyBonus() { return orderlyCount * 0.5; }
+            function getOrderly2Bonus() { return orderly2Count * 0.05; }
+
+            function updateStaffPanel() {
+                const nurseItem = document.getElementById('staffNurse');
+                const orderlyItem = document.getElementById('staffOrderly');
+                const orderly2Item = document.getElementById('staffOrderly2');
+                
+                nurseItem.classList.remove('hidden-staff');
+                
+                if (maxOrderlies > 0) {
+                    orderlyItem.classList.remove('hidden-staff');
+                } else {
+                    orderlyItem.classList.add('hidden-staff');
+                }
+                
+                if (maxOrderlies2 > 0) {
+                    orderly2Item.classList.remove('hidden-staff');
+                } else {
+                    orderly2Item.classList.add('hidden-staff');
+                }
+            }
+
+            function renderTechTree() {
+                const grid = document.getElementById('techGrid');
+                grid.innerHTML = '';
+                TECH_TREE.forEach(tech => {
+                    const status = getTechStatus(tech.id);
+                    const card = document.createElement('div');
+                    card.className = 'tech-card ' + status;
+                    const canResearch = canResearchTech(tech.id);
+                    const cost = tech.cost;
+
+                    let statusText = '';
+                    let statusClass = '';
+                    if (status === 'researched') { statusText = '✅ Изучено'; statusClass = 'done'; } else if (status === 'available') {
+                        statusText = canResearch ? '🔬 Доступно' : '🧪 Недостаточно очков';
+                        statusClass = 'avail';
+                    } else {
+                        statusText = '🔒 Требует: ' + tech.prereq.map(p => { const t = TECH_TREE.find(t => t.id === p); return t ? t.name : p; }).join(', ');
+                        statusClass = 'lock';
+                    }
+
+                    card.innerHTML = `
+                        <div class="tech-name">${tech.name}</div>
+                        <div class="tech-desc">${tech.desc}</div>
+                        <div class="tech-cost">💰 ${cost}🧪</div>
+                        <div class="tech-prereq">${tech.prereq.length ? 'Требует: ' + tech.prereq.map(p => { const t = TECH_TREE.find(t => t.id === p); return t ? t.name : p; }).join(', ') : '🆓 Базовое'}</div>
+                        <div class="tech-status ${statusClass}">${statusText}</div>
+                    `;
+
+                    if (status === 'available' && canResearch) {
+                        card.style.cursor = 'pointer';
+                        card.addEventListener('click', function() {
+                            if (researchTech(tech.id)) {
+                                statusMessage = '✅ Исследовано: ' + tech.name + '!';
+                                updateUI();
+                                renderDrugPanel();
+                            } else {
+                                statusMessage = '❌ Недостаточно очков исследований для ' + tech.name;
+                                updateUI();
+                            }
+                        });
+                    }
+
+                    grid.appendChild(card);
+                });
+                document.getElementById('techPointsModal').textContent = techPoints;
+                document.getElementById('techPointsDisplay').textContent = '🧪 ' + techPoints;
+            }
+
+            // === TWO-STEP SELECTION RENDER ===
+            function renderPsychSelection() {
+                psychGrid.innerHTML = '';
+                PSYCHIATRISTS.forEach((doc, idx) => {
+                    const card = document.createElement('div');
+                    card.className = 'sel-card' + (idx === selectedPsychIndex ? ' selected' : '');
+                    card.innerHTML = `<div class="name">🧠 ${doc.name}</div><div class="ability">✨ ${doc.ability}</div><div class="stats">IQ ${doc.iq} · эмпатия ${doc.empathy} · скорость ${doc.speed.toFixed(2)}</div>`;
+                    card.addEventListener('click', function() { 
+                        selectedPsychIndex = idx;
+                        selectedDoc = doc;
+                        selectedDocDisplay.textContent = 'Выбран: ' + doc.name;
+                        renderPsychSelection();
+                        showStep('level');
+                        renderLevelSelection();
+                    });
+                    psychGrid.appendChild(card);
+                });
+            }
+
+            function renderLevelSelection() {
+                levelGrid.innerHTML = '';
+                LEVELS.forEach((level, idx) => {
+                    const el = document.createElement('div');
+                    const isUnlocked = level.unlocked || checkLevelUnlock(level.id);
+                    el.className = 'sel-level' + (idx === selectedLevelIndex ? ' selected' : '') + (!isUnlocked ? ' locked-level' : '');
+                    
+                    let progressText = '';
+                    if (isUnlocked && completedLevels[level.id]) {
+                        progressText = '<span class="level-progress">✅ Пройден</span>';
+                    } else if (isUnlocked) {
+                        const drugCount = level.availableDrugs.length;
+                        const limits = level.staffLimits || { nurses: 0, orderlies: 0, orderlies2: 0 };
+                        progressText = `<span class="level-progress">🔓 ${drugCount} препаратов · 👩‍⚕️${limits.nurses} 💊${limits.orderlies} 🧹${limits.orderlies2}</span>`;
+                    } else {
+                        const required = LEVELS.find(l => l.id === level.requiredLevel);
+                        progressText = `<span class="level-progress">🔒 Требуется: ${required ? required.name : ''}</span>`;
+                    }
+                    
+                    const levelIndex = LEVELS.indexOf(level);
+                    const taskForLevel = Math.max(1, 3 + levelIndex - 2);
+                    const maxForLevel = Math.max(2, 6 + levelIndex - 2);
+                    el.innerHTML = `${level.name} <span class="desc">${level.desc} · задача: вылечить ${taskForLevel} пациентов (макс. ${maxForLevel})</span> ${progressText}`;
+                    
+                    if (isUnlocked) {
+                        el.addEventListener('click', function() { 
+                            if (isUnlocked) {
+                                selectedLevelIndex = idx;
+                                renderLevelSelection();
+                                // Start game on click
+                                const doc = PSYCHIATRISTS[selectedPsychIndex];
+                                const lvl = LEVELS[selectedLevelIndex];
+                                if (doc && lvl && (lvl.unlocked || checkLevelUnlock(lvl.id))) {
+                                    selectedDoc = doc;
+                                    selectedLevel = lvl;
+                                    selectionScreen.classList.add('hidden');
+                                    gameWrapper.classList.add('active');
+                                    initGameWithSettings(doc, lvl);
+                                }
+                            }
+                        });
+                    }
+                    
+                    levelGrid.appendChild(el);
+                });
+                
+                const selectedLevelData = LEVELS[selectedLevelIndex];
+                if (selectedLevelData && !selectedLevelData.unlocked && !checkLevelUnlock(selectedLevelData.id)) {
+                    const firstUnlocked = LEVELS.findIndex(l => l.unlocked || checkLevelUnlock(l.id));
+                    if (firstUnlocked !== -1) {
+                        selectedLevelIndex = firstUnlocked;
+                        renderLevelSelection();
+                    }
+                }
+            }
+
+            function showStep(step) {
+                stepPsych.classList.toggle('active', step === 'psych');
+                stepLevel.classList.toggle('active', step === 'level');
+            }
+
+            function onBackToPsych() {
+                showStep('psych');
+                renderPsychSelection();
+            }
+
+            // === CANVAS И ИГРОВОЙ МИР ===
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            const W = 900, H = 550;
+
+            let patients = [], selectedPatient = null, statusMessage = '⚡ лечите пациентов';
+            let namePool = [], spawnTimer = 0, drugPrice = 10, drugLimit = 20;
+            let zLetters = [], timeOfDay = 600, DAY_SPEED = 0.3, currentLevel = null;
+            let fightChance = 0.01, spawnInterval = 12, maxPatients = 6;
+            let score = 0, frameCounter = 0, hoveredPatient = null;
+            let curedCount = 0, taskTarget = 5;
+            let levelCompleted = false;
+            let currentHealthRange = [50, 80];
+            let gameActive = false;
+
+            const beds = [];
+            for (let i = 0; i < 8; i++) beds.push({ x: 50 + i * 100, y: 480 + Math.sin(i * 1.2) * 20, occupied: false });
+
+            const tooltip = document.getElementById('tooltip');
+            const tipName = document.getElementById('tipName'), tipDisease = document.getElementById('tipDisease'), tipHealth = document.getElementById('tipHealth'), tipDrugs = document.getElementById('tipDrugs'), tipStatus = document.getElementById('tipStatus'), tipSeverity = document.getElementById('tipSeverity');
+
+            function showTooltip(patient, x, y) {
+                if (!patient || patient.state === 'healed' || gameOver) { tooltip.style.display = 'none'; return; }
+                tipName.textContent = '🧑‍⚕️ ' + patient.name;
+                tipDisease.textContent = '📋 ' + patient.disease.code + ' ' + patient.disease.name;
+                tipHealth.textContent = '❤️ Здоровье: ' + Math.round(patient.health) + '%';
+                
+                const availableTreat = patient.disease.treat.filter(drug => availableDrugsList.includes(drug));
+                tipDrugs.textContent = '💊 Лечить: ' + (availableTreat.length > 0 ? availableTreat.join(', ') : '❌ Нет доступных препаратов!');
+                
+                let status = '🟢 Ожидает';
+                if (patient.isSleeping) status = '💤 Спит';
+                else if (patient.isFighting) status = '⚔️ Дерётся';
+                else if (patient.isInjectedSleep) status = '💉 Усыплён';
+                else if (patient.health < 30) status = '🔴 Критическое состояние!';
+                else if (patient.health < 60) status = '🟡 Требует лечения';
+                tipStatus.textContent = '📌 ' + status;
+                const sevLabel = getSeverityLabel(patient.disease.severity);
+                const sevClass = getSeverityClass(patient.disease.severity);
+                tipSeverity.innerHTML = '⚠️ Тяжесть: <span class="severity-indicator ' + sevClass + '">' + sevLabel + ' (' + patient.disease.severity + '/5)</span>';
+                tooltip.style.display = 'block';
+                let left = x + 15, top = y - 20;
+                if (left + 340 > window.innerWidth) left = x - 350;
+                if (top + 220 > window.innerHeight) top = window.innerHeight - 230;
+                if (top < 10) top = 10;
+                tooltip.style.left = left + 'px';
+                tooltip.style.top = top + 'px';
+            }
+
+            function hideTooltip() { tooltip.style.display = 'none'; hoveredPatient = null; }
+
+            const drugTooltip = document.getElementById('drugTooltip');
+            const tipDrugName = document.getElementById('tipDrugName');
+            const tipDrugSideEffect = document.getElementById('tipDrugSideEffect');
+
+            function showDrugTooltip(drug, x, y) {
+                tipDrugName.textContent = '💊 ' + drug.name;
+                let sideEffect = drug.sideEffect;
+                if (getSideEffectReduction() >= 1) sideEffect = '✅ Побочные эффекты устранены (Экстрапирамидные расстройства)';
+                tipDrugSideEffect.textContent = '⚠️ Побочный эффект: ' + sideEffect;
+                drugTooltip.style.display = 'block';
+                let left = x + 15, top = y - 10;
+                if (left + 260 > window.innerWidth) left = x - 270;
+                if (top + 100 > window.innerHeight) top = window.innerHeight - 110;
+                if (top < 10) top = 10;
+                drugTooltip.style.left = left + 'px';
+                drugTooltip.style.top = top + 'px';
+            }
+
+            function hideDrugTooltip() { drugTooltip.style.display = 'none'; }
+
+            function random(min, max) { return Math.random() * (max - min) + min }
+            function randomInt(min, max) { return Math.floor(random(min, max + 1)) }
+            function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y) }
+
+            function getRandomDisease(gender) {
+                let candidates = [];
+                if (!availableDiseases || availableDiseases.length === 0) {
+                    candidates = ALL_DISEASES.filter(d => d.gender === 'neutral' || d.gender === gender);
+                } else {
+                    candidates = availableDiseases.filter(d => d.gender === 'neutral' || d.gender === gender);
+                }
+                if (candidates.length === 0) {
+                    candidates = availableDiseases.length > 0 ? availableDiseases : ALL_DISEASES.filter(d => d.gender === 'neutral');
+                }
+                const totalWeight = candidates.reduce((s, d) => s + d.weight, 0);
+                let rand = Math.random() * totalWeight;
+                for (let d of candidates) {
+                    rand -= d.weight;
+                    if (rand <= 0) return { ...d };
+                }
+                return { ...candidates[0] };
+            }
+
+            function isNight() { return (timeOfDay > 2100 || timeOfDay < 300); }
+            function isEvening() { return (timeOfDay >= 1800 && timeOfDay <= 2100); }
+            function isMorning() { return (timeOfDay >= 300 && timeOfDay < 600); }
+            function isDay() { return (timeOfDay >= 600 && timeOfDay < 1800); }
+            
+            function getTimeIcon() { 
+                if (isMorning()) return '🌅';
+                if (isDay()) return '🌞';
+                if (isEvening()) return '🌅';
+                return '🌙';
+            }
+            function getTimeText() { 
+                if (isMorning()) return 'Утро';
+                if (isDay()) return 'День';
+                if (isEvening()) return 'Вечер';
+                return 'Ночь';
+            }
+
+            function resolveCollisions() {
+                const active = patients.filter(p => p.state !== 'healed' && !p.isSleeping && !p.isFighting);
+                for (let iter = 0; iter < MAX_SEPARATION_ITERATIONS; iter++) {
+                    let moved = false;
+                    for (let i = 0; i < active.length; i++) {
+                        for (let j = i + 1; j < active.length; j++) {
+                            const a = active[i], b = active[j];
+                            const dx = b.x - a.x, dy = b.y - a.y;
+                            const distance = Math.hypot(dx, dy);
+                            if (distance < MIN_PATIENT_DISTANCE && distance > 0.01) {
+                                moved = true;
+                                const overlap = (MIN_PATIENT_DISTANCE - distance) / MIN_PATIENT_DISTANCE;
+                                const force = Math.min(overlap * SEPARATION_STRENGTH, 1.5);
+                                const normX = dx / distance, normY = dy / distance;
+                                a.x -= normX * force; a.y -= normY * force;
+                                b.x += normX * force; b.y += normY * force;
+                                clampPatient(a); clampPatient(b);
+                            }
+                        }
+                    }
+                    if (!moved) break;
+                }
+            }
+
+            function clampPatient(p) {
+                const margin = 20;
+                p.x = Math.max(margin, Math.min(W - margin, p.x));
+                p.y = Math.max(margin, Math.min(H - margin, p.y));
+            }
+
+            function findNewTarget(p) {
+                let attempts = 0, tx, ty;
+                do {
+                    tx = random(70, W - 70);
+                    ty = random(80, H - 80);
+                    attempts++;
+                } while (attempts < 20 && isPositionBlocked(p, tx, ty));
+                return { x: tx, y: ty };
+            }
+
+            function isPositionBlocked(p, tx, ty) {
+                for (let other of patients) {
+                    if (other === p || other.state === 'healed') continue;
+                    if (other.isSleeping || other.isFighting) continue;
+                    if (Math.hypot(other.x - tx, other.y - ty) < MIN_PATIENT_DISTANCE + 10) return true;
+                }
+                return false;
+            }
+
+            function movePatient(p) {
+                if (p.isSleeping || p.isFighting || p.state === 'healed') return;
+                const dx = p.targetX - p.x, dy = p.targetY - p.y;
+                const distance = Math.hypot(dx, dy);
+                if (distance < 2) {
+                    const newTarget = findNewTarget(p);
+                    p.targetX = newTarget.x; p.targetY = newTarget.y;
+                    p.stuckCounter = 0;
+                    return;
+                }
+                const speed = 0.4 + Math.random() * 0.3;
+                const step = Math.min(speed, distance);
+                let newX = p.x + (dx / distance) * step;
+                let newY = p.y + (dy / distance) * step;
+                let blocked = false;
+                for (let other of patients) {
+                    if (other === p || other.state === 'healed') continue;
+                    if (other.isSleeping || other.isFighting) continue;
+                    if (Math.hypot(newX - other.x, newY - other.y) < MIN_PATIENT_DISTANCE - 5) {
+                        blocked = true; break;
+                    }
+                }
+                if (!blocked) { p.x = newX; p.y = newY; p.stuckCounter = 0; } 
+                else {
+                    p.stuckCounter++;
+                    if (p.stuckCounter > STUCK_THRESHOLD) {
+                        const newTarget = findNewTarget(p);
+                        p.targetX = newTarget.x; p.targetY = newTarget.y;
+                        p.stuckCounter = 0;
+                    }
+                }
+            }
+
+            function createPatient() {
+                const gender = Math.random() < 0.5 ? 'male' : 'female';
+                const disease = getRandomDisease(gender);
+                const speed = 0.4 + Math.random() * 0.7;
+                let x, y, attempts = 0;
+                do { x = random(70, W - 70); y = random(80, H - 80); attempts++; } while (attempts < 30 && isPositionBlocked(null, x, y));
+                const target = findNewTarget(null);
+                
+                let name = 'Пациент';
+                const maleNames = ['Алексей', 'Иван', 'Дмитрий', 'Сергей', 'Павел', 'Николай', 'Артём', 'Максим', 'Владимир', 'Андрей', 'Георгий', 'Михаил', 'Роман'];
+                const femaleNames = ['Мария', 'Екатерина', 'Анна', 'Ольга', 'Татьяна', 'Наталья', 'Юлия', 'Елена', 'Ирина', 'Ксения', 'София', 'Алиса'];
+                
+                if (namePool.length === 0) {
+                    namePool = shuffleArray([...ALL_NAMES]);
+                }
+                
+                let foundName = null;
+                for (let i = 0; i < namePool.length; i++) {
+                    const n = namePool[i];
+                    const isMale = maleNames.includes(n);
+                    if ((gender === 'male' && isMale) || (gender === 'female' && !isMale)) {
+                        foundName = namePool.splice(i, 1)[0];
+                        break;
+                    }
+                }
+                
+                if (foundName === null && namePool.length > 0) {
+                    foundName = namePool.pop();
+                }
+                
+                if (foundName === null) {
+                    const pool = gender === 'male' ? maleNames : femaleNames;
+                    foundName = pool[randomInt(0, pool.length - 1)];
+                }
+                
+                name = foundName || 'Пациент';
+
+                const [minHealth, maxHealth] = currentHealthRange;
+                const health = Math.floor(random(minHealth, maxHealth));
+
+                return {
+                    name, x, y, targetX: target.x, targetY: target.y, speed, disease, health,
+                    state: 'waiting', size: 18, id: Date.now() + Math.random() * 1000,
+                    isSleeping: false, isInjectedSleep: false, injectedSleepTimer: 0,
+                    fightTimer: 0, isFighting: false, fightTarget: null,
+                    bedTarget: null, goingToBed: false, bedIndex: -1,
+                    gender: gender, animPhase: Math.random() * Math.PI * 2,
+                    breathPhase: Math.random() * Math.PI * 2,
+                    shakeX: 0, shakeY: 0, stuckCounter: 0
+                };
+            }
+
+            function returnNameToPool(name) {
+                if (name && name !== 'Пациент' && !namePool.includes(name)) {
+                    namePool.push(name);
+                }
+            }
+
+            function injectPatient(patient) {
+                if (gameOver || !patient || patient.state === 'healed' || patient.isSleeping) return false;
+                if (!drugInventory['седалит'] || drugInventory['седалит'] <= 0) {
+                    statusMessage = '❌ Нет седалита! Купите в аптеке!';
+                    return false;
+                }
+                drugInventory['седалит']--;
+                patient.isInjectedSleep = true;
+                patient.injectedSleepTimer = 300;
+                patient.isSleeping = true;
+                for (let i = 0; i < 3; i++) {
+                    zLetters.push({ x: patient.x + random(-20, 20), y: patient.y - 40 - i * 15, size: 16 + random(0, 8), life: 60 + i * 20, maxLife: 60 + i * 20, dx: random(-0.3, 0.3), dy: -0.5 - random(0, 0.3) });
+                }
+                statusMessage = '💉 ' + patient.name + ' усыплён!';
+                return true;
+            }
+
+            function startFight(p1, p2) {
+                if (gameOver) return;
+                const fightReduction = getFightReduction();
+                if (Math.random() < fightReduction) {
+                    statusMessage = '🕊️ Конфликт между ' + p1.name + ' и ' + p2.name + ' предотвращён (судебная психиатрия)!';
+                    return;
+                }
+                if (p1.isFighting || p2.isFighting) return;
+                p1.isFighting = true; p2.isFighting = true;
+                p1.fightTarget = p2; p2.fightTarget = p1;
+                p1.fightTimer = 60; p2.fightTimer = 60;
+                statusMessage = '⚔️ ' + p1.name + ' и ' + p2.name + ' дерутся!';
+            }
+
+            function processFight(p1, p2) {
+                if (gameOver) return;
+                if (p1.state === 'healed' || p2.state === 'healed') { p1.isFighting = false; p2.isFighting = false; p1.fightTarget = null; p2.fightTarget = null; return }
+                p1.fightTimer--; p2.fightTimer--;
+                if (p1.fightTimer % 10 === 0) {
+                    let damage = 3 + Math.floor(Math.random() * 5);
+                    if (currentLevel && currentLevel.id === 'bechtereva') {
+                        damage = Math.floor(damage * 0.4);
+                        if (damage < 1) damage = 1;
+                    }
+                    p2.health = Math.max(0, p2.health - damage);
+                    p1.health = Math.max(0, p1.health - damage);
+                    if (p1.health <= 0) { 
+                        p1.state = 'healed'; 
+                        returnNameToPool(p1.name);
+                        score = Math.max(0, score - 3); 
+                        statusMessage = '💀 ' + p1.name + ' погиб в драке! -3 Ψ'; 
+                        updateUI(); 
+                        endGame(); 
+                        return; 
+                    }
+                    if (p2.health <= 0) { 
+                        p2.state = 'healed'; 
+                        returnNameToPool(p2.name);
+                        score = Math.max(0, score - 3); 
+                        statusMessage = '💀 ' + p2.name + ' погиб в драке! -3 Ψ'; 
+                        updateUI(); 
+                        endGame(); 
+                        return; 
+                    }
+                }
+                if (p1.fightTimer <= 0 || p2.fightTimer <= 0 || p1.health <= 30 || p2.health <= 30) {
+                    p1.isFighting = false; p2.isFighting = false;
+                    p1.fightTarget = null; p2.fightTarget = null;
+                }
+            }
+
+            function endGame() {
+                if (gameOver) return;
+                gameOver = true; gameActive = false;
+                if (gameLoopId) { cancelAnimationFrame(gameLoopId); gameLoopId = null; }
+                const modal = document.getElementById('gameoverModal');
+                document.getElementById('goDoc').textContent = selectedDoc ? selectedDoc.name : '—';
+                document.getElementById('goLevel').textContent = currentLevel ? currentLevel.name + ' (' + currentLevel.desc + ')' : '—';
+                document.getElementById('goScore').textContent = score;
+                document.getElementById('goTech').textContent = techPoints;
+                document.getElementById('goCured').textContent = curedCount;
+                document.getElementById('goTask').textContent = taskTarget;
+                modal.classList.add('active');
+            }
+
+            function applyDrug(patient, drugName) {
+                if (gameOver || !patient || patient.state === 'healed') return false;
+                if (patient.isSleeping) { statusMessage = '💤 Пациент спит, подождите пробуждения'; updateUI(); return false; }
+                if (!drugInventory[drugName] || drugInventory[drugName] <= 0) {
+                    statusMessage = '❌ Нет ' + drugName + '! Купите в аптеке!';
+                    updateUI();
+                    return false;
+                }
+                const disease = patient.disease;
+                if (!disease.treat) return false;
+                const isMatch = disease.treat.some(d => d === drugName);
+
+                let baseHeal = 15;
+                const difficulty = getHealDifficulty(disease.severity);
+                let healAmount = baseHeal * difficulty;
+                const healBoost = getTotalHealBoost(disease);
+                healAmount = healAmount * healBoost;
+
+                const nurseBonus = 1 + getNurseBonus();
+                healAmount = healAmount * nurseBonus;
+
+                if (selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'aminazine' && drugName === 'аминазин') {
+                    healAmount = healAmount * (1 + selectedDoc.bonus.value / 100);
+                }
+
+                if (selectedDoc && selectedDoc.bonus) {
+                    const bonus = selectedDoc.bonus;
+                    if (disease.category === bonus.type) {
+                        healAmount += bonus.value / 100 * 10;
+                    }
+                }
+
+                healAmount = Math.max(1, healAmount);
+                healAmount = Math.min(35, healAmount);
+
+                drugInventory[drugName]--;
+
+                let sideEffectMessage = '';
+                const drugInfo = ALL_DRUGS.find(d => d.name === drugName);
+                if (drugInfo && drugInfo.sideEffect) {
+                    const sideEffectChance = 0.25 * (1 - getSideEffectReduction());
+                    if (Math.random() < sideEffectChance) {
+                        const damage = Math.floor(random(8, 20) * (1 - getSideEffectReduction() * 0.5));
+                        patient.health = Math.max(0, patient.health - damage);
+                        sideEffectMessage = ` ⚠️ Побочный эффект: ${drugInfo.sideEffect} (-${damage}%)`;
+                        statusMessage = sideEffectMessage;
+                        if (patient.health <= 0) {
+                            patient.state = 'healed';
+                            returnNameToPool(patient.name);
+                            score = Math.max(0, score - 5);
+                            statusMessage = '💀 ' + patient.name + ' умер от побочного эффекта! -5 Ψ';
+                            updateUI();
+                            endGame();
+                            return false;
+                        }
+                    }
+                }
+
+                if (isMatch) {
+                    patient.health = Math.min(100, patient.health + healAmount);
+                    const severityLabel = getSeverityLabel(disease.severity);
+                    if (patient.health >= 100) {
+                        patient.state = 'healed';
+                        returnNameToPool(patient.name);
+                        const bonusPoints = 10 + Math.floor(disease.severity * 2);
+                        score += bonusPoints;
+                        const orderlyBonus = getOrderlyBonus();
+                        const techEarn = 2 + Math.floor(disease.severity * 0.5) + Math.floor(orderlyBonus);
+                        techPoints += techEarn;
+                        curedCount++;
+                        statusMessage = '✅ ' + patient.name + ' вылечен! +' + bonusPoints + 'Ψ, +' + techEarn + '🧪 (' + curedCount + '/' + taskTarget + ')' + sideEffectMessage;
+                        updateUI();
+                        if (curedCount >= taskTarget && !levelCompleted && !gameOver) {
+                            levelCompleted = true;
+                            statusMessage = '🎉 УРОВЕНЬ ПРОЙДЕН! +50 бонусных очков!';
+                            score += 50;
+                            techPoints += 10;
+                            completeLevel(currentLevel.id);
+                            updateUI();
+                        }
+                    } else {
+                        const roundedHeal = Math.round(healAmount);
+                        statusMessage = '💊 +' + roundedHeal + '% (' + patient.name + ', ' + severityLabel + ')' + sideEffectMessage;
+                    }
+                    return true;
+                } else {
+                    const wrongDrugPenalty = 8 + Math.floor(disease.severity * 3);
+                    patient.health = Math.max(0, patient.health - wrongDrugPenalty);
+                    statusMessage = '❌ ' + drugName + ' не лечит ' + disease.name + ' (-' + wrongDrugPenalty + '%)' + sideEffectMessage;
+                    if (patient.health <= 0) {
+                        patient.state = 'healed';
+                        returnNameToPool(patient.name);
+                        score = Math.max(0, score - 5);
+                        statusMessage = '💀 ' + patient.name + ' умер! -5 Ψ';
+                        updateUI();
+                        endGame();
+                    }
+                    return false;
+                }
+            }
+
+            function initGameWithSettings(doc, level) {
+                hideDrugTooltip();
+                gameOver = false; gameActive = true;
+                isPaused = false;
+                selectedDoc = doc; currentLevel = level;
+                
+                fightChance = level.fightChance * (1 - getFightReduction());
+                spawnInterval = level.spawnInterval;
+                drugPrice = level.drugPrice;
+                drugLimit = level.drugLimit;
+                currentHealthRange = level.healthRange || [50, 80];
+                
+                const levelIndex = LEVELS.indexOf(level);
+                currentTaskTarget = Math.max(1, 3 + levelIndex - 2);
+                currentMaxPatients = Math.max(2, 6 + levelIndex - 2);
+                taskTarget = currentTaskTarget;
+                maxPatients = currentMaxPatients;
+                
+                availableDrugsList = getAvailableDrugsForLevel(level);
+                availableDiseases = getAvailableDiseasesForLevel(level);
+                drugInventory = initDrugInventory(level);
+                
+                score = 0; techPoints = 0; curedCount = 0; levelCompleted = false;
+                researchedTechs = []; techEffects = {};
+                
+                const limits = getStaffLimits(level);
+                maxNurses = limits.nurses; maxOrderlies = limits.orderlies; maxOrderlies2 = limits.orderlies2;
+                nurseCount = 0; orderlyCount = 0; orderly2Count = 0;
+
+                namePool = shuffleArray([...ALL_NAMES]);
+                
+                patients = [];
+                const extraPatients = Math.floor(Math.random() * 3) + 1;
+                const totalInitial = Math.max(1, taskTarget + extraPatients - 2);
+                const initialCount = Math.min(totalInitial, maxPatients);
+                for (let i = 0; i < initialCount; i++) patients.push(createPatient());
+                
+                if (totalInitial > maxPatients) statusMessage = '⚠️ На уровне может быть максимум ' + maxPatients + ' пациентов. Создано ' + initialCount + '.';
+                else statusMessage = '🏥 Появилось ' + initialCount + ' пациентов (нужно вылечить ' + taskTarget + ')';
+
+                selectedPatient = null; spawnTimer = 0; frameCounter = 0;
+                timeOfDay = 600; zLetters = []; zSpawnCounter = 0;
+                autoRestockCounter = 0;
+                nextRestockTime = Math.floor(Math.random() * (AUTO_RESTOCK_MAX_INTERVAL - AUTO_RESTOCK_MIN_INTERVAL + 1)) + AUTO_RESTOCK_MIN_INTERVAL;
+                
+                document.getElementById('levelDisplay').textContent = '📍 ' + level.name + ' (' + level.desc + ')';
+                
+                updateStaffPanel();
+                
+                document.getElementById('gameoverModal').classList.remove('active');
+                updateUI(); renderDrugPanel(); renderBook(); renderTechTree();
+                if (gameLoopId) cancelAnimationFrame(gameLoopId);
+                gameLoop();
+            }
+
+            function updateUI() {
+                if (gameOver) return;
+                const doc = selectedDoc || PSYCHIATRISTS[0];
+                document.getElementById('docDisplay').innerHTML = '🧠 ' + doc.name;
+                const active = patients.filter(p => p.state !== 'healed').length;
+                document.getElementById('patientCount').innerText = '👥 ' + active;
+                document.getElementById('nurseCount').textContent = nurseCount + '/' + maxNurses;
+                document.getElementById('orderlyCount').textContent = orderlyCount + '/' + maxOrderlies;
+                document.getElementById('orderlyCount2').textContent = orderly2Count + '/' + maxOrderlies2;
+                const nurseBtn = document.getElementById('hireNurseBtn');
+                nurseBtn.textContent = nurseCount >= maxNurses ? 'MAX' : '10Ψ';
+                nurseBtn.disabled = nurseCount >= maxNurses || score < 10 || gameOver;
+                const orderlyBtn = document.getElementById('hireOrderlyBtn');
+                if (maxOrderlies === 0) { orderlyBtn.textContent = '🔒'; orderlyBtn.disabled = true; } 
+                else { orderlyBtn.textContent = orderlyCount >= maxOrderlies ? 'MAX' : '25Ψ'; orderlyBtn.disabled = orderlyCount >= maxOrderlies || score < 25 || gameOver; }
+                const orderly2Btn = document.getElementById('hireOrderlyBtn2');
+                if (maxOrderlies2 === 0) { orderly2Btn.textContent = '🔒'; orderly2Btn.disabled = true; } 
+                else { orderly2Btn.textContent = orderly2Count >= maxOrderlies2 ? 'MAX' : '5Ψ'; orderly2Btn.disabled = orderly2Count >= maxOrderlies2 || score < 5 || gameOver; }
+                document.getElementById('scoreDisplay').textContent = 'Ψ ' + score;
+                document.getElementById('topScoreValue').textContent = score;
+                document.getElementById('techPointsDisplay').textContent = '🧪 ' + techPoints;
+                if (hoveredPatient && hoveredPatient.state !== 'healed' && !gameOver) document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + hoveredPatient.disease.code + ' ' + hoveredPatient.disease.name;
+                else if (selectedPatient && selectedPatient.state !== 'healed' && !gameOver) document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + selectedPatient.disease.code + ' ' + selectedPatient.disease.name;
+                else document.getElementById('diagnosisDisplay').innerHTML = '🔍 наведи на пациента';
+                document.getElementById('statusMsg').innerText = statusMessage + ' | Вылечено: ' + curedCount + '/' + taskTarget + (isPaused ? ' ⏸️ ПАУЗА' : '');
+                document.getElementById('timeIcon').textContent = getTimeIcon();
+                document.getElementById('timeText').textContent = getTimeText();
+                document.getElementById('timeCycle').textContent = isNight() ? '🌙' : (isMorning() ? '🌅' : (isEvening() ? '🌅' : '☀️'));
+            }
+
+            function renderDrugPanel() {
+                const panel = document.getElementById('drugPanel');
+                panel.innerHTML = '';
+
+                const pharmacyBtn = document.createElement('div');
+                pharmacyBtn.className = 'drug-pill pharmacy-pill';
+                pharmacyBtn.innerHTML = `<div style="font-size:1.4rem;">🏪</div><div class="drug-label">Аптека</div><div style="font-size:0.7rem;color:#1a1612;">${drugPrice}Ψ за шт.</div>`;
+                pharmacyBtn.addEventListener('click', function() {
+                    if (gameOver) return;
+                    if (score < drugPrice) {
+                        statusMessage = '❌ Недостаточно очков! Нужно ' + drugPrice + ' Ψ за препарат';
+                        updateUI();
+                        return;
+                    }
+                    let bought = 0;
+                    for (let drug of ALL_DRUGS) {
+                        if (availableDrugsList.includes(drug.name) && score >= drugPrice && drugInventory[drug.name] < drugLimit) {
+                            score -= drugPrice;
+                            drugInventory[drug.name] = (drugInventory[drug.name] || 0) + 1;
+                            bought++;
+                        }
+                    }
+                    if (bought === 0) { statusMessage = '❌ Нет средств или все препараты уже в наличии'; } 
+                    else { statusMessage = '💊 Куплено ' + bought + ' препаратов в аптеке!'; }
+                    updateUI();
+                    renderDrugPanel();
+                });
+                panel.appendChild(pharmacyBtn);
+
+                ALL_DRUGS.forEach(function(drug) {
+                    const isAvailable = availableDrugsList.includes(drug.name);
+                    const div = document.createElement('div');
+                    div.className = 'drug-pill' + (isAvailable ? '' : ' locked-drug');
+                    if (!isAvailable) div.draggable = false;
+                    else div.draggable = true;
+                    div.dataset.drug = drug.name;
+                    const dot = document.createElement('div');
+                    dot.className = 'color-dot';
+                    dot.style.backgroundColor = isAvailable ? drug.color : '#888';
+                    div.appendChild(dot);
+                    const label = document.createElement('span');
+                    label.className = 'drug-label';
+                    label.textContent = drug.name;
+                    div.appendChild(label);
+                    const countSpan = document.createElement('span');
+                    countSpan.className = 'drug-count';
+                    countSpan.textContent = drugInventory[drug.name] || 0;
+                    div.appendChild(countSpan);
+
+                    if (isAvailable) {
+                        div.addEventListener('mouseenter', function(e) { showDrugTooltip(drug, e.clientX, e.clientY); });
+                        div.addEventListener('mousemove', function(e) {
+                            let left = e.clientX + 15, top = e.clientY - 10;
+                            if (left + 260 > window.innerWidth) left = e.clientX - 270;
+                            if (top + 100 > window.innerHeight) top = window.innerHeight - 110;
+                            if (top < 10) top = 10;
+                            drugTooltip.style.left = left + 'px';
+                            drugTooltip.style.top = top + 'px';
+                        });
+                        div.addEventListener('mouseleave', function() { hideDrugTooltip(); });
+
+                        div.addEventListener('click', function() {
+                            if (gameOver) return;
+                            if (selectedPatient && selectedPatient.state !== 'healed') {
+                                applyDrug(selectedPatient, drug.name);
+                                if (selectedPatient.health <= 0) selectedPatient.state = 'healed';
+                                updateUI();
+                                renderDrugPanel();
+                            } else {
+                                statusMessage = '❌ Выделите пациента для лечения';
+                                updateUI();
+                            }
+                        });
+                        div.addEventListener('dragstart', function(e) {
+                            if (gameOver) { e.preventDefault(); return; }
+                            e.dataTransfer.setData('text/plain', drug.name);
+                            div.classList.add('dragging');
+                        });
+                        div.addEventListener('dragend', function() { div.classList.remove('dragging'); });
+                    } else {
+                        div.title = '🔒 Доступен на более высоких уровнях';
+                    }
+                    panel.appendChild(div);
+                });
+            }
+
+            function renderBook() {
+                const container = document.getElementById('bookEntries');
+                container.innerHTML = '';
+                const sorted = [...availableDiseases].sort((a, b) => a.weight - b.weight);
+                sorted.forEach(function(d) {
+                    const div = document.createElement('div');
+                    div.className = 'book-entry';
+                    const codeSpan = document.createElement('span');
+                    codeSpan.className = 'disease-code';
+                    codeSpan.textContent = d.code;
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'disease-name';
+                    nameSpan.textContent = d.name;
+                    const weightSpan = document.createElement('span');
+                    weightSpan.className = 'disease-weight';
+                    weightSpan.textContent = 'вес: ' + d.weight;
+                    const sevSpan = document.createElement('span');
+                    sevSpan.className = 'disease-severity';
+                    const sevLabel = getSeverityLabel(d.severity);
+                    const sevClass = getSeverityClass(d.severity);
+                    sevSpan.innerHTML = '⚡ <span class="severity-indicator ' + sevClass + '">' + sevLabel + '</span>';
+                    const drugSpan = document.createElement('span');
+                    drugSpan.className = 'drug-list';
+                    d.treat.forEach(function(t) {
+                        const span = document.createElement('span');
+                        span.textContent = t;
+                        if (availableDrugsList.includes(t)) span.className = '';
+                        else { span.className = 'locked-drug-text'; span.title = '🔒 Недоступен на этом уровне'; }
+                        drugSpan.appendChild(span);
+                    });
+                    div.appendChild(codeSpan); div.appendChild(nameSpan); div.appendChild(weightSpan); div.appendChild(sevSpan); div.appendChild(drugSpan);
+                    container.appendChild(div);
+                });
+            }
+
+            // === РИСОВАНИЕ ===
+            function drawPatient(p) {
+                if (p.state === 'healed') return;
+                const time = Date.now() / 1000;
+                const breathe = Math.sin(time * 1.5 + p.breathPhase) * 0.04;
+                const scale = 1 + breathe;
+                let alpha = 1;
+                if (p.health < 30 && !p.isSleeping && !p.isFighting) {
+                    alpha = 0.05 + (p.health / 30) * 0.65;
+                    alpha = Math.max(0.05, Math.min(0.7, alpha));
+                } else if (p.isFighting) {
+                    p.shakeX = (Math.random() - 0.5) * 8;
+                    p.shakeY = (Math.random() - 0.5) * 8;
+                    alpha = 1;
+                } else { p.shakeX *= 0.9; p.shakeY *= 0.9; alpha = 1; }
+                const x = p.x + p.shakeX, y = p.y + p.shakeY, r = p.size * scale;
+                ctx.globalAlpha = alpha;
+                if (hoveredPatient === p) {
+                    ctx.shadowColor = '#4a3a2a'; ctx.shadowBlur = 25;
+                    ctx.beginPath(); ctx.arc(x, y, r + 12, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(74,58,42,0.15)'; ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
+                for (let i = zLetters.length - 1; i >= 0; i--) {
+                    const z = zLetters[i];
+                    const progress = 1 - z.life / z.maxLife;
+                    const zAlpha = progress < 0.7 ? 1 : 1 - (progress - 0.7) / 0.3;
+                    ctx.globalAlpha = alpha * zAlpha;
+                    ctx.font = 'bold ' + z.size + 'px "Georgia"';
+                    ctx.fillStyle = '#a0d0ff';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Z', z.x, z.y);
+                    z.x += z.dx; z.y += z.dy; z.life--;
+                    if (z.life <= 0) zLetters.splice(i, 1);
+                }
+                ctx.globalAlpha = alpha;
+                if (p.isFighting) {
+                    ctx.strokeStyle = '#6a2a1a'; ctx.lineWidth = 3;
+                    ctx.beginPath(); ctx.arc(x, y, r + 8, 0, Math.PI * 2); ctx.stroke();
+                    ctx.strokeStyle = '#8a3a2a'; ctx.lineWidth = 2; ctx.setLineDash([4, 6]);
+                    ctx.beginPath(); ctx.arc(x, y, r + 14, 0, Math.PI * 2); ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+                ctx.textAlign = 'center'; ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 8;
+                ctx.font = 'bold 13px "Georgia"'; ctx.fillStyle = '#ffffff';
+                ctx.fillText(p.name, x, y - 48);
+                ctx.font = 'bold 12px "Georgia"';
+                ctx.fillText(p.disease.code + ' ' + p.disease.name, x, y - 33);
+                ctx.shadowBlur = 0;
+                let healthColor = p.health > 50 ? '#4a7a3a' : (p.health > 25 ? '#c9b84a' : '#b05a3a');
+                ctx.fillStyle = 'rgba(218, 201, 176, ' + (0.6 * alpha) + ')';
+                ctx.fillRect(x - 24, y - 24, 48, 6);
+                ctx.fillStyle = healthColor; ctx.globalAlpha = alpha * 0.9;
+                ctx.fillRect(x - 24, y - 24, 48 * (p.health / 100), 6);
+                ctx.globalAlpha = alpha;
+                ctx.shadowColor = 'rgba(0,0,0,0.3)'; ctx.shadowBlur = 10;
+                ctx.beginPath(); ctx.arc(x, y - 6, r * 0.5, 0, Math.PI * 2);
+                const skinColor = p.isSleeping ? '#b0b8a0' : (p.health > 70 ? '#f5d6b8' : (p.health > 40 ? '#e8c8a0' : '#d4a080'));
+                ctx.fillStyle = skinColor; ctx.fill();
+                ctx.strokeStyle = '#2d2417'; ctx.lineWidth = 2; ctx.stroke();
+
+                const isMale = p.gender === 'male';
+                const diseaseCategory = p.disease.category;
+                let bodyWidth = isMale ? 16 : 13, bodyHeight = isMale ? 22 : 20;
+                let drawGlasses = false, drawBeard = false, drawTie = false, drawScarf = false;
+                if (diseaseCategory === 'psychosomatic' && p.disease.name.includes('анорексия')) { bodyWidth = isMale ? 10 : 7; bodyHeight = isMale ? 24 : 22; }
+                if (diseaseCategory === 'schizophrenia' && p.disease.code === 'F20.0') { drawGlasses = true; drawBeard = true; drawTie = true; bodyWidth = isMale ? 14 : 12; }
+                if (diseaseCategory === 'delusional') { drawGlasses = true; bodyWidth = isMale ? 15 : 13; }
+                if (diseaseCategory === 'depression') { bodyHeight = isMale ? 20 : 18; }
+
+                ctx.shadowBlur = 8;
+                ctx.fillStyle = isMale ? '#4a6a8a' : '#6a4a7a';
+                ctx.beginPath();
+                ctx.roundRect(x - bodyWidth/2, y + 2, bodyWidth, bodyHeight, 4);
+                ctx.fill();
+                ctx.strokeStyle = '#2d2417'; ctx.lineWidth = 1.5; ctx.stroke();
+
+                ctx.fillStyle = skinColor;
+                ctx.beginPath(); ctx.roundRect(x - 3, y - 2, 6, 6, 3); ctx.fill();
+                if (drawTie) { ctx.fillStyle = '#8a2a2a'; ctx.beginPath(); ctx.roundRect(x - 2, y + 4, 4, 14, 2); ctx.fill(); }
+                if (drawScarf) { ctx.fillStyle = '#4a7a4a'; ctx.beginPath(); ctx.roundRect(x - 6, y + 2, 12, 6, 3); ctx.fill(); }
+
+                ctx.fillStyle = skinColor; ctx.strokeStyle = '#2d2417'; ctx.lineWidth = 1.5;
+                ctx.beginPath(); ctx.roundRect(x - bodyWidth/2 - 4, y + 4, 4, 12, 2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.roundRect(x + bodyWidth/2, y + 4, 4, 12, 2); ctx.fill(); ctx.stroke();
+
+                ctx.fillStyle = isMale ? '#3a4a5a' : '#4a3a5a';
+                ctx.beginPath(); ctx.roundRect(x - 5, y + bodyHeight - 2, 5, 10, 2); ctx.fill();
+                ctx.beginPath(); ctx.roundRect(x + 1, y + bodyHeight - 2, 5, 10, 2); ctx.fill();
+
+                ctx.fillStyle = '#1a1612'; ctx.shadowBlur = 0;
+                if (drawGlasses) {
+                    ctx.strokeStyle = '#1a1612'; ctx.lineWidth = 2;
+                    ctx.beginPath(); ctx.arc(x - 5, y - 8, 5, 0, Math.PI * 2); ctx.stroke();
+                    ctx.beginPath(); ctx.arc(x + 5, y - 8, 5, 0, Math.PI * 2); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(x - 10, y - 8); ctx.lineTo(x - 5, y - 8); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(x + 5, y - 8); ctx.lineTo(x + 10, y - 8); ctx.stroke();
+                    ctx.fillStyle = '#1a1612';
+                    ctx.beginPath(); ctx.arc(x - 5, y - 8, 1.5, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(x + 5, y - 8, 1.5, 0, Math.PI * 2); ctx.fill();
+                } else {
+                    ctx.beginPath(); ctx.arc(x - 3, y - 8, 1.5, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(x + 3, y - 8, 1.5, 0, Math.PI * 2); ctx.fill();
+                }
+                ctx.strokeStyle = '#2d2417'; ctx.lineWidth = 1.5;
+                if (p.health > 50 && !p.isSleeping) { ctx.beginPath(); ctx.arc(x, y - 3, 5, 0.1, Math.PI - 0.1); ctx.stroke(); } 
+                else if (p.health < 30 && !p.isSleeping) { ctx.beginPath(); ctx.arc(x, y + 2, 4, Math.PI + 0.2, -0.2); ctx.stroke(); } 
+                else { ctx.beginPath(); ctx.arc(x, y - 2, 4, 0.2, Math.PI - 0.2); ctx.stroke(); }
+                if (drawBeard && isMale) { ctx.fillStyle = '#4a3a2a'; ctx.beginPath(); ctx.ellipse(x, y + 4, 6, 5, 0, 0, Math.PI * 2); ctx.fill(); }
+                ctx.fillStyle = isMale ? '#3a2a1a' : '#4a2a2a';
+                ctx.beginPath(); ctx.ellipse(x, y - 14, 10, 4, 0, 0, Math.PI * 2); ctx.fill();
+                if (diseaseCategory === 'depression') { ctx.fillStyle = '#3a2a1a'; ctx.beginPath(); ctx.ellipse(x - 2, y - 16, 6, 3, 0.2, 0, Math.PI * 2); ctx.fill(); }
+                if (p.isSleeping) {
+                    ctx.strokeStyle = '#1a1612'; ctx.lineWidth = 1.5;
+                    ctx.beginPath(); ctx.moveTo(x - 7, y - 10); ctx.lineTo(x - 3, y - 10); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(x + 3, y - 10); ctx.lineTo(x + 7, y - 10); ctx.stroke();
+                }
+                ctx.shadowBlur = 0; ctx.globalAlpha = 1;
+            }
+
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+                if (w < 2 * r) r = w / 2; if (h < 2 * r) r = h / 2;
+                this.moveTo(x + r, y); this.lineTo(x + w - r, y);
+                this.quadraticCurveTo(x + w, y, x + w, y + r);
+                this.lineTo(x + w, y + h - r);
+                this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+                this.lineTo(x + r, y + h);
+                this.quadraticCurveTo(x, y + h, x, y + h - r);
+                this.lineTo(x, y + r);
+                this.quadraticCurveTo(x, y, x + r, y);
+                this.closePath();
+                return this;
+            };
+
+            function drawBeds() {
+                const theme = currentLevel ? LEVEL_THEMES[currentLevel.theme] : LEVEL_THEMES['bechtereva'];
+                beds.forEach(function(bed, i) {
+                    const isOccupied = patients.some(p => p.bedIndex === i && p.state !== 'healed' && p.isSleeping);
+                    ctx.fillStyle = isOccupied ? (theme.bedColor || '#4a6a3a') : '#3a3a2a';
+                    ctx.shadowBlur = 4; ctx.shadowColor = 'rgba(0,0,0,0.3)';
+                    ctx.beginPath(); ctx.roundRect(bed.x - 20, bed.y - 8, 40, 16, 4); ctx.fill();
+                    ctx.strokeStyle = '#6b5f47'; ctx.lineWidth = 1.5; ctx.stroke();
+                    ctx.fillStyle = '#5a4a3a';
+                    ctx.beginPath(); ctx.roundRect(bed.x - 14, bed.y - 10, 12, 6, 3); ctx.fill();
+                    ctx.shadowBlur = 0;
+                    if (isOccupied) { ctx.font = '14px "Georgia"'; ctx.fillStyle = '#8a9a7a'; ctx.textAlign = 'center'; ctx.fillText('🛏️', bed.x, bed.y - 14); }
+                });
+            }
+
+            function drawDecor() {
+                if (gameOver || !currentLevel) return;
+                const theme = LEVEL_THEMES[currentLevel.theme] || LEVEL_THEMES['bechtereva'];
+                const decorType = theme.decor || 'default';
+                ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
+                
+                switch(decorType) {
+                    case 'flowers':
+                        for (let i = 0; i < 3; i++) { 
+                            const x = 150 + i * 200, y = 420;
+                            ctx.fillStyle = '#5a4a3a'; ctx.beginPath(); ctx.roundRect(x - 15, y - 10, 30, 20, 6); ctx.fill();
+                            ctx.fillStyle = '#6a5a4a'; ctx.beginPath(); ctx.roundRect(x - 12, y - 16, 24, 10, 4); ctx.fill();
+                            ctx.fillStyle = '#f5d742'; ctx.shadowBlur = 15; ctx.shadowColor = 'rgba(245,215,66,0.3)';
+                            ctx.beginPath(); ctx.arc(x, y - 30, 6, 0, Math.PI * 2); ctx.fill();
+                            ctx.shadowBlur = 0; ctx.fillStyle = '#e57373'; ctx.beginPath(); ctx.arc(x + 20, y - 25, 4, 0, Math.PI * 2); ctx.fill();
+                            ctx.fillStyle = '#81c784'; ctx.beginPath(); ctx.arc(x + 22, y - 28, 2, 0, Math.PI * 2); ctx.fill(); 
+                        }
+                        break;
+                    case 'wood':
+                        for (let i = 0; i < 4; i++) {
+                            const x = 100 + i * 180, y = 430;
+                            ctx.fillStyle = '#6a5a4a'; ctx.beginPath(); ctx.roundRect(x - 15, y - 5, 30, 15, 3); ctx.fill();
+                            ctx.fillStyle = '#7a6a5a'; ctx.beginPath(); ctx.roundRect(x - 10, y - 12, 20, 8, 2); ctx.fill();
+                            ctx.fillStyle = '#8a7a6a'; ctx.font = '18px "Georgia"'; ctx.textAlign = 'center';
+                            ctx.fillText('🌳', x, y - 18);
+                        }
+                        break;
+                    case 'dark':
+                        for (let i = 0; i < 5; i++) {
+                            const x = 80 + i * 160, y = 440;
+                            ctx.fillStyle = '#3a3a3a'; ctx.beginPath(); ctx.roundRect(x - 10, y - 5, 20, 15, 2); ctx.fill();
+                            ctx.fillStyle = '#4a4a4a'; ctx.beginPath(); ctx.roundRect(x - 8, y - 14, 16, 10, 2); ctx.fill();
+                            ctx.fillStyle = '#2a2a2a'; ctx.fillRect(x + 15, y - 18, 3, 22);
+                            ctx.fillStyle = '#3a3a3a'; ctx.beginPath(); ctx.roundRect(x + 10, y - 22, 13, 6, 2); ctx.fill();
+                        }
+                        break;
+                    case 'warm':
+                        for (let i = 0; i < 3; i++) {
+                            const x = 180 + i * 220, y = 425;
+                            ctx.fillStyle = '#8a7a6a'; ctx.beginPath(); ctx.roundRect(x - 12, y - 5, 24, 16, 4); ctx.fill();
+                            ctx.fillStyle = '#9a8a7a'; ctx.beginPath(); ctx.roundRect(x - 8, y - 14, 16, 10, 3); ctx.fill();
+                            ctx.fillStyle = '#f5d742'; ctx.shadowBlur = 20; ctx.shadowColor = 'rgba(245,215,66,0.15)';
+                            ctx.beginPath(); ctx.arc(x, y - 22, 5, 0, Math.PI * 2); ctx.fill();
+                            ctx.shadowBlur = 0;
+                        }
+                        break;
+                    case 'tiles':
+                        for (let i = 0; i < 8; i++) {
+                            const x = 40 + i * 110, y = 420;
+                            ctx.fillStyle = i % 2 === 0 ? '#8aaa8a' : '#7a9a7a';
+                            ctx.fillRect(x, y, 50, 30);
+                            ctx.strokeStyle = '#5a6a5a'; ctx.lineWidth = 1;
+                            ctx.strokeRect(x, y, 50, 30);
+                        }
+                        break;
+                    case 'sterile':
+                        for (let i = 0; i < 6; i++) {
+                            const x = 60 + i * 140, y = 430;
+                            ctx.fillStyle = '#e8e8e8'; ctx.beginPath(); ctx.roundRect(x - 8, y - 5, 16, 20, 2); ctx.fill();
+                            ctx.strokeStyle = '#d0d0d0'; ctx.lineWidth = 1; ctx.strokeRect(x - 8, y - 5, 16, 20);
+                            ctx.fillStyle = '#d0d0d0'; ctx.beginPath(); ctx.roundRect(x - 3, y - 12, 6, 8, 2); ctx.fill();
+                        }
+                        break;
+                    case 'experimental':
+                        for (let i = 0; i < 4; i++) {
+                            const x = 120 + i * 200, y = 430;
+                            const colors = ['#6a4a8a', '#8a4a6a', '#4a6a8a', '#8a6a4a'];
+                            ctx.fillStyle = colors[i % colors.length];
+                            ctx.beginPath(); ctx.roundRect(x - 12, y - 5, 24, 16, 6); ctx.fill();
+                            ctx.fillStyle = '#9a8aba'; ctx.shadowBlur = 10; ctx.shadowColor = 'rgba(100,80,140,0.2)';
+                            ctx.beginPath(); ctx.arc(x, y - 14, 4, 0, Math.PI * 2); ctx.fill();
+                            ctx.shadowBlur = 0;
+                        }
+                        break;
+                    case 'dark_corridor':
+                        for (let i = 0; i < 6; i++) {
+                            const x = 50 + i * 150, y = 440;
+                            ctx.fillStyle = '#2a2a3a'; ctx.beginPath(); ctx.roundRect(x - 10, y - 5, 20, 18, 2); ctx.fill();
+                            ctx.fillStyle = '#3a3a4a'; ctx.beginPath(); ctx.roundRect(x - 8, y - 16, 16, 12, 2); ctx.fill();
+                            ctx.fillStyle = '#4a4a5a'; ctx.font = '12px "Georgia"'; ctx.textAlign = 'center';
+                            ctx.fillText('🚪', x, y - 20);
+                        }
+                        break;
+                    case 'classic':
+                        for (let i = 0; i < 4; i++) {
+                            const x = 120 + i * 200, y = 430;
+                            ctx.fillStyle = '#5a4a4a'; ctx.beginPath(); ctx.roundRect(x - 15, y - 5, 30, 20, 4); ctx.fill();
+                            ctx.fillStyle = '#6a5a5a'; ctx.beginPath(); ctx.roundRect(x - 10, y - 16, 20, 12, 3); ctx.fill();
+                            ctx.fillStyle = '#7a6a6a'; ctx.font = '16px "Georgia"'; ctx.textAlign = 'center';
+                            ctx.fillText('🏛️', x, y - 18);
+                        }
+                        break;
+                    case 'minimal':
+                        for (let i = 0; i < 5; i++) {
+                            const x = 80 + i * 170, y = 435;
+                            ctx.fillStyle = '#3a3a3a'; ctx.beginPath(); ctx.roundRect(x - 8, y - 3, 16, 12, 2); ctx.fill();
+                            ctx.fillStyle = '#4a4a4a'; ctx.beginPath(); ctx.roundRect(x - 6, y - 12, 12, 10, 2); ctx.fill();
+                            ctx.fillStyle = '#5a5a5a'; ctx.fillRect(x - 1, y - 20, 2, 10);
+                        }
+                        break;
+                    case 'dark_psychopathy':
+                        for (let i = 0; i < 5; i++) {
+                            const x = 70 + i * 160, y = 440;
+                            ctx.fillStyle = '#3a2a2a'; ctx.beginPath(); ctx.roundRect(x - 12, y - 5, 24, 16, 3); ctx.fill();
+                            ctx.fillStyle = '#4a3a3a'; ctx.beginPath(); ctx.roundRect(x - 8, y - 14, 16, 10, 2); ctx.fill();
+                            ctx.fillStyle = '#5a3a3a'; ctx.fillRect(x + 15, y - 18, 3, 20);
+                            ctx.fillStyle = '#4a2a2a'; ctx.beginPath(); ctx.roundRect(x + 10, y - 22, 13, 6, 2); ctx.fill();
+                        }
+                        break;
+                    case 'forensic':
+                        for (let i = 0; i < 5; i++) {
+                            const x = 60 + i * 170, y = 435;
+                            ctx.fillStyle = '#4a4a3a'; ctx.beginPath(); ctx.roundRect(x - 10, y - 5, 20, 16, 2); ctx.fill();
+                            ctx.fillStyle = '#5a5a4a'; ctx.beginPath(); ctx.roundRect(x - 8, y - 14, 16, 10, 2); ctx.fill();
+                            ctx.fillStyle = '#6a5a4a'; ctx.font = '14px "Georgia"'; ctx.textAlign = 'center';
+                            ctx.fillText('⚖️', x, y - 16);
+                        }
+                        break;
+                    case 'chaotic':
+                        for (let i = 0; i < 8; i++) {
+                            const x = 30 + i * 110, y = 420 + Math.sin(i * 1.5) * 15;
+                            const colors = ['#4a3a5a', '#5a3a4a', '#3a4a5a', '#5a4a3a', '#4a5a3a', '#3a5a4a'];
+                            ctx.fillStyle = colors[i % colors.length];
+                            ctx.beginPath(); ctx.roundRect(x - 8, y - 4, 16, 14, 4); ctx.fill();
+                            ctx.fillStyle = '#6a5a7a'; ctx.beginPath(); ctx.arc(x + 10 + Math.sin(i * 0.7) * 6, y - 8, 3, 0, Math.PI * 2); ctx.fill();
+                        }
+                        break;
+                    case 'sterile_rare':
+                        for (let i = 0; i < 6; i++) {
+                            const x = 70 + i * 140, y = 430;
+                            ctx.fillStyle = '#e8e8e8'; ctx.beginPath(); ctx.roundRect(x - 8, y - 3, 16, 12, 2); ctx.fill();
+                            ctx.strokeStyle = '#d0d0d0'; ctx.lineWidth = 1; ctx.strokeRect(x - 8, y - 3, 16, 12);
+                            ctx.fillStyle = '#f0f0f0'; ctx.beginPath(); ctx.roundRect(x - 4, y - 12, 8, 10, 2); ctx.fill();
+                            ctx.strokeStyle = '#d0d0d0'; ctx.strokeRect(x - 4, y - 12, 8, 10);
+                        }
+                        break;
+                    case 'maximum_security':
+                        for (let i = 0; i < 6; i++) {
+                            const x = 50 + i * 150, y = 440;
+                            ctx.fillStyle = '#1a1a1a'; ctx.beginPath(); ctx.roundRect(x - 12, y - 5, 24, 18, 2); ctx.fill();
+                            ctx.fillStyle = '#2a2a2a'; ctx.beginPath(); ctx.roundRect(x - 10, y - 18, 20, 14, 2); ctx.fill();
+                            ctx.fillStyle = '#3a2a2a'; ctx.font = '14px "Georgia"'; ctx.textAlign = 'center';
+                            ctx.fillText('🔒', x, y - 20);
+                            ctx.strokeStyle = '#3a3a3a'; ctx.lineWidth = 2;
+                            for (let j = 0; j < 3; j++) {
+                                ctx.beginPath(); ctx.moveTo(x - 8 + j * 8, y - 4); ctx.lineTo(x - 8 + j * 8, y + 12); ctx.stroke();
+                            }
+                            ctx.beginPath(); ctx.moveTo(x - 10, y + 2); ctx.lineTo(x + 10, y + 2); ctx.stroke();
+                        }
+                        break;
+                    default:
+                        for (let i = 0; i < 3; i++) {
+                            const x = 150 + i * 200, y = 430;
+                            ctx.fillStyle = '#4a4a3a'; ctx.beginPath(); ctx.roundRect(x - 10, y - 5, 20, 15, 2); ctx.fill();
+                            ctx.fillStyle = '#5a5a4a'; ctx.beginPath(); ctx.roundRect(x - 8, y - 12, 16, 8, 2); ctx.fill();
+                        }
+                }
+                ctx.shadowBlur = 0;
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, W, H);
+                if (gameOver) {
+                    ctx.fillStyle = 'rgba(26,22,18,0.8)'; ctx.fillRect(0, 0, W, H);
+                    ctx.fillStyle = '#4a1a1a'; ctx.font = 'bold 60px "Georgia"'; ctx.textAlign = 'center';
+                    ctx.shadowColor = '#4a1a1a'; ctx.shadowBlur = 30;
+                    ctx.fillText('💀 ИГРА ОКОНЧЕНА', W / 2, H / 2 - 20);
+                    ctx.shadowBlur = 0; ctx.fillStyle = '#6a3a2a'; ctx.font = '24px "Georgia"';
+                    ctx.fillText('Пациент умер... Ваша лицензия отозвана!', W / 2, H / 2 + 50);
+                    return;
+                }
+                if (isPaused) {
+                    ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(0, 0, W, H);
+                    ctx.fillStyle = '#dac9b0'; ctx.font = 'bold 60px "Georgia"'; ctx.textAlign = 'center';
+                    ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 20;
+                    ctx.fillText('⏸️ ПАУЗА', W / 2, H / 2);
+                    ctx.shadowBlur = 0;
+                    ctx.font = '20px "Georgia"'; ctx.fillStyle = '#b09a7a';
+                    ctx.fillText('Нажмите Пробел для продолжения', W / 2, H / 2 + 60);
+                    return;
+                }
+                const isNightTime = isNight();
+                const theme = currentLevel ? LEVEL_THEMES[currentLevel.theme] : LEVEL_THEMES['bechtereva'];
+                const bgColors = theme.bg || ['#4a7a5a', '#3a5a4a'];
+                
+                const grd = ctx.createRadialGradient(200, 200, 100, 500, 300, 500);
+                if (isNightTime) { 
+                    grd.addColorStop(0, '#1a2a1a'); 
+                    grd.addColorStop(1, '#0a0a0a'); 
+                } else { 
+                    grd.addColorStop(0, bgColors[0]); 
+                    grd.addColorStop(1, bgColors[1]); 
+                }
+                ctx.fillStyle = grd; ctx.fillRect(0, 0, W, H);
+                
+                ctx.strokeStyle = isNightTime ? '#1a2a1a' : (theme.border || '#6a7a5a');
+                ctx.lineWidth = 0.5;
+                for (let i = 0; i < 30; i++) { ctx.beginPath(); ctx.moveTo(i * 30, 0); ctx.lineTo(i * 30, H); ctx.stroke() }
+                for (let i = 0; i < 20; i++) { ctx.beginPath(); ctx.moveTo(0, i * 27.5); ctx.lineTo(W, i * 27.5); ctx.stroke() }
+                
+                drawDecor(); 
+                drawBeds();
+                patients.forEach(p => drawPatient(p));
+                
+                if (selectedPatient && selectedPatient.state !== 'healed' && !gameOver) {
+                    ctx.strokeStyle = '#4a3a2a'; ctx.lineWidth = 3;
+                    ctx.beginPath(); ctx.arc(selectedPatient.x, selectedPatient.y, selectedPatient.size + 10, 0, Math.PI * 2); ctx.stroke();
+                    ctx.strokeStyle = '#4a3a2a'; ctx.lineWidth = 1; ctx.setLineDash([5, 8]);
+                    ctx.beginPath(); ctx.arc(selectedPatient.x, selectedPatient.y, selectedPatient.size + 16, 0, Math.PI * 2); ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+                
+                ctx.fillStyle = '#dac9b0'; ctx.globalAlpha = 0.6; ctx.fillRect(0, H - 40, W, 40); ctx.globalAlpha = 1;
+                ctx.fillStyle = '#1a1612'; ctx.font = 'bold 15px "Georgia"'; ctx.textAlign = 'left';
+                const activeCount = patients.filter(p => p.state !== 'healed').length;
+                ctx.fillText('🏥 ' + (selectedDoc ? selectedDoc.name : '') + '   |   пациентов: ' + activeCount + '   |   ' + getTimeText() + '   |   Ψ ' + score + '   |   🧪 ' + techPoints + '   |   ' + (currentLevel ? currentLevel.name : '') + '   |   цель: ' + curedCount + '/' + taskTarget, 20, H - 14);
+            }
+
+            // === ИГРОВОЙ ЦИКЛ ===
+            let autoPointCounter = 0;
+            let drugAddCounter = 0;
+            const DRUG_ADD_INTERVAL = 300;
+
+            function gameLoop() {
+                if (gameOver) { draw(); gameLoopId = requestAnimationFrame(gameLoop); return; }
+                if (!gameActive) { draw(); gameLoopId = requestAnimationFrame(gameLoop); return; }
+                
+                if (!isPaused) {
+                    timeOfDay = (timeOfDay + DAY_SPEED) % 2400;
+                    const night = isNight(), evening = isEvening();
+                    frameCounter++;
+                    if (frameCounter >= 60) {
+                        frameCounter = 0;
+                        spawnTimer++;
+                        const activeCount = patients.filter(p => p.state !== 'healed').length;
+                        const adjustedMaxPatients = Math.max(2, maxPatients - 2);
+                        if (spawnTimer >= spawnInterval / 2 && activeCount < adjustedMaxPatients && !levelCompleted && !gameOver) {
+                            const newPatient = createPatient();
+                            patients.push(newPatient);
+                            spawnTimer = 0;
+                            statusMessage = '🆕 Новый пациент поступил!';
+                            updateUI();
+                        }
+                        autoPointCounter++;
+                        if (autoPointCounter >= 10) { autoPointCounter = 0; if (!gameOver && gameActive) { score += 1; statusMessage = '✨ +1 очко за работу (автоматически)'; updateUI(); } }
+                        if (!gameOver && gameActive && currentLevel) {
+                            autoRestockCounter++;
+                            if (autoRestockCounter >= nextRestockTime) {
+                                autoRestockCounter = 0;
+                                nextRestockTime = Math.floor(Math.random() * (AUTO_RESTOCK_MAX_INTERVAL - AUTO_RESTOCK_MIN_INTERVAL + 1)) + AUTO_RESTOCK_MIN_INTERVAL;
+                                autoRestockDrugs();
+                            }
+                        }
+
+                        drugAddCounter++;
+                        if (drugAddCounter >= DRUG_ADD_INTERVAL / 60) {
+                            drugAddCounter = 0;
+                            if (!gameOver && gameActive && currentLevel) {
+                                const drugName = getWeightedRandomDrug();
+                                if (drugName && drugInventory[drugName] !== undefined) {
+                                    drugInventory[drugName] = (drugInventory[drugName] || 0) + 1;
+                                    statusMessage = '💊 +1 ' + drugName + ' (редкость: ' + DRUG_RARITY[drugName] || 1 + ')';
+                                    updateUI();
+                                    renderDrugPanel();
+                                }
+                            }
+                        }
+                    }
+
+                    zSpawnCounter++;
+                    if (zSpawnCounter >= 300 && !gameOver && gameActive) {
+                        zSpawnCounter = 0;
+                        const sleepingPatients = patients.filter(p => p.state !== 'healed' && p.isSleeping);
+                        for (let p of sleepingPatients) {
+                            for (let i = 0; i < 2; i++) {
+                                zLetters.push({ x: p.x + random(-25, 25), y: p.y - 35 - random(0, 20), size: 14 + random(0, 10), life: 80 + random(0, 40), maxLife: 80 + random(0, 40), dx: random(-0.3, 0.3), dy: -0.4 - random(0, 0.3) });
+                            }
+                        }
+                    }
+
+                    const activePatients = patients.filter(p => p.state !== 'healed');
+
+                    if (frameCounter % 30 === 0 && !gameOver && gameActive) {
+                        let healthDropRate = Math.max(0.5, 3 - getOrderly2Bonus() * 3);
+                        if (techEffects.dopamineBoost) {
+                            activePatients.forEach(p => {
+                                if (p.disease.category === 'schizophrenia' || p.disease.category === 'schizotypal') {
+                                    healthDropRate = healthDropRate * (1 - techEffects.dopamineBoost);
+                                }
+                            });
+                        }
+                        activePatients.forEach(function(p) {
+                            if (Math.random() < 0.002 / (healthDropRate / 3) && !p.isSleeping && !levelCompleted) {
+                                p.health = Math.max(0, p.health - healthDropRate);
+                                if (p.health <= 0) {
+                                    p.state = 'healed';
+                                    returnNameToPool(p.name);
+                                    score = Math.max(0, score - 5);
+                                    statusMessage = '💀 ' + p.name + ' умер от болезни! -5 Ψ';
+                                    updateUI();
+                                    endGame();
+                                }
+                            }
+                        });
+                        updateUI();
+                    }
+
+                    if (gameActive) {
+                        activePatients.forEach(function(p) {
+                            if (p.isInjectedSleep) {
+                                p.injectedSleepTimer--;
+                                if (p.injectedSleepTimer <= 0) { p.isInjectedSleep = false; p.isSleeping = false; p.goingToBed = false; if (p.bedIndex >= 0) { beds[p.bedIndex].occupied = false; p.bedIndex = -1 } }
+                                return;
+                            }
+                            if (evening && p.health > 50 && !p.isSleeping && !p.goingToBed && p.bedIndex < 0) {
+                                for (let i = 0; i < beds.length; i++) {
+                                    if (!beds[i].occupied) { p.bedIndex = i; p.bedTarget = { x: beds[i].x, y: beds[i].y - 5 }; p.goingToBed = true; beds[i].occupied = true; p.targetX = p.bedTarget.x; p.targetY = p.bedTarget.y; break; }
+                                }
+                            }
+                            if (p.goingToBed && p.bedIndex >= 0) {
+                                const bed = beds[p.bedIndex];
+                                if (dist(p, { x: bed.x, y: bed.y - 5 }) < 15) {
+                                    p.isSleeping = true; p.goingToBed = false; p.x = bed.x; p.y = bed.y - 5;
+                                    for (let i = 0; i < 3; i++) { zLetters.push({ x: p.x + random(-15, 15), y: p.y - 30 - i * 12, size: 14 + random(0, 6), life: 80 + i * 15, maxLife: 80 + i * 15, dx: random(-0.2, 0.2), dy: -0.4 - random(0, 0.2) }); }
+                                }
+                            }
+                            if (night && p.health > 50 && !p.isSleeping && !p.goingToBed) {
+                                if (p.bedIndex >= 0) { p.isSleeping = true } else {
+                                    for (let i = 0; i < beds.length; i++) {
+                                        if (!beds[i].occupied) { p.bedIndex = i; p.bedTarget = { x: beds[i].x, y: beds[i].y - 5 }; p.goingToBed = true; beds[i].occupied = true; p.targetX = p.bedTarget.x; p.targetY = p.bedTarget.y; break; }
+                                    }
+                                }
+                            }
+                            if (!night && !evening && p.isSleeping && !p.isInjectedSleep) {
+                                p.isSleeping = false;
+                                if (p.bedIndex >= 0) { beds[p.bedIndex].occupied = false; p.bedIndex = -1 }
+                                p.goingToBed = false;
+                                const newTarget = findNewTarget(p);
+                                p.targetX = newTarget.x; p.targetY = newTarget.y;
+                            }
+                        });
+
+                        const fighters = activePatients.filter(p => !p.isFighting && !p.isSleeping);
+                        for (let i = 0; i < fighters.length - 1; i++) {
+                            for (let j = i + 1; j < fighters.length; j++) {
+                                if (dist(fighters[i], fighters[j]) < MIN_PATIENT_DISTANCE + 5 && Math.random() < fightChance * 2) {
+                                    startFight(fighters[i], fighters[j]);
+                                }
+                            }
+                        }
+                        for (let p of activePatients) {
+                            if (p.isFighting && p.fightTarget) {
+                                const target = p.fightTarget;
+                                if (target.state === 'healed' || !activePatients.includes(target)) { p.isFighting = false; p.fightTarget = null; continue }
+                                processFight(p, target);
+                            }
+                        }
+                        for (let p of activePatients) movePatient(p);
+                        resolveCollisions();
+                    }
+                }
+
+                updateUI();
+                draw();
+                gameLoopId = requestAnimationFrame(gameLoop);
+            }
+
+            // === СОХРАНЕНИЕ И ЗАГРУЗКА ===
+            function saveGame() {
+                if (!currentLevel || gameOver) {
+                    statusMessage = '❌ Нет активной игры для сохранения!';
+                    updateUI();
+                    return;
+                }
+                const saveData = {
+                    version: 1,
+                    levelId: currentLevel.id,
+                    docIndex: PSYCHIATRISTS.indexOf(selectedDoc),
+                    score: score,
+                    techPoints: techPoints,
+                    researchedTechs: researchedTechs,
+                    nurseCount: nurseCount,
+                    orderlyCount: orderlyCount,
+                    orderly2Count: orderly2Count,
+                    curedCount: curedCount,
+                    levelCompleted: levelCompleted,
+                    timeOfDay: timeOfDay,
+                    patients: patients.map(p => ({
+                        name: p.name,
+                        x: p.x,
+                        y: p.y,
+                        targetX: p.targetX,
+                        targetY: p.targetY,
+                        health: p.health,
+                        disease: p.disease,
+                        state: p.state,
+                        isSleeping: p.isSleeping,
+                        isInjectedSleep: p.isInjectedSleep,
+                        injectedSleepTimer: p.injectedSleepTimer,
+                        isFighting: p.isFighting,
+                        fightTarget: p.fightTarget ? patients.indexOf(p.fightTarget) : -1,
+                        fightTimer: p.fightTimer,
+                        bedIndex: p.bedIndex,
+                        goingToBed: p.goingToBed,
+                        gender: p.gender,
+                        animPhase: p.animPhase,
+                        breathPhase: p.breathPhase,
+                        stuckCounter: p.stuckCounter,
+                        size: p.size
+                    })),
+                    drugInventory: drugInventory,
+                    completedLevels: completedLevels,
+                    unlockedLevels: unlockedLevels,
+                    beds: beds.map(b => ({ occupied: b.occupied })),
+                    zLetters: zLetters,
+                    spawnTimer: spawnTimer,
+                    autoRestockCounter: autoRestockCounter,
+                    nextRestockTime: nextRestockTime,
+                    techEffects: techEffects,
+                    taskTarget: taskTarget,
+                    maxPatients: maxPatients,
+                    currentHealthRange: currentHealthRange,
+                    fightChance: fightChance,
+                    spawnInterval: spawnInterval,
+                    drugPrice: drugPrice,
+                    drugLimit: drugLimit
+                };
+                const json = JSON.stringify(saveData, null, 2);
+                const blob = new Blob([json], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `level_${currentLevel.id}.psy`;
+                a.click();
+                URL.revokeObjectURL(url);
+                statusMessage = '💾 Игра сохранена в файл!';
+                updateUI();
+            }
+
+            function loadGame() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.psy';
+                input.onchange = function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        try {
+                            const data = JSON.parse(ev.target.result);
+                            if (!data.levelId) {
+                                statusMessage = '❌ Неверный формат файла!';
+                                updateUI();
+                                return;
+                            }
+                            const level = LEVELS.find(l => l.id === data.levelId);
+                            if (!level) {
+                                statusMessage = '❌ Уровень не найден!';
+                                updateUI();
+                                return;
+                            }
+                            
+                            // АВТОМАТИЧЕСКАЯ РАЗБЛОКИРОВКА УРОВНЯ ПРИ ЗАГРУЗКЕ
+                            // Проверяем все уровни из сохранения и разблокируем их цепочку
+                            if (data.completedLevels) {
+                                // Разблокируем все пройденные уровни
+                                Object.keys(data.completedLevels).forEach(levelId => {
+                                    const lvl = LEVELS.find(l => l.id === levelId);
+                                    if (lvl) {
+                                        lvl.unlocked = true;
+                                        if (!unlockedLevels.includes(levelId)) {
+                                            unlockedLevels.push(levelId);
+                                        }
+                                    }
+                                });
+                                
+                                // Разблокируем все уровни, которые зависят от пройденных
+                                LEVELS.forEach(l => {
+                                    if (l.requiredLevel && data.completedLevels[l.requiredLevel]) {
+                                        l.unlocked = true;
+                                        if (!unlockedLevels.includes(l.id)) {
+                                            unlockedLevels.push(l.id);
+                                        }
+                                    }
+                                    // Если сам уровень есть в unlockedLevels из сохранения
+                                    if (data.unlockedLevels && data.unlockedLevels.includes(l.id)) {
+                                        l.unlocked = true;
+                                        if (!unlockedLevels.includes(l.id)) {
+                                            unlockedLevels.push(l.id);
+                                        }
+                                    }
+                                });
+                            }
+                            
+                            // Принудительно разблокируем загружаемый уровень
+                            level.unlocked = true;
+                            if (!unlockedLevels.includes(level.id)) {
+                                unlockedLevels.push(level.id);
+                            }
+                            
+                            // Также разблокируем все уровни, которые зависят от загружаемого
+                            LEVELS.forEach(l => {
+                                if (l.requiredLevel === level.id) {
+                                    l.unlocked = true;
+                                    if (!unlockedLevels.includes(l.id)) {
+                                        unlockedLevels.push(l.id);
+                                    }
+                                }
+                            });
+                            
+                            // Загружаем данные
+                            currentLevel = level;
+                            selectedDoc = PSYCHIATRISTS[data.docIndex] || PSYCHIATRISTS[0];
+                            selectedLevel = level;
+                            
+                            // Обновляем выбранные индексы для UI
+                            selectedPsychIndex = Math.max(0, PSYCHIATRISTS.indexOf(selectedDoc));
+                            selectedLevelIndex = Math.max(0, LEVELS.indexOf(level));
+                            
+                            score = data.score || 0;
+                            techPoints = data.techPoints || 0;
+                            researchedTechs = data.researchedTechs || [];
+                            nurseCount = data.nurseCount || 0;
+                            orderlyCount = data.orderlyCount || 0;
+                            orderly2Count = data.orderly2Count || 0;
+                            curedCount = data.curedCount || 0;
+                            levelCompleted = data.levelCompleted || false;
+                            timeOfDay = data.timeOfDay || 600;
+                            
+                            taskTarget = data.taskTarget || level.taskTarget || 3;
+                            maxPatients = data.maxPatients || 6;
+                            currentHealthRange = data.currentHealthRange || [50, 80];
+                            fightChance = data.fightChance || level.fightChance;
+                            spawnInterval = data.spawnInterval || level.spawnInterval;
+                            drugPrice = data.drugPrice || level.drugPrice;
+                            drugLimit = data.drugLimit || level.drugLimit;
+                            
+                            completedLevels = data.completedLevels || {};
+                            
+                            drugInventory = data.drugInventory || {};
+                            techEffects = data.techEffects || {};
+                            
+                            availableDrugsList = getAvailableDrugsForLevel(level);
+                            availableDiseases = getAvailableDiseasesForLevel(level);
+                            
+                            const limits = getStaffLimits(level);
+                            maxNurses = limits.nurses;
+                            maxOrderlies = limits.orderlies;
+                            maxOrderlies2 = limits.orderlies2;
+                            
+                            // Восстанавливаем пациентов
+                            patients = (data.patients || []).map(p => ({
+                                ...p,
+                                targetX: p.targetX || 0,
+                                targetY: p.targetY || 0,
+                                fightTarget: null,
+                                bedTarget: null,
+                                shakeX: 0,
+                                shakeY: 0,
+                                size: p.size || 18
+                            }));
+                            
+                            // Восстанавливаем связи fightTarget
+                            (data.patients || []).forEach((p, idx) => {
+                                if (p.fightTarget !== undefined && p.fightTarget >= 0 && p.fightTarget < patients.length) {
+                                    patients[idx].fightTarget = patients[p.fightTarget];
+                                }
+                            });
+                            
+                            // Восстанавливаем beds
+                            if (data.beds) {
+                                data.beds.forEach((b, i) => {
+                                    if (beds[i]) beds[i].occupied = b.occupied;
+                                });
+                            }
+                            
+                            zLetters = data.zLetters || [];
+                            spawnTimer = data.spawnTimer || 0;
+                            autoRestockCounter = data.autoRestockCounter || 0;
+                            nextRestockTime = data.nextRestockTime || Math.floor(Math.random() * (AUTO_RESTOCK_MAX_INTERVAL - AUTO_RESTOCK_MIN_INTERVAL + 1)) + AUTO_RESTOCK_MIN_INTERVAL;
+                            
+                            // Обновляем UI
+                            document.getElementById('levelDisplay').textContent = '📍 ' + level.name + ' (' + level.desc + ')';
+                            updateStaffPanel();
+                            
+                            // Переключаемся в игровой режим
+                            selectionScreen.classList.add('hidden');
+                            gameWrapper.classList.add('active');
+                            document.getElementById('gameoverModal').classList.remove('active');
+                            document.getElementById('levelTransitionModal').classList.remove('active');
+                            gameOver = false;
+                            gameActive = true;
+                            isPaused = false;
+                            
+                            // Обновляем выбор в меню (чтобы при выходе в меню было видно)
+                            renderPsychSelection();
+                            renderLevelSelection();
+                            
+                            updateUI();
+                            renderDrugPanel();
+                            renderBook();
+                            renderTechTree();
+                            
+                            if (gameLoopId) cancelAnimationFrame(gameLoopId);
+                            gameLoop();
+                            
+                            statusMessage = '📂 Игра загружена! Уровень автоматически разблокирован.';
+                            updateUI();
+                        } catch (err) {
+                            statusMessage = '❌ Ошибка загрузки: ' + err.message;
+                            updateUI();
+                            console.error(err);
+                        }
+                    };
+                    reader.readAsText(file);
+                };
+                input.click();
+            }
+
+            // === СОБЫТИЯ ===
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    const bookModal = document.getElementById('bookModal');
+                    const techModal = document.getElementById('techTreeModal');
+                    const infoModal = document.getElementById('infoModal');
+                    if (bookModal.classList.contains('active')) {
+                        bookModal.classList.remove('active');
+                    }
+                    if (techModal.classList.contains('active')) {
+                        techModal.classList.remove('active');
+                    }
+                    if (infoModal.classList.contains('active')) {
+                        infoModal.classList.remove('active');
+                    }
+                }
+                if (e.key === ' ' || e.key === 'Space') {
+                    e.preventDefault();
+                    if (gameActive && !gameOver && !pendingLevelTransition) {
+                        isPaused = !isPaused;
+                        statusMessage = isPaused ? '⏸️ ПАУЗА' : '▶️ Продолжение';
+                        updateUI();
+                    }
+                }
+                if (e.key === 'Enter') {
+                    if (!selectionScreen.classList.contains('hidden')) {
+                        if (stepPsych.classList.contains('active')) {
+                            // Select first psychiatrist and go to level selection
+                            selectedDoc = PSYCHIATRISTS[selectedPsychIndex];
+                            selectedDocDisplay.textContent = 'Выбран: ' + selectedDoc.name;
+                            showStep('level');
+                            renderLevelSelection();
+                        } else if (stepLevel.classList.contains('active')) {
+                            // Start game with selected level
+                            const doc = PSYCHIATRISTS[selectedPsychIndex];
+                            const lvl = LEVELS[selectedLevelIndex];
+                            if (doc && lvl && (lvl.unlocked || checkLevelUnlock(lvl.id))) {
+                                selectedDoc = doc;
+                                selectedLevel = lvl;
+                                selectionScreen.classList.add('hidden');
+                                gameWrapper.classList.add('active');
+                                initGameWithSettings(doc, lvl);
+                            }
+                        }
+                    }
+                }
+                // Ctrl+S - сохранение
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    saveGame();
+                }
+                // Ctrl+O - загрузка
+                if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
+                    e.preventDefault();
+                    loadGame();
+                }
+            });
+
+            canvas.addEventListener('mousemove', function(e) {
+                if (gameOver) { hideTooltip(); return; }
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
+                const mx = (e.clientX - rect.left) * scaleX, my = (e.clientY - rect.top) * scaleY;
+                let found = null;
+                for (let p of patients) { if (p.state === 'healed') continue; if (dist({ x: mx, y: my }, p) < p.size + 12) { found = p; break; } }
+                if (found) { hoveredPatient = found; showTooltip(found, e.clientX, e.clientY); document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + found.disease.code + ' ' + found.disease.name; } 
+                else { if (hoveredPatient) { hideTooltip(); if (selectedPatient && selectedPatient.state !== 'healed') document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + selectedPatient.disease.code + ' ' + selectedPatient.disease.name; else document.getElementById('diagnosisDisplay').innerHTML = '🔍 наведи на пациента' } }
+            });
+            canvas.addEventListener('mouseleave', function() {
+                if (gameOver) return;
+                hideTooltip();
+                if (selectedPatient && selectedPatient.state !== 'healed') document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + selectedPatient.disease.code + ' ' + selectedPatient.disease.name;
+                else document.getElementById('diagnosisDisplay').innerHTML = '🔍 наведи на пациента';
+            });
+            canvas.addEventListener('click', function(e) {
+                if (gameOver) return;
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
+                const mx = (e.clientX - rect.left) * scaleX, my = (e.clientY - rect.top) * scaleY;
+                let found = null;
+                for (let p of patients) { if (p.state === 'healed') continue; if (dist({ x: mx, y: my }, p) < p.size + 12) { found = p; break; } }
+                if (found) { selectedPatient = found; document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + found.disease.code + ' ' + found.disease.name; } else { selectedPatient = null; document.getElementById('diagnosisDisplay').innerHTML = '🔍 наведи на пациента'; }
+                updateUI();
+            });
+            canvas.addEventListener('dragover', function(e) { e.preventDefault(); });
+            canvas.addEventListener('drop', function(e) {
+                e.preventDefault();
+                if (gameOver) { statusMessage = '❌ Игра окончена!'; updateUI(); return; }
+                const drug = e.dataTransfer.getData('text/plain');
+                if (!drug) return;
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
+                const mx = (e.clientX - rect.left) * scaleX, my = (e.clientY - rect.top) * scaleY;
+                let targetPatient = null;
+                for (let p of patients) { if (p.state === 'healed') continue; if (dist({ x: mx, y: my }, p) < p.size + 12) { targetPatient = p; break; } }
+                if (targetPatient) { applyDrug(targetPatient, drug); if (targetPatient.health <= 0) targetPatient.state = 'healed'; updateUI(); renderDrugPanel(); } 
+                else { statusMessage = '❌ перетащите на пациента'; updateUI(); }
+            });
+            canvas.addEventListener('dblclick', function() {
+                if (gameOver) return;
+                if (selectedDoc) { statusMessage = '🧠 выбран ' + selectedDoc.name; document.getElementById('statusMsg').innerText = statusMessage; }
+            });
+
+            document.getElementById('restartBtn').addEventListener('click', function() {
+                if (selectedDoc && currentLevel) { initGameWithSettings(selectedDoc, currentLevel); updateUI(); renderDrugPanel(); } else { location.reload(); }
+            });
+            document.getElementById('hireNurseBtn').addEventListener('click', hireNurse);
+            document.getElementById('hireOrderlyBtn').addEventListener('click', hireOrderly);
+            document.getElementById('hireOrderlyBtn2').addEventListener('click', hireOrderly2);
+
+            const bookModal = document.getElementById('bookModal');
+            document.getElementById('bookBtnTop').addEventListener('click', function() { bookModal.classList.add('active'); });
+            document.getElementById('bookCloseBtn').addEventListener('click', function() { bookModal.classList.remove('active'); });
+            bookModal.addEventListener('click', function(e) { if (e.target === bookModal) bookModal.classList.remove('active'); });
+
+            const techTreeModal = document.getElementById('techTreeModal');
+            document.getElementById('techBtnTop').addEventListener('click', function() { renderTechTree(); techTreeModal.classList.add('active'); });
+            document.getElementById('techCloseBtn').addEventListener('click', function() { techTreeModal.classList.remove('active'); });
+            techTreeModal.addEventListener('click', function(e) { if (e.target === techTreeModal) techTreeModal.classList.remove('active'); });
+
+            const infoModal = document.getElementById('infoModal');
+            document.getElementById('infoBtnTop').addEventListener('click', function() { infoModal.classList.add('active'); });
+            document.getElementById('infoCloseBtn').addEventListener('click', function() { infoModal.classList.remove('active'); });
+            infoModal.addEventListener('click', function(e) { if (e.target === infoModal) infoModal.classList.remove('active'); });
+
+            document.getElementById('ltNextBtn').addEventListener('click', function() {
+                if (nextLevelData) goToNextLevel();
+                else { document.getElementById('levelTransitionModal').classList.remove('active'); showGameWin(); }
+            });
+            document.getElementById('ltStayBtn').addEventListener('click', function() {
+                document.getElementById('levelTransitionModal').classList.remove('active');
+                pendingLevelTransition = false; nextLevelData = null; gameActive = true;
+                if (!gameLoopId) gameLoop();
+                statusMessage = '⏸️ Остались на уровне ' + (currentLevel ? currentLevel.name : '');
+                updateUI();
+            });
+
+            document.getElementById('goRestartBtn').addEventListener('click', function() {
+                document.getElementById('gameoverModal').classList.remove('active');
+                document.querySelector('.go-title').textContent = '💀 ИГРА ОКОНЧЕНА';
+                document.querySelector('.go-sub').textContent = 'Пациент умер... Ваша лицензия отозвана!';
+                if (selectedDoc && currentLevel) { initGameWithSettings(selectedDoc, currentLevel); updateUI(); renderDrugPanel(); } else { location.reload(); }
+            });
+            document.getElementById('goMenuBtn').addEventListener('click', function() {
+                document.getElementById('gameoverModal').classList.remove('active');
+                document.querySelector('.go-title').textContent = '💀 ИГРА ОКОНЧЕНА';
+                document.querySelector('.go-sub').textContent = 'Пациент умер... Ваша лицензия отозвана!';
+                gameOver = false; gameActive = false; isPaused = false;
+                if (gameLoopId) { cancelAnimationFrame(gameLoopId); gameLoopId = null; }
+                gameWrapper.classList.remove('active');
+                selectionScreen.classList.remove('hidden');
+                showStep('psych');
+                renderPsychSelection();
+            });
+
+            // === КНОПКИ СОХРАНЕНИЯ/ЗАГРУЗКИ ===
+            document.getElementById('saveBtnTop').addEventListener('click', saveGame);
+            document.getElementById('loadBtnTop').addEventListener('click', loadGame);
+
+            // === INIT SELECTION ===
+            renderPsychSelection();
+            showStep('psych');
+
+            // === BUTTONS ===
+            backToPsychBtn.addEventListener('click', onBackToPsych);
+
+        })();
+    </script>
+</body>
+</html>
