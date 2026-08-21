@@ -1371,7 +1371,10 @@
             const tipName = document.getElementById('tipName'), tipDisease = document.getElementById('tipDisease'), tipHealth = document.getElementById('tipHealth'), tipDrugs = document.getElementById('tipDrugs'), tipStatus = document.getElementById('tipStatus'), tipSeverity = document.getElementById('tipSeverity');
 
             function showTooltip(patient, x, y) {
-                if (!patient || patient.state === 'healed' || gameOver) { tooltip.style.display = 'none'; return; }
+                if (isPaused || gameOver || !patient || patient.state === 'healed') {
+                    tooltip.style.display = 'none';
+                    return;
+                }
                 tipName.textContent = '🧑‍⚕️ ' + patient.name;
                 tipDisease.textContent = '📋 ' + patient.disease.code + ' ' + patient.disease.name;
                 tipHealth.textContent = '❤️ Здоровье: ' + Math.round(patient.health) + '%';
@@ -2854,7 +2857,10 @@
             });
 
             canvas.addEventListener('mousemove', function(e) {
-                if (gameOver) { hideTooltip(); return; }
+                if (gameOver || isPaused) {
+                    hideTooltip();
+                    return;
+                }
                 const rect = canvas.getBoundingClientRect();
                 const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
                 const mx = (e.clientX - rect.left) * scaleX, my = (e.clientY - rect.top) * scaleY;
