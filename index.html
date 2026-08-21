@@ -29,8 +29,8 @@
         .canvas-wrapper { position: relative; width: 100%; border-radius: 8px; overflow: hidden; box-shadow: inset 0 0 0 3px #8a7a5a, 0 8px 16px rgba(0,0,0,0.4); background: #b8a78c; touch-action: none; }
         canvas { display: block; width: 100%; height: auto; aspect-ratio: 900 / 550; background: #cbb99e; touch-action: none; border-radius: 4px; }
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; gap: 8px; padding: 0 4px; flex-wrap: wrap; background: #cbb99e; border-radius: 8px; padding: 6px 12px; box-shadow: inset 0 0 0 2px #a28d70; }
-        .top-bar .book-btn-top, .top-bar .tech-btn-top { background: #b09a7a; border: none; border-bottom: 4px solid #6a5a42; color: #1a1612; font-weight: bold; padding: 6px 18px; border-radius: 30px; cursor: pointer; font-size: 0.95rem; transition: 0.07s; text-shadow: 0 1px 0 #dac9b0; box-shadow: 0 4px 0 #4a3a2a; font-family: 'Georgia', serif; }
-        .top-bar .book-btn-top:active, .top-bar .tech-btn-top:active { transform: translateY(2px); border-bottom-width: 2px; }
+        .top-bar .book-btn-top, .top-bar .tech-btn-top, .top-bar .info-btn-top { background: #b09a7a; border: none; border-bottom: 4px solid #6a5a42; color: #1a1612; font-weight: bold; padding: 6px 18px; border-radius: 30px; cursor: pointer; font-size: 0.95rem; transition: 0.07s; text-shadow: 0 1px 0 #dac9b0; box-shadow: 0 4px 0 #4a3a2a; font-family: 'Georgia', serif; }
+        .top-bar .book-btn-top:active, .top-bar .tech-btn-top:active, .top-bar .info-btn-top:active { transform: translateY(2px); border-bottom-width: 2px; }
         .top-bar .tech-btn-top:disabled { opacity: 0.4; cursor: not-allowed; transform: translateY(2px); border-bottom-width: 2px; }
         .top-score-bar { display: flex; align-items: center; gap: 6px; background: #dac9b0; padding: 4px 16px 4px 12px; border-radius: 30px; border-bottom: 3px solid #8a7a5a; }
         .top-score-bar .psi-icon { font-size: 1.5rem; color: #4a3a2a; }
@@ -80,9 +80,9 @@
         .sel-start { display: block; width: 100%; padding: 16px; font-size: 1.6rem; background: #b09a7a; border: none; border-bottom: 6px solid #6a5a42; color: #1a1612; font-weight: bold; border-radius: 40px; cursor: pointer; transition: 0.1s; text-shadow: 0 2px 0 #dac9b0; letter-spacing: 2px; margin-top: 6px; font-family: 'Georgia', serif; }
         .sel-start:active { transform: translateY(3px); border-bottom-width: 3px; }
         .sel-start:disabled { opacity: 0.4; transform: translateY(2px); border-bottom-width: 4px; cursor: not-allowed; }
-        .book-modal, .tech-tree-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
-        .book-modal.active, .tech-tree-modal.active { display: flex; }
-        .book-content, .tech-tree-content { background: #cbb99e; border: 6px solid #8a7a5a; border-radius: 20px; padding: 24px 30px; max-width: 850px; width: 92%; max-height: 88vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.9), inset 0 0 0 2px #e1cfb6; color: #2d2417; }
+        .book-modal, .tech-tree-modal, .info-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .book-modal.active, .tech-tree-modal.active, .info-modal.active { display: flex; }
+        .book-content, .tech-tree-content, .info-content { background: #cbb99e; border: 6px solid #8a7a5a; border-radius: 20px; padding: 24px 30px; max-width: 850px; width: 92%; max-height: 88vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.9), inset 0 0 0 2px #e1cfb6; color: #2d2417; }
         .book-title { font-size: 2.2rem; text-align: center; color: #1a1612; border-bottom: 3px solid #8a7a5a; padding-bottom: 12px; margin-bottom: 16px; font-weight: bold; text-shadow: 0 2px 0 #b09a7a; font-family: 'Georgia', serif; }
         .book-subtitle { text-align: center; color: #4a3a2a; font-size: 1rem; margin-top: -6px; margin-bottom: 16px; font-style: italic; }
         .book-stats-note { background: #dac9b0; padding: 12px 18px; border-radius: 12px; margin-bottom: 16px; font-size: 0.95rem; color: #2d2417; border-left: 6px solid #4a3a2a; line-height: 1.7; font-family: 'Georgia', serif; }
@@ -94,8 +94,8 @@
         .book-entry .drug-list { color: #4a3a2a; font-size: 0.85rem; display: flex; flex-wrap: wrap; gap: 6px 10px; }
         .book-entry .drug-list span { background: #e1cfb6; padding: 2px 14px; border-radius: 16px; border-bottom: 2px solid #8a7a5a; font-size: 0.8rem; }
         .book-entry .drug-list span.locked-drug-text { opacity: 0.4; text-decoration: line-through; background: #b09a7a; }
-        .book-close, .tech-close { display: block; margin: 18px auto 0; padding: 10px 50px; background: #b09a7a; border: none; border-bottom: 4px solid #6a5a42; color: #1a1612; border-radius: 30px; font-size: 1.1rem; cursor: pointer; font-weight: bold; font-family: 'Georgia', serif; }
-        .book-close:active, .tech-close:active { transform: translateY(2px); border-bottom-width: 2px; }
+        .book-close, .tech-close, .info-close { display: block; margin: 18px auto 0; padding: 10px 50px; background: #b09a7a; border: none; border-bottom: 4px solid #6a5a42; color: #1a1612; border-radius: 30px; font-size: 1.1rem; cursor: pointer; font-weight: bold; font-family: 'Georgia', serif; }
+        .book-close:active, .tech-close:active, .info-close:active { transform: translateY(2px); border-bottom-width: 2px; }
         .tech-tree-title { font-size: 1.8rem; text-align: center; color: #1a1612; border-bottom: 3px solid #8a7a5a; padding-bottom: 10px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; font-family: 'Georgia', serif; }
         .tech-tree-title span { font-size: 1.1rem; color: #4a3a2a; }
         .tech-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
@@ -166,6 +166,7 @@
                     <div class="sel-sub" style="margin-top: 6px;">🏛️ ВЫБОР УРОВНЯ СЛОЖНОСТИ</div>
                     <div class="sel-levels" id="levelGrid"></div>
                     <button class="sel-start" id="startGameBtn">▶ НАЧАТЬ ИГРУ</button>
+                    <div style="text-align:center; margin-top:12px; color:#5a4a32; font-size:0.9rem;">Нажмите <kbd>Enter</kbd>, чтобы начать</div>
                 </div>
             </div>
 
@@ -181,6 +182,7 @@
                         <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
                             <button class="book-btn-top" id="bookBtnTop">📜 Справочник</button>
                             <button class="tech-btn-top" id="techBtnTop">🔬 Исследования</button>
+                            <button class="info-btn-top" id="infoBtnTop">❓</button>
                             <div class="top-score-bar"><span class="psi-icon">⚜️</span><span class="score-value" id="topScoreValue">0</span><span class="score-label">очков</span></div>
                             <div class="tech-points" id="techPointsDisplay">🧪 0</div>
                         </div>
@@ -225,6 +227,21 @@
                     <div class="tech-tree-title"><span>🔬 ДЕРЕВО ИССЛЕДОВАНИЙ</span><span>🧪 <span id="techPointsModal">0</span> очков</span></div>
                     <div class="tech-grid" id="techGrid"></div>
                     <button class="tech-close" id="techCloseBtn">Закрыть</button>
+                </div>
+            </div>
+
+            <!-- INFO MODAL -->
+            <div class="info-modal" id="infoModal">
+                <div class="info-content" style="max-width:480px; text-align:center;">
+                    <div style="font-size:3rem; margin-bottom:8px;">🧠</div>
+                    <div style="font-size:1.6rem; font-weight:bold; color:#1a1612; border-bottom:2px solid #8a7a5a; padding-bottom:10px; margin-bottom:16px;">Об игре</div>
+                    <div style="font-size:1.1rem; line-height:1.8; color:#2d2417;">
+                        <p><strong>Автор:</strong> Панченко М. А.</p>
+                        <p><strong>Email:</strong> <a href="mailto:mercury.nosov@gmail.com" style="color:#4a3a2a;">mercury.nosov@gmail.com</a></p>
+                        <p style="margin-top:12px; font-size:0.9rem; color:#5a4a32;">Управление: лечите пациентов, перетаскивая препараты или нажимая на них.</p>
+                        <p style="font-size:0.9rem; color:#5a4a32;"><kbd>Пробел</kbd> — пауза, <kbd>Esc</kbd> — закрыть окна</p>
+                    </div>
+                    <button class="info-close" id="infoCloseBtn">Закрыть</button>
                 </div>
             </div>
 
@@ -304,7 +321,6 @@
                 { name: 'Лабори', ability: '+35% к эффективности аминазина', iq: 82, empathy: 70, speed: 0.8, bonus: { type: 'aminazine', value: 35 } }
             ];
 
-            // УРОВНИ С КРАТКИМИ ОПИСАНИЯМИ - ТИП РАССТРОЙСТВ
             const LEVELS = [
                 { 
                     id: 'bechtereva', name: 'Бехтерева', desc: 'Неврозы', 
@@ -443,7 +459,6 @@
                 }
             ];
 
-            // ДЕРЕВО ИССЛЕДОВАНИЙ
             const TECH_TREE = [
                 { id: 'tech_psychopharmacology', name: 'Психофармакология', desc: '+15% эффективность всех препаратов', cost: 15, prereq: [], effect: 'drug_boost', value: 0.15 },
                 { id: 'tech_clinical_diagnosis', name: 'Клиническая диагностика', desc: 'Ускоренная диагностика пациентов', cost: 12, prereq: [], effect: 'diagnosis_speed', value: 0.2 },
@@ -487,7 +502,6 @@
                 { name: 'циклодол', color: '#aed581', sideEffect: 'запор, сухость во рту' }
             ];
 
-            // === РЕДКОСТЬ ПРЕПАРАТОВ ===
             const DRUG_RARITY = {
                 'глицин': 1,
                 'флуоксетин': 1,
@@ -501,7 +515,6 @@
                 'циклодол': 3
             };
 
-            // ИСПРАВЛЕНИЕ: добавили больше имён (50 штук)
             const ALL_NAMES = [
                 'Алексей', 'Мария', 'Иван', 'Екатерина', 'Дмитрий', 'Анна', 'Сергей', 'Ольга', 'Павел', 'Татьяна',
                 'Николай', 'Наталья', 'Артём', 'Юлия', 'Максим', 'Елена', 'Владимир', 'Ирина', 'Андрей', 'Ксения',
@@ -594,6 +607,9 @@
             const AUTO_RESTOCK_MIN_INTERVAL = 10;
             const AUTO_RESTOCK_MAX_INTERVAL = 15;
             let nextRestockTime = 0;
+
+            // ПАУЗА
+            let isPaused = false;
 
             // КОНСТАНТЫ ДВИЖЕНИЯ
             const MIN_PATIENT_DISTANCE = 40;
@@ -789,7 +805,7 @@
                 }
                 
                 drugInventory[drugName] = (drugInventory[drugName] || 0) + 1;
-                statusMessage = `💊 +1 ${drugName} в аптеке (автопополнение)`;
+                statusMessage = '💊 +1 ' + drugName + ' в аптеке (автопополнение)';
                 updateUI();
                 renderDrugPanel();
             }
@@ -945,9 +961,9 @@
                 }
                 
                 if (totalInitial > maxPatients) {
-                    statusMessage = `⚠️ На уровне может быть максимум ${maxPatients} пациентов. Создано ${initialCount}.`;
+                    statusMessage = '⚠️ На уровне может быть максимум ' + maxPatients + ' пациентов. Создано ' + initialCount + '.';
                 } else {
-                    statusMessage = `🏥 Появилось ${initialCount} пациентов (нужно вылечить ${taskTarget})`;
+                    statusMessage = '🏥 Появилось ' + initialCount + ' пациентов (нужно вылечить ' + taskTarget + ')';
                 }
 
                 document.getElementById('levelDisplay').textContent = '📍 ' + nextLevel.name + ' (' + nextLevel.desc + ')';
@@ -1380,8 +1396,6 @@
                 return { ...candidates[0] };
             }
 
-            // ===== ИСПРАВЛЕННАЯ ЛОГИКА ВРЕМЕНИ =====
-            // Утро: 300–600, День: 600–1800, Вечер: 1800–2100, Ночь: 2100–300
             function isNight() { return (timeOfDay > 2100 || timeOfDay < 300); }
             function isEvening() { return (timeOfDay >= 1800 && timeOfDay <= 2100); }
             function isMorning() { return (timeOfDay >= 300 && timeOfDay < 600); }
@@ -1726,6 +1740,7 @@
             function initGameWithSettings(doc, level) {
                 hideDrugTooltip();
                 gameOver = false; gameActive = true;
+                isPaused = false;
                 selectedDoc = doc; currentLevel = level;
                 
                 fightChance = level.fightChance * (1 - getFightReduction());
@@ -1759,8 +1774,8 @@
                 const initialCount = Math.min(totalInitial, maxPatients);
                 for (let i = 0; i < initialCount; i++) patients.push(createPatient());
                 
-                if (totalInitial > maxPatients) statusMessage = `⚠️ На уровне может быть максимум ${maxPatients} пациентов. Создано ${initialCount}.`;
-                else statusMessage = `🏥 Появилось ${initialCount} пациентов (нужно вылечить ${taskTarget})`;
+                if (totalInitial > maxPatients) statusMessage = '⚠️ На уровне может быть максимум ' + maxPatients + ' пациентов. Создано ' + initialCount + '.';
+                else statusMessage = '🏥 Появилось ' + initialCount + ' пациентов (нужно вылечить ' + taskTarget + ')';
 
                 selectedPatient = null; spawnTimer = 0; frameCounter = 0;
                 timeOfDay = 600; zLetters = []; zSpawnCounter = 0;
@@ -1801,7 +1816,7 @@
                 if (hoveredPatient && hoveredPatient.state !== 'healed' && !gameOver) document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + hoveredPatient.disease.code + ' ' + hoveredPatient.disease.name;
                 else if (selectedPatient && selectedPatient.state !== 'healed' && !gameOver) document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + selectedPatient.disease.code + ' ' + selectedPatient.disease.name;
                 else document.getElementById('diagnosisDisplay').innerHTML = '🔍 наведи на пациента';
-                document.getElementById('statusMsg').innerText = statusMessage + ' | Вылечено: ' + curedCount + '/' + taskTarget;
+                document.getElementById('statusMsg').innerText = statusMessage + ' | Вылечено: ' + curedCount + '/' + taskTarget + (isPaused ? ' ⏸️ ПАУЗА' : '');
                 document.getElementById('timeIcon').textContent = getTimeIcon();
                 document.getElementById('timeText').textContent = getTimeText();
                 document.getElementById('timeCycle').textContent = isNight() ? '🌙' : (isMorning() ? '🌅' : (isEvening() ? '🌅' : '☀️'));
@@ -2248,6 +2263,16 @@
                     ctx.fillText('Пациент умер... Ваша лицензия отозвана!', W / 2, H / 2 + 50);
                     return;
                 }
+                if (isPaused) {
+                    ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(0, 0, W, H);
+                    ctx.fillStyle = '#dac9b0'; ctx.font = 'bold 60px "Georgia"'; ctx.textAlign = 'center';
+                    ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 20;
+                    ctx.fillText('⏸️ ПАУЗА', W / 2, H / 2);
+                    ctx.shadowBlur = 0;
+                    ctx.font = '20px "Georgia"'; ctx.fillStyle = '#b09a7a';
+                    ctx.fillText('Нажмите Пробел для продолжения', W / 2, H / 2 + 60);
+                    return;
+                }
                 const isNightTime = isNight();
                 const theme = currentLevel ? LEVEL_THEMES[currentLevel.theme] : LEVEL_THEMES['bechtereva'];
                 const bgColors = theme.bg || ['#4a7a5a', '#3a5a4a'];
@@ -2293,137 +2318,141 @@
             function gameLoop() {
                 if (gameOver) { draw(); gameLoopId = requestAnimationFrame(gameLoop); return; }
                 if (!gameActive) { draw(); gameLoopId = requestAnimationFrame(gameLoop); return; }
-                timeOfDay = (timeOfDay + DAY_SPEED) % 2400;
-                const night = isNight(), evening = isEvening();
-                frameCounter++;
-                if (frameCounter >= 60) {
-                    frameCounter = 0;
-                    spawnTimer++;
-                    const activeCount = patients.filter(p => p.state !== 'healed').length;
-                    const adjustedMaxPatients = Math.max(2, maxPatients - 2);
-                    if (spawnTimer >= spawnInterval / 2 && activeCount < adjustedMaxPatients && !levelCompleted && !gameOver) {
-                        const newPatient = createPatient();
-                        patients.push(newPatient);
-                        spawnTimer = 0;
-                        statusMessage = '🆕 Новый пациент поступил!';
-                        updateUI();
-                    }
-                    autoPointCounter++;
-                    if (autoPointCounter >= 10) { autoPointCounter = 0; if (!gameOver && gameActive) { score += 1; statusMessage = '✨ +1 очко за работу (автоматически)'; updateUI(); } }
-                    if (!gameOver && gameActive && currentLevel) {
-                        autoRestockCounter++;
-                        if (autoRestockCounter >= nextRestockTime) {
-                            autoRestockCounter = 0;
-                            nextRestockTime = Math.floor(Math.random() * (AUTO_RESTOCK_MAX_INTERVAL - AUTO_RESTOCK_MIN_INTERVAL + 1)) + AUTO_RESTOCK_MIN_INTERVAL;
-                            autoRestockDrugs();
+                
+                // Обновление только если не на паузе
+                if (!isPaused) {
+                    timeOfDay = (timeOfDay + DAY_SPEED) % 2400;
+                    const night = isNight(), evening = isEvening();
+                    frameCounter++;
+                    if (frameCounter >= 60) {
+                        frameCounter = 0;
+                        spawnTimer++;
+                        const activeCount = patients.filter(p => p.state !== 'healed').length;
+                        const adjustedMaxPatients = Math.max(2, maxPatients - 2);
+                        if (spawnTimer >= spawnInterval / 2 && activeCount < adjustedMaxPatients && !levelCompleted && !gameOver) {
+                            const newPatient = createPatient();
+                            patients.push(newPatient);
+                            spawnTimer = 0;
+                            statusMessage = '🆕 Новый пациент поступил!';
+                            updateUI();
                         }
-                    }
-
-                    drugAddCounter++;
-                    if (drugAddCounter >= DRUG_ADD_INTERVAL / 60) {
-                        drugAddCounter = 0;
+                        autoPointCounter++;
+                        if (autoPointCounter >= 10) { autoPointCounter = 0; if (!gameOver && gameActive) { score += 1; statusMessage = '✨ +1 очко за работу (автоматически)'; updateUI(); } }
                         if (!gameOver && gameActive && currentLevel) {
-                            const drugName = getWeightedRandomDrug();
-                            if (drugName && drugInventory[drugName] !== undefined) {
-                                drugInventory[drugName] = (drugInventory[drugName] || 0) + 1;
-                                statusMessage = `💊 +1 ${drugName} (редкость: ${DRUG_RARITY[drugName] || 1})`;
-                                updateUI();
-                                renderDrugPanel();
+                            autoRestockCounter++;
+                            if (autoRestockCounter >= nextRestockTime) {
+                                autoRestockCounter = 0;
+                                nextRestockTime = Math.floor(Math.random() * (AUTO_RESTOCK_MAX_INTERVAL - AUTO_RESTOCK_MIN_INTERVAL + 1)) + AUTO_RESTOCK_MIN_INTERVAL;
+                                autoRestockDrugs();
+                            }
+                        }
+
+                        drugAddCounter++;
+                        if (drugAddCounter >= DRUG_ADD_INTERVAL / 60) {
+                            drugAddCounter = 0;
+                            if (!gameOver && gameActive && currentLevel) {
+                                const drugName = getWeightedRandomDrug();
+                                if (drugName && drugInventory[drugName] !== undefined) {
+                                    drugInventory[drugName] = (drugInventory[drugName] || 0) + 1;
+                                    statusMessage = '💊 +1 ' + drugName + ' (редкость: ' + DRUG_RARITY[drugName] || 1 + ')';
+                                    updateUI();
+                                    renderDrugPanel();
+                                }
                             }
                         }
                     }
-                }
 
-                zSpawnCounter++;
-                if (zSpawnCounter >= 300 && !gameOver && gameActive) {
-                    zSpawnCounter = 0;
-                    const sleepingPatients = patients.filter(p => p.state !== 'healed' && p.isSleeping);
-                    for (let p of sleepingPatients) {
-                        for (let i = 0; i < 2; i++) {
-                            zLetters.push({ x: p.x + random(-25, 25), y: p.y - 35 - random(0, 20), size: 14 + random(0, 10), life: 80 + random(0, 40), maxLife: 80 + random(0, 40), dx: random(-0.3, 0.3), dy: -0.4 - random(0, 0.3) });
+                    zSpawnCounter++;
+                    if (zSpawnCounter >= 300 && !gameOver && gameActive) {
+                        zSpawnCounter = 0;
+                        const sleepingPatients = patients.filter(p => p.state !== 'healed' && p.isSleeping);
+                        for (let p of sleepingPatients) {
+                            for (let i = 0; i < 2; i++) {
+                                zLetters.push({ x: p.x + random(-25, 25), y: p.y - 35 - random(0, 20), size: 14 + random(0, 10), life: 80 + random(0, 40), maxLife: 80 + random(0, 40), dx: random(-0.3, 0.3), dy: -0.4 - random(0, 0.3) });
+                            }
                         }
                     }
-                }
 
-                const activePatients = patients.filter(p => p.state !== 'healed');
+                    const activePatients = patients.filter(p => p.state !== 'healed');
 
-                if (frameCounter % 30 === 0 && !gameOver && gameActive) {
-                    let healthDropRate = Math.max(0.5, 3 - getOrderly2Bonus() * 3);
-                    if (techEffects.dopamineBoost) {
-                        activePatients.forEach(p => {
-                            if (p.disease.category === 'schizophrenia' || p.disease.category === 'schizotypal') {
-                                healthDropRate = healthDropRate * (1 - techEffects.dopamineBoost);
+                    if (frameCounter % 30 === 0 && !gameOver && gameActive) {
+                        let healthDropRate = Math.max(0.5, 3 - getOrderly2Bonus() * 3);
+                        if (techEffects.dopamineBoost) {
+                            activePatients.forEach(p => {
+                                if (p.disease.category === 'schizophrenia' || p.disease.category === 'schizotypal') {
+                                    healthDropRate = healthDropRate * (1 - techEffects.dopamineBoost);
+                                }
+                            });
+                        }
+                        activePatients.forEach(function(p) {
+                            if (Math.random() < 0.002 / (healthDropRate / 3) && !p.isSleeping && !levelCompleted) {
+                                p.health = Math.max(0, p.health - healthDropRate);
+                                if (p.health <= 0) {
+                                    p.state = 'healed';
+                                    returnNameToPool(p.name);
+                                    score = Math.max(0, score - 5);
+                                    statusMessage = '💀 ' + p.name + ' умер от болезни! -5 Ψ';
+                                    updateUI();
+                                    endGame();
+                                }
                             }
                         });
+                        updateUI();
                     }
-                    activePatients.forEach(function(p) {
-                        if (Math.random() < 0.002 / (healthDropRate / 3) && !p.isSleeping && !levelCompleted) {
-                            p.health = Math.max(0, p.health - healthDropRate);
-                            if (p.health <= 0) {
-                                p.state = 'healed';
-                                returnNameToPool(p.name);
-                                score = Math.max(0, score - 5);
-                                statusMessage = '💀 ' + p.name + ' умер от болезни! -5 Ψ';
-                                updateUI();
-                                endGame();
-                            }
-                        }
-                    });
-                    updateUI();
-                }
 
-                if (gameActive) {
-                    activePatients.forEach(function(p) {
-                        if (p.isInjectedSleep) {
-                            p.injectedSleepTimer--;
-                            if (p.injectedSleepTimer <= 0) { p.isInjectedSleep = false; p.isSleeping = false; p.goingToBed = false; if (p.bedIndex >= 0) { beds[p.bedIndex].occupied = false; p.bedIndex = -1 } }
-                            return;
-                        }
-                        if (evening && p.health > 50 && !p.isSleeping && !p.goingToBed && p.bedIndex < 0) {
-                            for (let i = 0; i < beds.length; i++) {
-                                if (!beds[i].occupied) { p.bedIndex = i; p.bedTarget = { x: beds[i].x, y: beds[i].y - 5 }; p.goingToBed = true; beds[i].occupied = true; p.targetX = p.bedTarget.x; p.targetY = p.bedTarget.y; break; }
+                    if (gameActive) {
+                        activePatients.forEach(function(p) {
+                            if (p.isInjectedSleep) {
+                                p.injectedSleepTimer--;
+                                if (p.injectedSleepTimer <= 0) { p.isInjectedSleep = false; p.isSleeping = false; p.goingToBed = false; if (p.bedIndex >= 0) { beds[p.bedIndex].occupied = false; p.bedIndex = -1 } }
+                                return;
                             }
-                        }
-                        if (p.goingToBed && p.bedIndex >= 0) {
-                            const bed = beds[p.bedIndex];
-                            if (dist(p, { x: bed.x, y: bed.y - 5 }) < 15) {
-                                p.isSleeping = true; p.goingToBed = false; p.x = bed.x; p.y = bed.y - 5;
-                                for (let i = 0; i < 3; i++) { zLetters.push({ x: p.x + random(-15, 15), y: p.y - 30 - i * 12, size: 14 + random(0, 6), life: 80 + i * 15, maxLife: 80 + i * 15, dx: random(-0.2, 0.2), dy: -0.4 - random(0, 0.2) }); }
-                            }
-                        }
-                        if (night && p.health > 50 && !p.isSleeping && !p.goingToBed) {
-                            if (p.bedIndex >= 0) { p.isSleeping = true } else {
+                            if (evening && p.health > 50 && !p.isSleeping && !p.goingToBed && p.bedIndex < 0) {
                                 for (let i = 0; i < beds.length; i++) {
                                     if (!beds[i].occupied) { p.bedIndex = i; p.bedTarget = { x: beds[i].x, y: beds[i].y - 5 }; p.goingToBed = true; beds[i].occupied = true; p.targetX = p.bedTarget.x; p.targetY = p.bedTarget.y; break; }
                                 }
                             }
-                        }
-                        if (!night && !evening && p.isSleeping && !p.isInjectedSleep) {
-                            p.isSleeping = false;
-                            if (p.bedIndex >= 0) { beds[p.bedIndex].occupied = false; p.bedIndex = -1 }
-                            p.goingToBed = false;
-                            const newTarget = findNewTarget(p);
-                            p.targetX = newTarget.x; p.targetY = newTarget.y;
-                        }
-                    });
+                            if (p.goingToBed && p.bedIndex >= 0) {
+                                const bed = beds[p.bedIndex];
+                                if (dist(p, { x: bed.x, y: bed.y - 5 }) < 15) {
+                                    p.isSleeping = true; p.goingToBed = false; p.x = bed.x; p.y = bed.y - 5;
+                                    for (let i = 0; i < 3; i++) { zLetters.push({ x: p.x + random(-15, 15), y: p.y - 30 - i * 12, size: 14 + random(0, 6), life: 80 + i * 15, maxLife: 80 + i * 15, dx: random(-0.2, 0.2), dy: -0.4 - random(0, 0.2) }); }
+                                }
+                            }
+                            if (night && p.health > 50 && !p.isSleeping && !p.goingToBed) {
+                                if (p.bedIndex >= 0) { p.isSleeping = true } else {
+                                    for (let i = 0; i < beds.length; i++) {
+                                        if (!beds[i].occupied) { p.bedIndex = i; p.bedTarget = { x: beds[i].x, y: beds[i].y - 5 }; p.goingToBed = true; beds[i].occupied = true; p.targetX = p.bedTarget.x; p.targetY = p.bedTarget.y; break; }
+                                    }
+                                }
+                            }
+                            if (!night && !evening && p.isSleeping && !p.isInjectedSleep) {
+                                p.isSleeping = false;
+                                if (p.bedIndex >= 0) { beds[p.bedIndex].occupied = false; p.bedIndex = -1 }
+                                p.goingToBed = false;
+                                const newTarget = findNewTarget(p);
+                                p.targetX = newTarget.x; p.targetY = newTarget.y;
+                            }
+                        });
 
-                    const fighters = activePatients.filter(p => !p.isFighting && !p.isSleeping);
-                    for (let i = 0; i < fighters.length - 1; i++) {
-                        for (let j = i + 1; j < fighters.length; j++) {
-                            if (dist(fighters[i], fighters[j]) < MIN_PATIENT_DISTANCE + 5 && Math.random() < fightChance * 2) {
-                                startFight(fighters[i], fighters[j]);
+                        const fighters = activePatients.filter(p => !p.isFighting && !p.isSleeping);
+                        for (let i = 0; i < fighters.length - 1; i++) {
+                            for (let j = i + 1; j < fighters.length; j++) {
+                                if (dist(fighters[i], fighters[j]) < MIN_PATIENT_DISTANCE + 5 && Math.random() < fightChance * 2) {
+                                    startFight(fighters[i], fighters[j]);
+                                }
                             }
                         }
-                    }
-                    for (let p of activePatients) {
-                        if (p.isFighting && p.fightTarget) {
-                            const target = p.fightTarget;
-                            if (target.state === 'healed' || !activePatients.includes(target)) { p.isFighting = false; p.fightTarget = null; continue }
-                            processFight(p, target);
+                        for (let p of activePatients) {
+                            if (p.isFighting && p.fightTarget) {
+                                const target = p.fightTarget;
+                                if (target.state === 'healed' || !activePatients.includes(target)) { p.isFighting = false; p.fightTarget = null; continue }
+                                processFight(p, target);
+                            }
                         }
+                        for (let p of activePatients) movePatient(p);
+                        resolveCollisions();
                     }
-                    for (let p of activePatients) movePatient(p);
-                    resolveCollisions();
                 }
 
                 updateUI();
@@ -2436,11 +2465,28 @@
                 if (e.key === 'Escape') {
                     const bookModal = document.getElementById('bookModal');
                     const techModal = document.getElementById('techTreeModal');
+                    const infoModal = document.getElementById('infoModal');
                     if (bookModal.classList.contains('active')) {
                         bookModal.classList.remove('active');
                     }
                     if (techModal.classList.contains('active')) {
                         techModal.classList.remove('active');
+                    }
+                    if (infoModal.classList.contains('active')) {
+                        infoModal.classList.remove('active');
+                    }
+                }
+                if (e.key === ' ' || e.key === 'Space') {
+                    e.preventDefault();
+                    if (gameActive && !gameOver && !pendingLevelTransition) {
+                        isPaused = !isPaused;
+                        statusMessage = isPaused ? '⏸️ ПАУЗА' : '▶️ Продолжение';
+                        updateUI();
+                    }
+                }
+                if (e.key === 'Enter') {
+                    if (!selectionScreen.classList.contains('hidden')) {
+                        startGame();
                     }
                 }
             });
@@ -2507,6 +2553,12 @@
             document.getElementById('techCloseBtn').addEventListener('click', function() { techTreeModal.classList.remove('active'); });
             techTreeModal.addEventListener('click', function(e) { if (e.target === techTreeModal) techTreeModal.classList.remove('active'); });
 
+            // INFO MODAL
+            const infoModal = document.getElementById('infoModal');
+            document.getElementById('infoBtnTop').addEventListener('click', function() { infoModal.classList.add('active'); });
+            document.getElementById('infoCloseBtn').addEventListener('click', function() { infoModal.classList.remove('active'); });
+            infoModal.addEventListener('click', function(e) { if (e.target === infoModal) infoModal.classList.remove('active'); });
+
             document.getElementById('ltNextBtn').addEventListener('click', function() {
                 if (nextLevelData) goToNextLevel();
                 else { document.getElementById('levelTransitionModal').classList.remove('active'); showGameWin(); }
@@ -2529,7 +2581,7 @@
                 document.getElementById('gameoverModal').classList.remove('active');
                 document.querySelector('.go-title').textContent = '💀 ИГРА ОКОНЧЕНА';
                 document.querySelector('.go-sub').textContent = 'Пациент умер... Ваша лицензия отозвана!';
-                gameOver = false; gameActive = false;
+                gameOver = false; gameActive = false; isPaused = false;
                 if (gameLoopId) { cancelAnimationFrame(gameLoopId); gameLoopId = null; }
                 gameWrapper.classList.remove('active');
                 selectionScreen.classList.remove('hidden');
