@@ -209,9 +209,9 @@
                             <div class="tech-points" id="techPointsDisplay">🧪 0</div>
                         </div>
                         <div class="staff-panel" id="staffPanel">
-                            <div class="staff-item" id="staffNurse"><span class="icon">👩‍⚕️</span> Медсестра <span class="count" id="nurseCount">0/2</span><button class="action-btn" id="hireNurseBtn">10Ψ</button></div>
+                            <div class="staff-item" id="staffOrderly2"><span class="icon">🧹</span> Санитар <span class="count" id="orderly2Count">0/0</span><button class="action-btn" id="hireOrderlyBtn2">5Ψ</button></div>
+                            <div class="staff-item" id="staffNurse"><span class="icon">👩‍⚕️</span> Медсестра <span class="count" id="nurseCount">0/0</span><button class="action-btn" id="hireNurseBtn">10Ψ</button></div>
                             <div class="staff-item" id="staffOrderly"><span class="icon">💊</span> Ординатор <span class="count" id="orderlyCount">0/0</span><button class="action-btn" id="hireOrderlyBtn" disabled>🔒</button></div>
-                            <div class="staff-item" id="staffOrderly2"><span class="icon">🧹</span> Санитар <span class="count" id="orderlyCount2">0/0</span><button class="action-btn" id="hireOrderlyBtn2" disabled>🔒</button></div>
                         </div>
                         <div class="time-indicator"><span class="time-icon" id="timeIcon">🌞</span><span class="time-text" id="timeText">День</span><span style="font-size:0.8rem;color:#5a4a32;" id="timeCycle">⚡</span></div>
                     </div>
@@ -319,7 +319,7 @@
             let isAudioPaused = false;
 
             function startMusic() {
-                audio.currentTime = 0; // всегда начинаем заново
+                audio.currentTime = 0;
                 audio.play().then(() => {
                     isAudioPlaying = true;
                     isAudioPaused = false;
@@ -379,7 +379,7 @@
                     task: 'Вылечить 3 пациентов', taskTarget: 3, healthRange: [70, 95], 
                     unlocked: true, requiredLevel: null, 
                     availableDrugs: ['глицин'], diseaseCount: 5, 
-                    staffLimits: { nurses: 2, orderlies: 0, orderlies2: 0 },
+                    staffLimits: { orderlies2: 0, nurses: 0, orderlies: 0 },
                     theme: 'bechtereva' 
                 },
                 { 
@@ -388,7 +388,7 @@
                     task: 'Вылечить 4 пациентов', taskTarget: 4, healthRange: [60, 90], 
                     unlocked: false, requiredLevel: 'bechtereva', 
                     availableDrugs: ['глицин', 'флуоксетин'], diseaseCount: 8, 
-                    staffLimits: { nurses: 3, orderlies: 0, orderlies2: 0 },
+                    staffLimits: { orderlies2: 0, nurses: 0, orderlies: 0 },
                     theme: 'suhanova' 
                 },
                 { 
@@ -397,7 +397,7 @@
                     task: 'Вылечить 5 пациентов', taskTarget: 5, healthRange: [55, 85], 
                     unlocked: false, requiredLevel: 'suhanova', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин'], diseaseCount: 12, 
-                    staffLimits: { nurses: 4, orderlies: 1, orderlies2: 0 },
+                    staffLimits: { orderlies2: 3, nurses: 0, orderlies: 0 },
                     theme: 'korsakov' 
                 },
                 { 
@@ -406,7 +406,7 @@
                     task: 'Вылечить 6 пациентов', taskTarget: 6, healthRange: [55, 85], 
                     unlocked: false, requiredLevel: 'korsakov', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин'], diseaseCount: 16, 
-                    staffLimits: { nurses: 4, orderlies: 2, orderlies2: 0 },
+                    staffLimits: { orderlies2: 3, nurses: 2, orderlies: 0 },
                     theme: 'balinsky' 
                 },
                 { 
@@ -415,7 +415,7 @@
                     task: 'Вылечить 7 пациентов', taskTarget: 7, healthRange: [50, 80], 
                     unlocked: false, requiredLevel: 'balinsky', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин'], diseaseCount: 20, 
-                    staffLimits: { nurses: 5, orderlies: 2, orderlies2: 0 },
+                    staffLimits: { orderlies2: 4, nurses: 3, orderlies: 0 },
                     theme: 'gannushkina' 
                 },
                 { 
@@ -424,7 +424,7 @@
                     task: 'Вылечить 8 пациентов', taskTarget: 8, healthRange: [45, 75], 
                     unlocked: false, requiredLevel: 'gannushkina', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол'], diseaseCount: 25, 
-                    staffLimits: { nurses: 5, orderlies: 3, orderlies2: 0 },
+                    staffLimits: { orderlies2: 4, nurses: 3, orderlies: 2 },
                     theme: 'osipova' 
                 },
                 { 
@@ -433,7 +433,7 @@
                     task: 'Вылечить 9 пациентов', taskTarget: 9, healthRange: [50, 80], 
                     unlocked: false, requiredLevel: 'osipova', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон'], diseaseCount: 30, 
-                    staffLimits: { nurses: 6, orderlies: 3, orderlies2: 2 },
+                    staffLimits: { orderlies2: 5, nurses: 4, orderlies: 3 },
                     theme: 'zhuravsky' 
                 },
                 { 
@@ -442,7 +442,7 @@
                     task: 'Вылечить 10 пациентов', taskTarget: 10, healthRange: [35, 65], 
                     unlocked: false, requiredLevel: 'zhuravsky', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин'], diseaseCount: 35, 
-                    staffLimits: { nurses: 6, orderlies: 4, orderlies2: 3 },
+                    staffLimits: { orderlies2: 6, nurses: 5, orderlies: 4 },
                     theme: 'snezhnevsky' 
                 },
                 { 
@@ -451,7 +451,7 @@
                     task: 'Вылечить 12 пациентов', taskTarget: 12, healthRange: [40, 70], 
                     unlocked: false, requiredLevel: 'snezhnevsky', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит'], diseaseCount: 40, 
-                    staffLimits: { nurses: 7, orderlies: 4, orderlies2: 4 },
+                    staffLimits: { orderlies2: 6, nurses: 5, orderlies: 4 },
                     theme: 'kashchenko' 
                 },
                 { 
@@ -460,7 +460,7 @@
                     task: 'Вылечить 15 пациентов', taskTarget: 15, healthRange: [30, 60], 
                     unlocked: false, requiredLevel: 'kashchenko', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 50, 
-                    staffLimits: { nurses: 7, orderlies: 5, orderlies2: 5 },
+                    staffLimits: { orderlies2: 7, nurses: 6, orderlies: 5 },
                     theme: 'skvortsova' 
                 },
                 { 
@@ -469,7 +469,7 @@
                     task: 'Вылечить 20 пациентов', taskTarget: 20, healthRange: [25, 55], 
                     unlocked: false, requiredLevel: 'skvortsova-stepanova', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 55, 
-                    staffLimits: { nurses: 8, orderlies: 5, orderlies2: 6 },
+                    staffLimits: { orderlies2: 7, nurses: 6, orderlies: 5 },
                     theme: 'gilyarovsky' 
                 },
                 { 
@@ -478,7 +478,7 @@
                     task: 'Вылечить 25 пациентов', taskTarget: 25, healthRange: [20, 50], 
                     unlocked: false, requiredLevel: 'gilyarovsky', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 60, 
-                    staffLimits: { nurses: 8, orderlies: 5, orderlies2: 7 },
+                    staffLimits: { orderlies2: 8, nurses: 7, orderlies: 5 },
                     theme: 'serbsky' 
                 },
                 { 
@@ -487,7 +487,7 @@
                     task: 'Вылечить 30 пациентов', taskTarget: 30, healthRange: [15, 45], 
                     unlocked: false, requiredLevel: 'serbsky', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 65, 
-                    staffLimits: { nurses: 8, orderlies: 5, orderlies2: 8 },
+                    staffLimits: { orderlies2: 8, nurses: 7, orderlies: 5 },
                     theme: 'kandinsky' 
                 },
                 { 
@@ -496,7 +496,7 @@
                     task: 'Вылечить 35 пациентов', taskTarget: 35, healthRange: [10, 40], 
                     unlocked: false, requiredLevel: 'kandinsky', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 70, 
-                    staffLimits: { nurses: 8, orderlies: 5, orderlies2: 9 },
+                    staffLimits: { orderlies2: 9, nurses: 8, orderlies: 5 },
                     theme: 'sukhanov' 
                 },
                 { 
@@ -505,12 +505,12 @@
                     task: 'Вылечить 40 пациентов', taskTarget: 40, healthRange: [5, 30], 
                     unlocked: false, requiredLevel: 'sukhanov', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 75, 
-                    staffLimits: { nurses: 8, orderlies: 5, orderlies2: 10 },
+                    staffLimits: { orderlies2: 10, nurses: 8, orderlies: 5 },
                     theme: 'arsenalnaya' 
                 }
             ];
 
-            // НОВЫЕ ИССЛЕДОВАНИЯ + ОРДИНАТУРА УВЕЛИЧИВАЕТ В 2 РАЗА
+            // ТЕХНОЛОГИИ
             const TECH_TREE = [
                 { id: 'tech_psychopharmacology', name: 'Психофармакология', desc: '+15% эффективность всех препаратов', cost: 15, prereq: [], effect: 'drug_boost', value: 0.15 },
                 { id: 'tech_clinical_diagnosis', name: 'Клиническая диагностика', desc: 'Ускоренная диагностика пациентов', cost: 12, prereq: [], effect: 'diagnosis_speed', value: 0.2 },
@@ -538,7 +538,6 @@
                 { id: 'tech_psychoanalysis', name: 'Психоанализ', desc: 'Глубинная терапия: +20% к лечению РЛ и неврозов', cost: 28, prereq: ['tech_personality', 'tech_affective', 'tech_psychotherapy'], effect: 'psychoanalysis_boost', value: 0.2 },
                 { id: 'tech_integrated_psychiatry', name: 'Интегративная психиатрия', desc: 'Все методы объединены: +25% общая эффективность', cost: 50, prereq: ['tech_neuropsychiatry', 'tech_social_psychiatry', 'tech_cognitive_behavioral', 'tech_psychoanalysis'], effect: 'mastery_boost', value: 0.25 },
                 { id: 'tech_psychiatry_leadership', name: 'Лидерство в психиатрии', desc: 'Персонал работает на 50% эффективнее', cost: 40, prereq: ['tech_social_psychiatry', 'tech_integrated_psychiatry'], effect: 'staff_boost', value: 0.5 },
-                // НОВЫЕ ИССЛЕДОВАНИЯ:
                 { id: 'tech_circadian_rhythms', name: 'Циркадные ритмы', desc: 'Уменьшает бессонницу у пациентов на 60%', cost: 18, prereq: ['tech_neurobiology'], effect: 'circadian_boost', value: 0.6 },
                 { id: 'tech_orderly_expertise', name: 'Устав санитаров', desc: 'Увеличивает эффективность санитаров на 40%', cost: 20, prereq: ['tech_ethics'], effect: 'orderly_boost', value: 0.4 },
                 { id: 'tech_physical_therapy', name: 'Лечебная физкультура', desc: '+15% к восстановлению здоровья пациентов', cost: 15, prereq: ['tech_psychotherapy'], effect: 'physical_therapy', value: 0.15 },
@@ -662,7 +661,7 @@
             let orderlyCount = 0;
             let orderly2Count = 0;
             
-            let maxNurses = 2;
+            let maxNurses = 0;
             let maxOrderlies = 0;
             let maxOrderlies2 = 0;
 
@@ -697,7 +696,7 @@
             };
 
             function getStaffLimits(level) {
-                if (!level || !level.staffLimits) return { nurses: 2, orderlies: 0, orderlies2: 0 };
+                if (!level || !level.staffLimits) return { orderlies2: 0, nurses: 0, orderlies: 0 };
                 return level.staffLimits;
             }
 
@@ -921,9 +920,9 @@
                 orderly2Count = 0;
                 
                 const limits = getStaffLimits(nextLevel);
+                maxOrderlies2 = limits.orderlies2;
                 maxNurses = limits.nurses;
                 maxOrderlies = limits.orderlies;
-                maxOrderlies2 = limits.orderlies2;
                 
                 curedCount = 0;
                 levelCompleted = false;
@@ -1060,14 +1059,12 @@
                     case 'affinity_boost': techEffects.affinityBoost = (techEffects.affinityBoost || 0) + tech.value; break;
                     case 'atypical_boost': techEffects.atypicalBoost = (techEffects.atypicalBoost || 0) + tech.value; break;
                     case 'forensic_boost': techEffects.forensicBoost = (techEffects.forensicBoost || 0) + tech.value; break;
-                    // НОВЫЕ ЭФФЕКТЫ
                     case 'circadian_boost': techEffects.circadianBoost = (techEffects.circadianBoost || 0) + tech.value; break;
                     case 'orderly_boost': techEffects.orderlyBoost = (techEffects.orderlyBoost || 0) + tech.value; break;
                     case 'physical_therapy': techEffects.physicalTherapy = (techEffects.physicalTherapy || 0) + tech.value; break;
                     case 'hypnotherapy_boost': techEffects.hypnotherapyBoost = (techEffects.hypnotherapyBoost || 0) + tech.value; break;
                     case 'nursing_care': techEffects.nursingCare = true; break;
                     case 'residency_boost': 
-                        // Увеличиваем лимит ординаторов в 2 раза (от текущего базового лимита уровня)
                         if (currentLevel) {
                             const baseLimits = getStaffLimits(currentLevel);
                             maxOrderlies = Math.floor(baseLimits.orderlies * tech.value);
@@ -1161,8 +1158,20 @@
                 return bonus;
             }
 
+            function hireOrderly2() {
+                if (gameOver || isPaused) return;
+                if (maxOrderlies2 === 0) { statusMessage = '❌ Санитары пока не доступны'; updateUI(); return; }
+                if (orderly2Count >= maxOrderlies2) { statusMessage = '❌ Максимум ' + maxOrderlies2 + ' санитаров'; updateUI(); return; }
+                if (score < 5) { statusMessage = '❌ Недостаточно очков! Нужно 5 Ψ'; updateUI(); return; }
+                score -= 5;
+                orderly2Count++;
+                statusMessage = '🧹 Санитар нанят! (замедляет ухудшение здоровья на ' + Math.round(getOrderly2Bonus() * 100) + '%)';
+                updateUI();
+            }
+
             function hireNurse() {
                 if (gameOver || isPaused) return;
+                if (maxNurses === 0) { statusMessage = '❌ Медсёстры пока не доступны'; updateUI(); return; }
                 if (nurseCount >= maxNurses) { statusMessage = '❌ Максимум ' + maxNurses + ' медсестёр'; updateUI(); return; }
                 if (score < 10) { statusMessage = '❌ Недостаточно очков! Нужно 10 Ψ'; updateUI(); return; }
                 score -= 10;
@@ -1182,34 +1191,27 @@
                 updateUI();
             }
 
-            function hireOrderly2() {
-                if (gameOver || isPaused) return;
-                if (maxOrderlies2 === 0) { statusMessage = '❌ Санитары пока не доступны'; updateUI(); return; }
-                if (orderly2Count >= maxOrderlies2) { statusMessage = '❌ Максимум ' + maxOrderlies2 + ' санитаров'; updateUI(); return; }
-                if (score < 5) { statusMessage = '❌ Недостаточно очков! Нужно 5 Ψ'; updateUI(); return; }
-                score -= 5;
-                orderly2Count++;
-                statusMessage = '🧹 Санитар нанят! (замедляет ухудшение здоровья на ' + Math.round(getOrderly2Bonus() * 100) + '%)';
-                updateUI();
-            }
-
             function updateStaffPanel() {
                 const nurseItem = document.getElementById('staffNurse');
                 const orderlyItem = document.getElementById('staffOrderly');
                 const orderly2Item = document.getElementById('staffOrderly2');
                 
-                nurseItem.classList.remove('hidden-staff');
+                if (maxOrderlies2 > 0) {
+                    orderly2Item.classList.remove('hidden-staff');
+                } else {
+                    orderly2Item.classList.add('hidden-staff');
+                }
+                
+                if (maxNurses > 0) {
+                    nurseItem.classList.remove('hidden-staff');
+                } else {
+                    nurseItem.classList.add('hidden-staff');
+                }
                 
                 if (maxOrderlies > 0) {
                     orderlyItem.classList.remove('hidden-staff');
                 } else {
                     orderlyItem.classList.add('hidden-staff');
-                }
-                
-                if (maxOrderlies2 > 0) {
-                    orderly2Item.classList.remove('hidden-staff');
-                } else {
-                    orderly2Item.classList.add('hidden-staff');
                 }
             }
 
@@ -1292,8 +1294,8 @@
                         progressText = '<span class="level-progress">✅ Пройден</span>';
                     } else if (isUnlocked) {
                         const drugCount = level.availableDrugs.length;
-                        const limits = level.staffLimits || { nurses: 0, orderlies: 0, orderlies2: 0 };
-                        progressText = `<span class="level-progress">🔓 ${drugCount} препаратов · 👩‍⚕️${limits.nurses} 💊${limits.orderlies} 🧹${limits.orderlies2}</span>`;
+                        const limits = level.staffLimits || { orderlies2: 0, nurses: 0, orderlies: 0 };
+                        progressText = `<span class="level-progress">🔓 ${drugCount} препаратов · 🧹${limits.orderlies2} 👩‍⚕️${limits.nurses} 💊${limits.orderlies}</span>`;
                     } else {
                         const required = LEVELS.find(l => l.id === level.requiredLevel);
                         progressText = `<span class="level-progress">🔒 Требуется: ${required ? required.name : ''}</span>`;
@@ -1797,12 +1799,8 @@
                 gameOver = false; gameActive = true;
                 isPaused = false;
                 selectedDoc = doc; currentLevel = level;
-                selectedPatient = null; // Снимаем выделение с пациента
+                selectedPatient = null;
                 document.getElementById('diagnosisDisplay').innerHTML = '🔍 наведи на пациента';
-                
-                // Сохраняем исследования и очки исследований
-                // Они уже сохранены в глобальных переменных techPoints и researchedTechs
-                // Не обнуляем их!
                 
                 fightChance = level.fightChance * (1 - getFightReduction());
                 spawnInterval = level.spawnInterval;
@@ -1820,21 +1818,17 @@
                 availableDiseases = getAvailableDiseasesForLevel(level);
                 drugInventory = initDrugInventory(level);
                 
-                // Обнуляем только очки (score) и счетчики, но НЕ techPoints и researchedTechs
                 score = 0; 
                 curedCount = 0; 
                 levelCompleted = false;
-                // techPoints и researchedTechs сохраняются!
-                // techEffects уже применены и остаются
                 
                 const limits = getStaffLimits(level);
+                maxOrderlies2 = limits.orderlies2;
                 maxNurses = limits.nurses;
                 maxOrderlies = limits.orderlies;
-                // Если есть исследование "Ординатура", умножаем лимит на 2
                 if (researchedTechs.includes('tech_residency')) {
                     maxOrderlies = Math.floor(maxOrderlies * 2);
                 }
-                maxOrderlies2 = limits.orderlies2;
                 nurseCount = 0; orderlyCount = 0; orderly2Count = 0;
 
                 namePool = shuffleArray([...ALL_NAMES]);
@@ -1869,18 +1863,22 @@
                 document.getElementById('docDisplay').innerHTML = '🧠 ' + doc.name;
                 const active = patients.filter(p => p.state !== 'healed').length;
                 document.getElementById('patientCount').innerText = '👥 ' + active;
+                document.getElementById('orderly2Count').textContent = orderly2Count + '/' + maxOrderlies2;
                 document.getElementById('nurseCount').textContent = nurseCount + '/' + maxNurses;
                 document.getElementById('orderlyCount').textContent = orderlyCount + '/' + maxOrderlies;
-                document.getElementById('orderlyCount2').textContent = orderly2Count + '/' + maxOrderlies2;
-                const nurseBtn = document.getElementById('hireNurseBtn');
-                nurseBtn.textContent = nurseCount >= maxNurses ? 'MAX' : '10Ψ';
-                nurseBtn.disabled = nurseCount >= maxNurses || score < 10 || gameOver || isPaused;
-                const orderlyBtn = document.getElementById('hireOrderlyBtn');
-                if (maxOrderlies === 0) { orderlyBtn.textContent = '🔒'; orderlyBtn.disabled = true; } 
-                else { orderlyBtn.textContent = orderlyCount >= maxOrderlies ? 'MAX' : '25Ψ'; orderlyBtn.disabled = orderlyCount >= maxOrderlies || score < 25 || gameOver || isPaused; }
+                
                 const orderly2Btn = document.getElementById('hireOrderlyBtn2');
                 if (maxOrderlies2 === 0) { orderly2Btn.textContent = '🔒'; orderly2Btn.disabled = true; } 
                 else { orderly2Btn.textContent = orderly2Count >= maxOrderlies2 ? 'MAX' : '5Ψ'; orderly2Btn.disabled = orderly2Count >= maxOrderlies2 || score < 5 || gameOver || isPaused; }
+                
+                const nurseBtn = document.getElementById('hireNurseBtn');
+                if (maxNurses === 0) { nurseBtn.textContent = '🔒'; nurseBtn.disabled = true; } 
+                else { nurseBtn.textContent = nurseCount >= maxNurses ? 'MAX' : '10Ψ'; nurseBtn.disabled = nurseCount >= maxNurses || score < 10 || gameOver || isPaused; }
+                
+                const orderlyBtn = document.getElementById('hireOrderlyBtn');
+                if (maxOrderlies === 0) { orderlyBtn.textContent = '🔒'; orderlyBtn.disabled = true; } 
+                else { orderlyBtn.textContent = orderlyCount >= maxOrderlies ? 'MAX' : '25Ψ'; orderlyBtn.disabled = orderlyCount >= maxOrderlies || score < 25 || gameOver || isPaused; }
+                
                 document.getElementById('scoreDisplay').textContent = 'Ψ ' + score;
                 document.getElementById('topScoreValue').textContent = score;
                 document.getElementById('techPointsDisplay').textContent = '🧪 ' + techPoints;
@@ -2597,7 +2595,7 @@
                     maxOrderlies2: maxOrderlies2,
                     isAudioPlaying: isAudioPlaying,
                     isAudioPaused: isAudioPaused,
-                    isPaused: isPaused // <-- СОХРАНЯЕМ СОСТОЯНИЕ ПАУЗЫ
+                    isPaused: isPaused
                 };
                 const json = JSON.stringify(saveData, null, 2);
                 const blob = new Blob([json], { type: 'application/json' });
@@ -2634,7 +2632,6 @@
                                 return;
                             }
                             
-                            // АВТОМАТИЧЕСКАЯ РАЗБЛОКИРОВКА УРОВНЯ ПРИ ЗАГРУЗКЕ
                             if (data.completedLevels) {
                                 Object.keys(data.completedLevels).forEach(levelId => {
                                     const lvl = LEVELS.find(l => l.id === levelId);
@@ -2701,7 +2698,7 @@
                             drugPrice = data.drugPrice || level.drugPrice;
                             drugLimit = data.drugLimit || level.drugLimit;
                             
-                            maxNurses = data.maxNurses || 2;
+                            maxNurses = data.maxNurses || 0;
                             maxOrderlies = data.maxOrderlies || 0;
                             maxOrderlies2 = data.maxOrderlies2 || 0;
                             
@@ -2710,7 +2707,6 @@
                             drugInventory = data.drugInventory || {};
                             techEffects = data.techEffects || {};
                             
-                            // ВОССТАНАВЛИВАЕМ СОСТОЯНИЕ ПАУЗЫ
                             if (data.isPaused !== undefined) {
                                 isPaused = data.isPaused;
                             } else {
@@ -2753,7 +2749,6 @@
                             autoRestockCounter = data.autoRestockCounter || 0;
                             nextRestockTime = data.nextRestockTime || Math.floor(Math.random() * (AUTO_RESTOCK_MAX_INTERVAL - AUTO_RESTOCK_MIN_INTERVAL + 1)) + AUTO_RESTOCK_MIN_INTERVAL;
                             
-                            // Восстановление состояния музыки
                             if (data.isAudioPlaying !== undefined) {
                                 isAudioPlaying = data.isAudioPlaying;
                                 isAudioPaused = data.isAudioPaused || false;
@@ -2774,7 +2769,7 @@
                             document.getElementById('levelTransitionModal').classList.remove('active');
                             gameOver = false;
                             gameActive = true;
-                            selectedPatient = null; // Снимаем выделение при загрузке
+                            selectedPatient = null;
                             document.getElementById('diagnosisDisplay').innerHTML = '🔍 наведи на пациента';
                             
                             renderPsychSelection();
@@ -2824,7 +2819,7 @@
                         isPaused = !isPaused;
                         statusMessage = isPaused ? '⏸️ ПАУЗА' : '▶️ Продолжение';
                         updateUI();
-                        renderDrugPanel(); // обновляем панель, чтобы кнопки заблокировались
+                        renderDrugPanel();
                     }
                 }
                 if (e.key === 'Enter') {
@@ -2905,16 +2900,16 @@
 
             document.getElementById('restartBtn').addEventListener('click', function() {
                 if (selectedDoc && currentLevel) { 
-                    isPaused = false; // снимаем паузу при перезапуске
-                    startMusic(); // музыка начинается заново
+                    isPaused = false;
+                    startMusic();
                     initGameWithSettings(selectedDoc, currentLevel); 
                     updateUI(); 
                     renderDrugPanel(); 
                 } else { location.reload(); }
             });
+            document.getElementById('hireOrderlyBtn2').addEventListener('click', hireOrderly2);
             document.getElementById('hireNurseBtn').addEventListener('click', hireNurse);
             document.getElementById('hireOrderlyBtn').addEventListener('click', hireOrderly);
-            document.getElementById('hireOrderlyBtn2').addEventListener('click', hireOrderly2);
 
             const bookModal = document.getElementById('bookModal');
             document.getElementById('bookBtnTop').addEventListener('click', function() { bookModal.classList.add('active'); });
