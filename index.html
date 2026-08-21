@@ -5,6 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Психиатр</title>
     <style>
+
+/* Добавьте это в стили, чтобы убрать обводку при выделении */
+button:focus,
+button:focus-visible {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Для всех интерактивных элементов */
+button,
+.book-btn-top,
+.tech-btn-top,
+.info-btn-top,
+.save-btn-top,
+.load-btn-top,
+.sel-card,
+.sel-level,
+.drug-pill,
+.action-btn,
+.go-btn,
+.lt-btn,
+.sel-btn {
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Для всех элементов, которые могут получать фокус */
+*:focus {
+    outline: none;
+}
+
+/* Убираем обводку у кнопок при фокусе через клавиатуру */
+button:focus-visible {
+    outline: 0px solid #4a3a2a;
+    outline-offset: 0px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
         html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; background: #1a1612; font-family: 'Georgia', 'Times New Roman', serif; display: flex; justify-content: center; align-items: center; }
         #gameScaler { position: relative; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; background: #1a1612; }
