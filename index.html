@@ -775,8 +775,20 @@
                 const availableDrugs = getAvailableDrugsForLevel(currentLevel);
                 const drugsToRestock = availableDrugs.filter(drug => drugInventory[drug] !== undefined);
                 if (drugsToRestock.length === 0) return;
-                const randomIndex = Math.floor(Math.random() * drugsToRestock.length);
-                const drugName = drugsToRestock[randomIndex];
+                
+                // Ускоренный приток для флуоксетина при изученном СИОЗС
+                let ssriBoostActive = researchedTechs.includes('tech_ssri');
+                let ssriDrug = 'флуоксетин';
+                let ssriRestockChance = ssriBoostActive ? 0.5 : 0.2; // увеличенный шанс появления флуоксетина
+                
+                let drugName;
+                if (ssriBoostActive && Math.random() < ssriRestockChance && availableDrugs.includes(ssriDrug)) {
+                    drugName = ssriDrug;
+                } else {
+                    const randomIndex = Math.floor(Math.random() * drugsToRestock.length);
+                    drugName = drugsToRestock[randomIndex];
+                }
+                
                 drugInventory[drugName] = (drugInventory[drugName] || 0) + 1;
                 statusMessage = `💊 +1 ${drugName} в аптеке (автопополнение)`;
                 updateUI();
@@ -1031,7 +1043,10 @@
                     case 'psychoanalysis_boost': techEffects.psychoanalysisBoost = (techEffects.psychoanalysisBoost || 0) + tech.value; break;
                     case 'mastery_boost': techEffects.masteryBoost = (techEffects.masteryBoost || 0) + tech.value; break;
                     case 'staff_boost': techEffects.staffBoost = (techEffects.staffBoost || 0) + tech.value; break;
-                    case 'ssri_boost': techEffects.ssriBoost = (techEffects.ssriBoost || 0) + tech.value; break;
+                    case 'ssri_boost': 
+                        techEffects.ssriBoost = (techEffects.ssriBoost || 0) + tech.value; 
+                        techEffects.ssriRestockBoost = 0.3; // ускорение притока на 30%
+                        break;
                     case 'wechsler_boost': techEffects.wechslerBoost = (techEffects.wechslerBoost || 0) + tech.value; break;
                     case 'dopamine_boost': techEffects.dopamineBoost = (techEffects.dopamineBoost || 0) + tech.value; break;
                     case 'polypharmacy_boost': techEffects.polypharmacyBoost = (techEffects.polypharmacyBoost || 0) + tech.value; break;
@@ -2286,9 +2301,10 @@
                     frameCounter = 0;
                     spawnTimer++;
                     const activeCount = patients.filter(p => p.state !== 'healed').length;
-                    // Уменьшаем спавн пациентов на 2
+                    // Ускоренный спавн в 2 раза (уменьшаем spawnTimer порог)
                     const adjustedMaxPatients = Math.max(2, maxPatients - 2);
-                    if (spawnTimer >= spawnInterval && activeCount < adjustedMaxPatients && !levelCompleted && !gameOver) {
+                    // Спавн происходит каждые spawnInterval/2 кадров
+                    if (spawnTimer >= spawnInterval / 2 && activeCount < adjustedMaxPatients && !levelCompleted && !gameOver) {
                         const newPatient = createPatient();
                         patients.push(newPatient);
                         spawnTimer = 0;
