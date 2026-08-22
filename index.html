@@ -9,18 +9,9 @@
 
 
 
-
-
-
-
-
-
-
 .staff-panel.hidden-staff-panel { 
     display: none !important; 
 }
-
-
 
 
 
@@ -185,8 +176,7 @@
 
 
 
-.bottom-panel{height:130px !important;}
-
+.bottom-panel{margin-top:20px !important;}
 
 
 
@@ -217,6 +207,7 @@
                         <div class="sel-levels" id="levelGrid"></div>
                         <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
                             <button class="sel-btn sel-back" id="backToPsychBtn">◀ НАЗАД</button>
+                            <button class="sel-btn sel-back" id="loadLevelBtn" style="background:#6a7a5a; border-bottom-color:#4a5a3a;">📂 ЗАГРУЗИТЬ УРОВЕНЬ</button>
                         </div>
                         <div class="sel-hint">Нажмите на больницу (уровень), чтобы начать игру</div>
                     </div>
@@ -424,11 +415,21 @@
                     staffLimits: { orderlies2: 0, nurses: 0, orderlies: 0 },
                     theme: 'suhanova' 
                 },
+                // --- НОВЫЙ УРОВЕНЬ: Алексеева (Расстройства пищевого поведения) ---
+                { 
+                    id: 'alekseeva', name: 'Алексеева', desc: 'Расстройства пищевого поведения', 
+                    fightChance: 0.006, spawnInterval: 11, drugPrice: 7, drugLimit: 28, 
+                    task: 'Вылечить 4 пациентов', taskTarget: 4, healthRange: [55, 85], 
+                    unlocked: false, requiredLevel: 'suhanova', 
+                    availableDrugs: ['глицин', 'флуоксетин', 'кветиапин'], diseaseCount: 10, 
+                    staffLimits: { orderlies2: 0, nurses: 1, orderlies: 0 },
+                    theme: 'alekseeva' 
+                },
                 { 
                     id: 'korsakov', name: 'Корсаков', desc: 'Психозы и деменции', 
                     fightChance: 0.008, spawnInterval: 11, drugPrice: 7, drugLimit: 28, 
                     task: 'Вылечить 5 пациентов', taskTarget: 5, healthRange: [55, 85], 
-                    unlocked: false, requiredLevel: 'suhanova', 
+                    unlocked: false, requiredLevel: 'alekseeva', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин'], diseaseCount: 12, 
                     staffLimits: { orderlies2: 3, nurses: 0, orderlies: 0 },
                     theme: 'korsakov' 
@@ -584,8 +585,9 @@
             const ALL_DRUGS = [
                 { name: 'глицин', color: '#90a4ae', sideEffect: 'минимальные' },
                 { name: 'флуоксетин', color: '#ce93d8', sideEffect: 'бессонница, тревожность' },
-                { name: 'аминазин', color: '#e57373', sideEffect: 'сонливость, сухость во рту' },
+                // Меняем местами: теперь кветиапин на 3-й позиции, аминазин на 4-й
                 { name: 'кветиапин', color: '#4dd0e1', sideEffect: 'сонливость, сухость во рту' },
+                { name: 'аминазин', color: '#e57373', sideEffect: 'сонливость, сухость во рту' },
                 { name: 'оланзапин', color: '#81c784', sideEffect: 'увеличение веса, седация' },
                 { name: 'галоперидол', color: '#64b5f6', sideEffect: 'экстрапирамидные расстройства' },
                 { name: 'рисперидон', color: '#ef9a9a', sideEffect: 'увеличение пролактина' },
@@ -597,8 +599,8 @@
             const DRUG_RARITY = {
                 'глицин': 1,
                 'флуоксетин': 1,
-                'аминазин': 1,
                 'кветиапин': 1,
+                'аминазин': 1,
                 'оланзапин': 2,
                 'галоперидол': 2,
                 'рисперидон': 2,
@@ -670,6 +672,7 @@
             const psychGrid = document.getElementById('psychGrid');
             const levelGrid = document.getElementById('levelGrid');
             const backToPsychBtn = document.getElementById('backToPsychBtn');
+            const loadLevelBtn = document.getElementById('loadLevelBtn');
             const stepPsych = document.getElementById('stepPsych');
             const stepLevel = document.getElementById('stepLevel');
             const selectedDocDisplay = document.getElementById('selectedDocDisplay');
@@ -713,6 +716,7 @@
             const LEVEL_THEMES = {
                 'bechtereva': { bg: ['#4a7a5a', '#3a5a4a'], border: '#3a5a2a', bedColor: '#4a6a3a', decor: 'flowers' },
                 'suhanova': { bg: ['#c9b89a', '#b09a7a'], border: '#8a7a5a', bedColor: '#6a5a4a', decor: 'wood' },
+                'alekseeva': { bg: ['#a8b5a0', '#8a9a82'], border: '#6a7a62', bedColor: '#5a6a52', decor: 'alekseeva' },
                 'korsakov': { bg: ['#3a3a3a', '#2a2a2a'], border: '#5a4a3a', bedColor: '#4a3a2a', decor: 'dark' },
                 'balinsky': { bg: ['#8a7a6a', '#6a5a4a'], border: '#6a5a4a', bedColor: '#5a4a3a', decor: 'warm' },
                 'gannushkina': { bg: ['#7a8a7a', '#5a6a5a'], border: '#5a6a5a', bedColor: '#4a5a3a', decor: 'tiles' },
@@ -768,6 +772,7 @@
                 let base = 20;
                 const name = level.name;
                 if (name.includes('Бехтерева')) base = 35;
+                else if (name.includes('Алексеева')) base = 28;
                 else if (name.includes('Кащенко')) base = 18;
                 else if (name.includes('Скворцова-Степанова')) base = 10;
                 else if (name.includes('Снежневский')) base = 12;
@@ -1394,6 +1399,70 @@
             function onBackToPsych() {
                 showStep('psych');
                 renderPsychSelection();
+            }
+
+            // === ФУНКЦИЯ ЗАГРУЗКИ УРОВНЯ ИЗ МЕНЮ ===
+            function loadLevelFromMenu() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.psy';
+                input.onchange = function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        try {
+                            const data = JSON.parse(ev.target.result);
+                            if (!data.levelId) {
+                                statusMessage = '❌ Неверный формат файла!';
+                                updateUI();
+                                return;
+                            }
+                            const level = LEVELS.find(l => l.id === data.levelId);
+                            if (!level) {
+                                statusMessage = '❌ Уровень не найден!';
+                                updateUI();
+                                return;
+                            }
+                            
+                            // Разблокируем все уровни до загруженного
+                            const levelIndex = LEVELS.indexOf(level);
+                            for (let i = 0; i <= levelIndex; i++) {
+                                const l = LEVELS[i];
+                                l.unlocked = true;
+                                if (!unlockedLevels.includes(l.id)) {
+                                    unlockedLevels.push(l.id);
+                                }
+                            }
+                            
+                            // Помечаем пройденными все уровни до загруженного
+                            for (let i = 0; i < levelIndex; i++) {
+                                const l = LEVELS[i];
+                                if (!completedLevels[l.id]) {
+                                    completedLevels[l.id] = true;
+                                }
+                                l.unlocked = true;
+                            }
+                            level.unlocked = true;
+                            
+                            // Обновляем отображение
+                            renderLevelSelection();
+                            
+                            // Выбираем загруженный уровень
+                            selectedLevelIndex = levelIndex;
+                            renderLevelSelection();
+                            
+                            statusMessage = '📂 Уровень "' + level.name + '" загружен! Все предыдущие уровни разблокированы.';
+                            updateUI();
+                        } catch (err) {
+                            statusMessage = '❌ Ошибка загрузки: ' + err.message;
+                            updateUI();
+                            console.error(err);
+                        }
+                    };
+                    reader.readAsText(file);
+                };
+                input.click();
             }
 
             // === CANVAS И ИГРОВОЙ МИР ===
@@ -2229,6 +2298,18 @@
                             ctx.fillStyle = '#81c784'; ctx.beginPath(); ctx.arc(x + 22, y - 28, 2, 0, Math.PI * 2); ctx.fill(); 
                         }
                         break;
+                    case 'alekseeva':
+                        for (let i = 0; i < 4; i++) {
+                            const x = 100 + i * 180, y = 425;
+                            ctx.fillStyle = '#7a8a72'; ctx.beginPath(); ctx.roundRect(x - 15, y - 5, 30, 16, 4); ctx.fill();
+                            ctx.fillStyle = '#8a9a82'; ctx.beginPath(); ctx.roundRect(x - 10, y - 14, 20, 10, 3); ctx.fill();
+                            ctx.fillStyle = '#6a7a62'; ctx.font = '16px "Georgia"'; ctx.textAlign = 'center';
+                            ctx.fillText('🍎', x, y - 16);
+                            ctx.fillStyle = '#9aaa92'; 
+                            ctx.beginPath(); ctx.arc(x + 12, y - 22, 3, 0, Math.PI * 2); ctx.fill();
+                            ctx.beginPath(); ctx.arc(x - 12, y - 22, 3, 0, Math.PI * 2); ctx.fill();
+                        }
+                        break;
                     case 'wood':
                         for (let i = 0; i < 4; i++) {
                             const x = 100 + i * 180, y = 430;
@@ -2872,6 +2953,14 @@
                         renderDrugPanel();
                     }
                 }
+                // Переход на следующий уровень по Enter (если модалка активна)
+                if (e.key === 'Enter') {
+                    const levelModal = document.getElementById('levelTransitionModal');
+                    if (levelModal.classList.contains('active') && nextLevelData) {
+                        e.preventDefault();
+                        goToNextLevel();
+                    }
+                }
                 if (e.key === 'Enter') {
                     if (!selectionScreen.classList.contains('hidden')) {
                         if (stepPsych.classList.contains('active')) {
@@ -3023,6 +3112,9 @@
             // === КНОПКИ СОХРАНЕНИЯ/ЗАГРУЗКИ ===
             document.getElementById('saveBtnTop').addEventListener('click', saveGame);
             document.getElementById('loadBtnTop').addEventListener('click', loadGame);
+
+            // === КНОПКА ЗАГРУЗКИ УРОВНЯ ИЗ МЕНЮ ===
+            loadLevelBtn.addEventListener('click', loadLevelFromMenu);
 
             // === INIT SELECTION ===
             renderPsychSelection();
