@@ -3701,5 +3701,14 @@ button:focus,
 
         })();
     </script>
+
+   <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/Psychiatrist/sw.js')
+      .then(() => console.log('SW зарегистрирован'));
+  }
+</script>
+
+   
 </body>
 </html>
