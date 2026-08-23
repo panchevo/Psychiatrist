@@ -2,24 +2,223 @@
 <html lang="ru">
 <head>
    <link rel="icon" href="icon.ico">
-
-
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Психиатр</title>
     <style>
 
-
-
-
-.staff-panel.hidden-staff-panel { 
-    display: none !important; 
+button:focus-visible, 
+button:focus, 
+.dialog-btn:focus-visible,
+.dialog-btn:focus,
+.menu-btn:focus-visible,
+.menu-btn:focus,
+.sel-btn:focus-visible,
+.sel-btn:focus,
+.action-btn:focus-visible,
+.action-btn:focus,
+.go-btn:focus-visible,
+.go-btn:focus,
+.lt-btn:focus-visible,
+.lt-btn:focus {
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /* --- Стили для диалоговых окон (замена alert) --- */
+        .game-dialog-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.75);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+        .game-dialog-overlay.active {
+            display: flex;
+        }
+        .game-dialog-box {
+            background: #cbb99e;
+            border: 6px solid #8a7a5a;
+            border-radius: 20px;
+            padding: 28px 32px;
+            max-width: 480px;
+            width: 92%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9), inset 0 0 0 2px #e1cfb6;
+            color: #2d2417;
+            text-align: center;
+            font-family: 'Georgia', serif;
+        }
+        .game-dialog-box .dialog-title {
+            font-size: 1.8rem;
+            color: #1a1612;
+            border-bottom: 3px solid #8a7a5a;
+            padding-bottom: 10px;
+            margin-bottom: 16px;
+            font-weight: bold;
+        }
+        .game-dialog-box .dialog-message {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #2d2417;
+        }
+        .game-dialog-box .dialog-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .game-dialog-box .dialog-btn {
+            background: #b09a7a;
+            border: none;
+            border-bottom: 4px solid #6a5a42;
+            color: #1a1612;
+            font-weight: bold;
+            padding: 8px 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.07s;
+            text-shadow: 0 1px 0 #dac9b0;
+            font-family: 'Georgia', serif;
+            box-shadow: 0 4px 0 #4a3a2a;
+            min-width: 80px;
+        }
+        .game-dialog-box .dialog-btn:active {
+            transform: translateY(2px);
+            border-bottom-width: 2px;
+        }
+        .game-dialog-box .dialog-btn.danger {
+            background: #8a5a4a;
+            border-bottom-color: #4a2a1a;
+            color: #fff;
+        }
+        .game-dialog-box .dialog-btn.secondary {
+            background: #8a7a6a;
+            border-bottom-color: #5a4a3a;
+        }
+        .game-dialog-box .dialog-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: translateY(2px);
+            border-bottom-width: 2px;
+        }
+        .game-dialog-box input[type="file"] {
+            display: none;
+        }
+        /* --- Убираем браузерные полосы прокрутки, оставляя игровые --- */
+        html, body {
+            overflow: hidden !important;
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+        }
+        /* Оставляем прокрутку только в модалках с классом .scrollable-modal */
+        .scrollable-modal .book-content,
+        .scrollable-modal .tech-tree-content,
+        .scrollable-modal .info-content,
+        .scrollable-modal .menu-content,
+        .scrollable-modal .sel-container {
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #a28d70 #cbb99e;
+        }
+        .scrollable-modal .book-content::-webkit-scrollbar,
+        .scrollable-modal .tech-tree-content::-webkit-scrollbar,
+        .scrollable-modal .info-content::-webkit-scrollbar,
+        .scrollable-modal .menu-content::-webkit-scrollbar,
+        .scrollable-modal .sel-container::-webkit-scrollbar {
+            width: 5px;
+        }
+        .scrollable-modal .book-content::-webkit-scrollbar-track,
+        .scrollable-modal .tech-tree-content::-webkit-scrollbar-track,
+        .scrollable-modal .info-content::-webkit-scrollbar-track,
+        .scrollable-modal .menu-content::-webkit-scrollbar-track,
+        .scrollable-modal .sel-container::-webkit-scrollbar-track {
+            background: #cbb99e;
+        }
+        .scrollable-modal .book-content::-webkit-scrollbar-thumb,
+        .scrollable-modal .tech-tree-content::-webkit-scrollbar-thumb,
+        .scrollable-modal .info-content::-webkit-scrollbar-thumb,
+        .scrollable-modal .menu-content::-webkit-scrollbar-thumb,
+        .scrollable-modal .sel-container::-webkit-scrollbar-thumb {
+            background: #a28d70;
+            border-radius: 4px;
+        }
+        /* Убираем скролл у всех остальных блоков */
+        * {
+            scrollbar-width: none !important;
+        }
+        *::-webkit-scrollbar {
+            display: none !important;
+        }
+        /* Но для модалок с прокруткой возвращаем */
+        .scrollable-modal * {
+            scrollbar-width: thin !important;
+        }
+        .scrollable-modal *::-webkit-scrollbar {
+            display: block !important;
+        }
+        .scrollable-modal .book-content,
+        .scrollable-modal .tech-tree-content,
+        .scrollable-modal .info-content,
+        .scrollable-modal .menu-content,
+        .scrollable-modal .sel-container {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        /* Адаптация под мобильные */
+        @media (max-width: 700px) {
+            .game-dialog-box {
+                padding: 20px 16px;
+            }
+            .game-dialog-box .dialog-title {
+                font-size: 1.4rem;
+            }
+            .game-dialog-box .dialog-message {
+                font-size: 1rem;
+            }
+            .game-dialog-box .dialog-btn {
+                padding: 6px 16px;
+                font-size: 0.9rem;
+                min-width: 60px;
+            }
+        }
+        /* Остальные стили из оригинального файла (сохранены) */
+        .staff-panel.hidden-staff-panel { 
+            display: none !important; 
+        }
         * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
         html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; background: #1a1612; font-family: 'Georgia', 'Times New Roman', serif; display: flex; justify-content: center; align-items: center; }
         #gameScaler { position: relative; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; background: #1a1612; }
@@ -176,17 +375,29 @@
         .level-transition-content .lt-btn.lt-btn-success { background: #4a7a3a; border-bottom-color: #2a4a1a; color: #fff; text-shadow: none; }
         @media (max-width: 700px) { .game-wrapper { flex-direction: column; align-items: center; max-height: none; } .left-panel { flex-direction: row; flex-wrap: wrap; width: 100%; min-width: auto; justify-content: center; gap: 4px; align-self: stretch; max-height: 100px; overflow-y: auto; } .left-panel .drug-pill { flex-direction: row; gap: 6px; padding: 4px 12px; min-height: 32px; width: auto; flex: 0 1 auto; font-size: 0.65rem; } .left-panel .color-dot { width: 20px; height: 20px; margin-bottom: 0; } .bottom-panel { flex-direction: column; align-items: stretch; gap: 4px; font-size: 0.8rem;} .bottom-left, .bottom-right { justify-content: center; flex-wrap: wrap; } .status-msg { min-width: auto; font-size: 0.75rem; } .game-container { min-width: 200px; } .book-entry { font-size: 0.8rem; } .book-entry .disease-name { min-width: 120px; } .tech-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); } .tech-tree-title { font-size: 1.3rem; } .gameover-content { padding: 24px 16px; } .gameover-content .go-title { font-size: 2rem; } .level-transition-content { padding: 24px 20px; } .level-transition-content .lt-title { font-size: 2rem; } .sel-levels { grid-template-columns: 1fr; } }
         .staff-item.hidden-staff { display: none !important; }
-
-
-
-.bottom-panel{margin-top:20px !important;}
-
-
-
-
-
-
-
+        .menu-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 6000; justify-content: center; align-items: center; backdrop-filter: blur(8px); }
+        .menu-modal.active { display: flex; }
+        .menu-content { background: #cbb99e; border: 6px solid #4a3a2a; border-radius: 24px; padding: 30px 36px; max-width: 700px; width: 95%; max-height: 90vh; overflow-y: auto; color: #2d2417; box-shadow: 0 0 60px rgba(0,0,0,0.6); }
+        .menu-title { font-size: 2.4rem; text-align: center; color: #1a1612; border-bottom: 3px solid #8a7a5a; padding-bottom: 12px; margin-bottom: 16px; font-family: 'Georgia', serif; }
+        .menu-buttons { display: flex; flex-direction: column; gap: 10px; margin: 18px 0; }
+        .menu-btn { background: #b09a7a; border: none; border-bottom: 4px solid #6a5a42; color: #1a1612; font-weight: bold; padding: 12px 20px; border-radius: 30px; cursor: pointer; font-size: 1.1rem; transition: 0.07s; text-shadow: 0 1px 0 #dac9b0; font-family: 'Georgia', serif; text-align: center; }
+        .menu-btn:active { transform: translateY(2px); border-bottom-width: 2px; }
+        .menu-btn.danger { background: #8a5a4a; border-bottom-color: #4a2a1a; color: #fff; }
+        .menu-btn.secondary { background: #8a7a6a; border-bottom-color: #5a4a3a; }
+        .menu-close-btn { background: #b09a7a; border: none; border-bottom: 4px solid #6a5a42; color: #1a1612; font-weight: bold; padding: 10px 40px; border-radius: 30px; font-size: 1rem; cursor: pointer; display: block; margin: 12px auto 0; font-family: 'Georgia', serif; }
+        .menu-close-btn:active { transform: translateY(2px); border-bottom-width: 2px; }
+        .menu-psychopedia { background: #dac9b0; border-radius: 12px; padding: 16px; margin: 12px 0; border: 2px solid #8a7a5a; max-height: 300px; overflow-y: auto; font-size: 0.9rem; line-height: 1.6; }
+        .menu-psychopedia h3 { color: #1a1612; margin: 8px 0 4px; border-bottom: 1px solid #b09a7a; }
+        .menu-psychopedia p { margin: 4px 0; }
+        .menu-psychopedia .entry { padding: 4px 0; border-bottom: 1px solid #b09a7a; }
+        .menu-psychopedia .entry:last-child { border-bottom: none; }
+        .menu-psychopedia .drug-entry { display: flex; gap: 8px; align-items: center; }
+        .menu-psychopedia .drug-entry .dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid #5a4a32; flex-shrink: 0; }
+        .menu-psychopedia .disease-entry { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+        .menu-psychopedia .disease-entry .code { font-weight: bold; min-width: 60px; }
+        .menu-psychopedia .disease-entry .name { font-weight: bold; }
+        .menu-psychopedia .disease-entry .severity-badge { font-size: 0.7rem; padding: 1px 8px; border-radius: 10px; background: #b09a7a; }
+        .bottom-panel{margin-top:0px !important;}
     </style>
 </head>
 <body>
@@ -232,6 +443,7 @@
                             <button class="info-btn-top" id="infoBtnTop">❓</button>
                             <button class="save-btn-top" id="saveBtnTop">💾</button>
                             <button class="load-btn-top" id="loadBtnTop">📂</button>
+                            <button class="menu-btn-top" id="menuBtnTop" style="background:#6a5a4a; border-bottom-color:#3a2a1a; color:#fff;">☰ Меню</button>
                             <div class="top-score-bar"><span class="psi-icon">⚜️</span><span class="score-value" id="topScoreValue">0</span><span class="score-label">очков</span></div>
                             <div class="tech-points" id="techPointsDisplay">🧪 0</div>
                         </div>
@@ -333,11 +545,91 @@
                     </div>
                 </div>
             </div>
+
+            <!-- ГЛАВНОЕ МЕНЮ -->
+            <div class="menu-modal" id="menuModal">
+                <div class="menu-content">
+                    <div class="menu-title">☰ ГЛАВНОЕ МЕНЮ</div>
+                    <div class="menu-buttons">
+                        <button class="menu-btn" id="menuPsychopediaBtn">📖 Психопедия</button>
+                        <button class="menu-btn" id="menuSaveBtn">💾 Сохранить игру</button>
+                        <button class="menu-btn" id="menuLoadBtn">📂 Загрузить игру</button>
+                        <button class="menu-btn" id="menuRestartBtn">🔄 В начало</button>
+                        <button class="menu-btn danger" id="menuExitBtn">🚪 Выйти</button>
+                        <button class="menu-btn secondary" id="menuAuthorBtn">👤 Об авторе</button>
+                    </div>
+                    <div id="menuPsychopediaBlock" style="display:none;">
+                        <div class="menu-psychopedia" id="menuPsychopediaContent"></div>
+                    </div>
+                    <button class="menu-close-btn" id="menuCloseBtn">Закрыть меню</button>
+                </div>
+            </div>
+
+            <!-- === ДИАЛОГОВОЕ ОКНО (замена alert) === -->
+            <div class="game-dialog-overlay" id="gameDialog">
+                <div class="game-dialog-box">
+                    <div class="dialog-title" id="dialogTitle">Подтверждение</div>
+                    <div class="dialog-message" id="dialogMessage">Вы уверены?</div>
+                    <div class="dialog-buttons" id="dialogButtons">
+                        <button class="dialog-btn" id="dialogOkBtn">OK</button>
+                        <button class="dialog-btn danger" id="dialogCancelBtn">Отмена</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <script>
         (function() {
+            // === ДИАЛОГОВОЕ ОКНО (замена alert/confirm) ===
+            const dialogOverlay = document.getElementById('gameDialog');
+            const dialogTitle = document.getElementById('dialogTitle');
+            const dialogMessage = document.getElementById('dialogMessage');
+            const dialogButtons = document.getElementById('dialogButtons');
+            let dialogResolve = null;
+
+            function showDialog(title, message, buttons = ['OK']) {
+                return new Promise((resolve) => {
+                    dialogTitle.textContent = title || 'Подтверждение';
+                    dialogMessage.textContent = message || '';
+                    dialogOverlay.classList.add('active');
+                    
+                    // Настраиваем кнопки
+                    const btns = dialogButtons;
+                    btns.innerHTML = '';
+                    buttons.forEach((label, index) => {
+                        const btn = document.createElement('button');
+                        btn.className = 'dialog-btn';
+                        if (label === 'Отмена' || label === 'Нет') btn.classList.add('danger');
+                        if (label === 'OK' || label === 'Да') btn.classList.add('secondary');
+                        btn.textContent = label;
+                        btn.addEventListener('click', function() {
+                            dialogOverlay.classList.remove('active');
+                            resolve(index);
+                        });
+                        btns.appendChild(btn);
+                    });
+                    
+                    // Закрытие по клику вне
+                    dialogOverlay.onclick = function(e) {
+                        if (e.target === dialogOverlay) {
+                            dialogOverlay.classList.remove('active');
+                            resolve(-1);
+                        }
+                    };
+                });
+            }
+
+            // Переопределяем alert и confirm
+            window.alert = function(msg) {
+                showDialog('Внимание', msg, ['OK']);
+            };
+            window.confirm = function(msg) {
+                return showDialog('Подтверждение', msg, ['Да', 'Нет']).then(res => res === 0);
+            };
+
+            // ===== ОСТАЛЬНОЙ КОД (полностью из оригинального файла, но с заменой alert) =====
             // === AUDIO ===
             const audio = new Audio('music.mp3');
             audio.loop = true;
@@ -351,6 +643,24 @@
                     isAudioPlaying = true;
                     isAudioPaused = false;
                 }).catch(err => console.warn('Audio play failed:', err));
+            }
+
+            function pauseMusic() {
+                if (isAudioPlaying && !isAudioPaused) {
+                    audio.pause();
+                    isAudioPaused = true;
+                }
+            }
+
+            function resumeMusic() {
+                if (isAudioPlaying && isAudioPaused) {
+                    audio.play().then(() => {
+                        isAudioPaused = false;
+                    }).catch(err => console.warn('Audio resume failed:', err));
+                }
+                if (!isAudioPlaying) {
+                    startMusic();
+                }
             }
 
             // === SCALING ===
@@ -405,7 +715,6 @@
                     staffLimits: { orderlies2: 0, nurses: 0, orderlies: 0 },
                     theme: 'suhanova' 
                 },
-                // --- НОВЫЙ УРОВЕНЬ: Алексеева (Расстройства пищевого поведения) ---
                 { 
                     id: 'alekseeva', name: 'Алексеева', desc: 'Расстройства пищевого поведения', 
                     fightChance: 0.006, spawnInterval: 11, drugPrice: 7, drugLimit: 28, 
@@ -575,7 +884,6 @@
             const ALL_DRUGS = [
                 { name: 'глицин', color: '#90a4ae', sideEffect: 'минимальные' },
                 { name: 'флуоксетин', color: '#ce93d8', sideEffect: 'бессонница, тревожность' },
-                // Меняем местами: теперь кветиапин на 3-й позиции, аминазин на 4-й
                 { name: 'кветиапин', color: '#4dd0e1', sideEffect: 'сонливость, сухость во рту' },
                 { name: 'аминазин', color: '#e57373', sideEffect: 'сонливость, сухость во рту' },
                 { name: 'оланзапин', color: '#81c784', sideEffect: 'увеличение веса, седация' },
@@ -981,10 +1289,8 @@
                 
                 updateStaffPanel();
                 
-                // ⭐ СБРАСЫВАЕМ ПАУЗУ ПРИ ПЕРЕХОДЕ НА СЛЕДУЮЩИЙ УРОВЕНЬ
                 isPaused = false;
                 
-                // ⭐ ВКЛЮЧАЕМ МУЗЫКУ
                 if (isAudioPlaying && isAudioPaused) {
                     audio.play().then(() => {
                         isAudioPaused = false;
@@ -1233,36 +1539,30 @@
             }
 
             function updateStaffPanel() {
-    const staffPanel = document.getElementById('staffPanel');
+                const staffPanel = document.getElementById('staffPanel');
                 const nurseItem = document.getElementById('staffNurse');
                 const orderlyItem = document.getElementById('staffOrderly');
                 const orderly2Item = document.getElementById('staffOrderly2');
                 
- const hasAnyStaff = maxOrderlies2 > 0 || maxNurses > 0 || maxOrderlies > 0;
-    
-    // Показываем или скрываем всю панель
-    if (hasAnyStaff) {
-        staffPanel.classList.remove('hidden-staff-panel');
-    } else {
-        staffPanel.classList.add('hidden-staff-panel');
-    }
+                const hasAnyStaff = maxOrderlies2 > 0 || maxNurses > 0 || maxOrderlies > 0;
+                if (hasAnyStaff) {
+                    staffPanel.classList.remove('hidden-staff-panel');
+                } else {
+                    staffPanel.classList.add('hidden-staff-panel');
+                }
 
-
-                // Панель санитаров
                 if (maxOrderlies2 > 0) {
                     orderly2Item.classList.remove('hidden-staff');
                 } else {
                     orderly2Item.classList.add('hidden-staff');
                 }
                 
-                // Панель медсестер
                 if (maxNurses > 0) {
                     nurseItem.classList.remove('hidden-staff');
                 } else {
                     nurseItem.classList.add('hidden-staff');
                 }
                 
-                // Панель ординаторов
                 if (maxOrderlies > 0) {
                     orderlyItem.classList.remove('hidden-staff');
                 } else {
@@ -1428,7 +1728,6 @@
                                 return;
                             }
                             
-                            // Разблокируем все уровни до загруженного
                             const levelIndex = LEVELS.indexOf(level);
                             for (let i = 0; i <= levelIndex; i++) {
                                 const l = LEVELS[i];
@@ -1438,7 +1737,6 @@
                                 }
                             }
                             
-                            // Помечаем пройденными все уровни до загруженного
                             for (let i = 0; i < levelIndex; i++) {
                                 const l = LEVELS[i];
                                 if (!completedLevels[l.id]) {
@@ -1448,10 +1746,8 @@
                             }
                             level.unlocked = true;
                             
-                            // Обновляем отображение
                             renderLevelSelection();
                             
-                            // Выбираем загруженный уровень
                             selectedLevelIndex = levelIndex;
                             renderLevelSelection();
                             
@@ -1920,7 +2216,6 @@
                 hideDrugTooltip();
                 gameOver = false; gameActive = true;
                 
-                // ⭐ СБРАСЫВАЕМ ПАУЗУ ПРИ ЗАГРУЗКЕ УРОВНЯ
                 isPaused = false;
                 
                 selectedDoc = doc; currentLevel = level;
@@ -1978,7 +2273,6 @@
                 
                 document.getElementById('gameoverModal').classList.remove('active');
                 
-                // ⭐ ВКЛЮЧАЕМ МУЗЫКУ ПРИ ЗАГРУЗКЕ УРОВНЯ
                 if (isAudioPlaying && isAudioPaused) {
                     audio.play().then(() => {
                         isAudioPaused = false;
@@ -2945,39 +3239,246 @@
                 input.click();
             }
 
+            // === МЕНЮ (НОВОЕ) ===
+            const menuModal = document.getElementById('menuModal');
+            const menuPsychopediaBlock = document.getElementById('menuPsychopediaBlock');
+            const menuPsychopediaContent = document.getElementById('menuPsychopediaContent');
+
+            function toggleMenu(show) {
+                if (show) {
+                    // Закрываем все модалки
+                    document.getElementById('bookModal').classList.remove('active');
+                    document.getElementById('techTreeModal').classList.remove('active');
+                    document.getElementById('infoModal').classList.remove('active');
+                    // Паузим музыку
+                    pauseMusic();
+                    menuModal.classList.add('active');
+                    // Скрываем психопедию при открытии
+                    menuPsychopediaBlock.style.display = 'none';
+                    // Ставим игру на паузу, если она активна
+                    if (gameActive && !gameOver && !pendingLevelTransition) {
+                        isPaused = true;
+                        statusMessage = '⏸️ ПАУЗА (меню)';
+                        updateUI();
+                    }
+                } else {
+                    menuModal.classList.remove('active');
+                    // Снимаем паузу, если игра активна и не окончена
+                    if (gameActive && !gameOver && !pendingLevelTransition) {
+                        isPaused = false;
+                        statusMessage = '▶️ Продолжение';
+                        updateUI();
+                        if (isAudioPlaying && isAudioPaused) {
+                            audio.play().then(() => {
+                                isAudioPaused = false;
+                            }).catch(err => console.warn('Audio resume failed:', err));
+                        }
+                        if (!isAudioPlaying) {
+                            startMusic();
+                        }
+                    } else {
+                        resumeMusic();
+                    }
+                }
+            }
+
+            function renderPsychopedia() {
+                let html = '';
+                
+                // Психиатры
+                html += `<h3>🧠 Психиатры</h3>`;
+                PSYCHIATRISTS.forEach(d => {
+                    html += `<div class="entry"><strong>${d.name}</strong> — ${d.ability} (IQ ${d.iq}, эмпатия ${d.empathy})</div>`;
+                });
+
+                // Уровни
+                html += `<h3>🏥 Уровни (больницы)</h3>`;
+                LEVELS.forEach(l => {
+                    const unlocked = l.unlocked || checkLevelUnlock(l.id);
+                    html += `<div class="entry"><strong>${l.name}</strong> — ${l.desc} (${unlocked ? '🔓 доступен' : '🔒 заблокирован'}), задача: вылечить ${l.taskTarget} пациентов, препаратов: ${l.availableDrugs.join(', ')}</div>`;
+                });
+
+                // Болезни
+                html += `<h3>📋 Болезни (МКБ-10)</h3>`;
+                ALL_DISEASES.forEach(d => {
+                    const sevLabel = getSeverityLabel(d.severity);
+                    html += `<div class="entry disease-entry"><span class="code">${d.code}</span><span class="name">${d.name}</span><span class="severity-badge">тяжесть ${d.severity} (${sevLabel})</span><span>лечится: ${d.treat.join(', ')}</span></div>`;
+                });
+
+                // Препараты
+                html += `<h3>💊 Препараты</h3>`;
+                ALL_DRUGS.forEach(d => {
+                    html += `<div class="entry drug-entry"><span class="dot" style="background:${d.color}"></span><strong>${d.name}</strong> — побочный эффект: ${d.sideEffect}</div>`;
+                });
+
+                // Исследования
+                html += `<h3>🔬 Исследования (технологии)</h3>`;
+                TECH_TREE.forEach(t => {
+                    const status = getTechStatus(t.id);
+                    const statusText = status === 'researched' ? '✅' : (status === 'available' ? '🔓' : '🔒');
+                    html += `<div class="entry"><strong>${statusText} ${t.name}</strong> — ${t.desc} (стоимость ${t.cost}🧪, требует: ${t.prereq.length ? t.prereq.join(', ') : 'нет'})</div>`;
+                });
+
+                // Реальные факты
+                html += `<h3>📖 Реальные факты</h3>`;
+                html += `<p><strong>Психиатрия</strong> — раздел медицины, изучающий психические расстройства. МКБ-10 — международная классификация болезней 10-го пересмотра.</p>`;
+                html += `<p><strong>Зигмунд Фрейд</strong> — основатель психоанализа, исследовал бессознательное.</p>`;
+                html += `<p><strong>Эмиль Крепелин</strong> — создатель первой систематической классификации психических болезней, ввел понятие "dementia praecox" (раннее слабоумие).</p>`;
+                html += `<p><strong>Карл Юнг</strong> — основатель аналитической психологии, ввел понятия архетипов и коллективного бессознательного.</p>`;
+                html += `<p><strong>Аминазин</strong> — первый антипсихотик, открытый в 1950-х, произвел революцию в психиатрии.</p>`;
+                html += `<p><strong>Флуоксетин (Прозак)</strong> — первый СИОЗС, один из самых известных антидепрессантов.</p>`;
+                html += `<p><strong>Галоперидол</strong> — мощный антипсихотик, используется при острых психозах.</p>`;
+                html += `<p><strong>Клозапин</strong> — атипичный антипсихотик, эффективен при резистентной шизофрении, но требует контроля крови из-за риска агранулоцитоза.</p>`;
+
+                menuPsychopediaContent.innerHTML = html;
+            }
+
+            // === Обработчики меню ===
+            document.getElementById('menuBtnTop').addEventListener('click', function() {
+                toggleMenu(true);
+            });
+
+            document.getElementById('menuCloseBtn').addEventListener('click', function() {
+                toggleMenu(false);
+            });
+
+            document.getElementById('menuPsychopediaBtn').addEventListener('click', function() {
+                if (menuPsychopediaBlock.style.display === 'none') {
+                    renderPsychopedia();
+                    menuPsychopediaBlock.style.display = 'block';
+                } else {
+                    menuPsychopediaBlock.style.display = 'none';
+                }
+            });
+
+            document.getElementById('menuSaveBtn').addEventListener('click', function() {
+                saveGame();
+                toggleMenu(false);
+            });
+
+            document.getElementById('menuLoadBtn').addEventListener('click', function() {
+                loadGame();
+                toggleMenu(false);
+            });
+
+            document.getElementById('menuRestartBtn').addEventListener('click', function() {
+                showDialog('В главное меню', 'Вернуться в главное меню? Текущий прогресс будет потерян.', ['Да', 'Нет']).then(res => {
+                    if (res === 0) {
+                        toggleMenu(false);
+                        gameOver = true; gameActive = false; isPaused = false;
+                        if (gameLoopId) { cancelAnimationFrame(gameLoopId); gameLoopId = null; }
+                        gameWrapper.classList.remove('active');
+                        selectionScreen.classList.remove('hidden');
+                        showStep('psych');
+                        renderPsychSelection();
+                        if (isAudioPlaying) {
+                            audio.pause();
+                            isAudioPlaying = false;
+                            isAudioPaused = false;
+                        }
+                        document.getElementById('gameoverModal').classList.remove('active');
+                        document.getElementById('levelTransitionModal').classList.remove('active');
+                    }
+                });
+            });
+
+            document.getElementById('menuExitBtn').addEventListener('click', function() {
+                showDialog('Выход', 'Вы уверены, что хотите выйти?', ['Да', 'Нет']).then(res => {
+                    if (res === 0) {
+                        window.close();
+                    }
+                });
+            });
+
+            document.getElementById('menuAuthorBtn').addEventListener('click', function() {
+                showDialog('Об авторе', '👤 Автор: Панченко М. А.\n📍 Санкт-Петербург, Россия\n💻 Программист\n📧 mercury.nosov@gmail.com', ['OK']);
+            });
+
+            // Закрытие меню по клику вне
+            menuModal.addEventListener('click', function(e) {
+                if (e.target === menuModal) {
+                    toggleMenu(false);
+                }
+            });
+
             // === СОБЫТИЯ ===
             document.addEventListener('keydown', function(e) {
+                // Если открыто диалоговое окно — игнорируем все, кроме Escape (закрывает диалог)
+                if (dialogOverlay.classList.contains('active')) {
+                    if (e.key === 'Escape') {
+                        dialogOverlay.classList.remove('active');
+                        if (dialogResolve) dialogResolve(-1);
+                        e.preventDefault();
+                    }
+                    return;
+                }
+
                 if (e.key === 'Escape') {
+                    // Если открыто меню — закрываем его
+                    if (menuModal.classList.contains('active')) {
+                        toggleMenu(false);
+                        e.preventDefault();
+                        return;
+                    }
+                    // Если открыта модалка — закрываем её и открываем меню
                     const bookModal = document.getElementById('bookModal');
                     const techModal = document.getElementById('techTreeModal');
                     const infoModal = document.getElementById('infoModal');
+                    const ltModal = document.getElementById('levelTransitionModal');
+                    const goModal = document.getElementById('gameoverModal');
+                    
                     if (bookModal.classList.contains('active')) {
                         bookModal.classList.remove('active');
+                        e.preventDefault();
+                        return;
                     }
                     if (techModal.classList.contains('active')) {
                         techModal.classList.remove('active');
+                        e.preventDefault();
+                        return;
                     }
                     if (infoModal.classList.contains('active')) {
                         infoModal.classList.remove('active');
+                        e.preventDefault();
+                        return;
+                    }
+                    if (ltModal.classList.contains('active')) {
+                        ltModal.classList.remove('active');
+                        pendingLevelTransition = false;
+                        nextLevelData = null;
+                        gameActive = true;
+                        if (!gameLoopId) gameLoop();
+                        statusMessage = '⏸️ Остались на уровне ' + (currentLevel ? currentLevel.name : '');
+                        updateUI();
+                        e.preventDefault();
+                        return;
+                    }
+                    if (goModal.classList.contains('active')) {
+                        // Если GameOver, Escape ничего не делает, но можно вернуться в меню через кнопку
+                        e.preventDefault();
+                        return;
+                    }
+                    // Иначе открываем меню, если игра активна или окончена
+                    if (gameActive || gameOver) {
+                        toggleMenu(true);
+                        e.preventDefault();
                     }
                 }
                 if (e.key === ' ' || e.key === 'Space') {
                     e.preventDefault();
+                    // Не обрабатываем пробел, если открыто меню или диалог
+                    if (menuModal.classList.contains('active') || dialogOverlay.classList.contains('active')) return;
                     
-                    // Переключаем паузу игры
                     if (gameActive && !gameOver && !pendingLevelTransition) {
                         isPaused = !isPaused;
                         statusMessage = isPaused ? '⏸️ ПАУЗА' : '▶️ Продолжение';
                         
-                        // Переключаем музыку синхронно с игрой
                         if (isPaused) {
-                            // Если игра на паузе - ставим музыку на паузу
                             if (isAudioPlaying && !isAudioPaused) {
                                 audio.pause();
                                 isAudioPaused = true;
                             }
                         } else {
-                            // Если игра продолжается - включаем музыку
                             if (isAudioPlaying && isAudioPaused) {
                                 audio.play().then(() => {
                                     isAudioPaused = false;
@@ -3015,7 +3516,6 @@
                                 selectedLevel = lvl;
                                 selectionScreen.classList.add('hidden');
                                 gameWrapper.classList.add('active');
-                                // Убеждаемся, что при старте уровня пауза выключена
                                 isPaused = false;
                                 initGameWithSettings(doc, lvl);
                             }
