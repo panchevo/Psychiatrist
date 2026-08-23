@@ -386,9 +386,8 @@ button:focus,
         .menu-btn.secondary { background: #8a7a6a; border-bottom-color: #5a4a3a; }
         .menu-close-btn { background: #b09a7a; border: none; border-bottom: 4px solid #6a5a42; color: #1a1612; font-weight: bold; padding: 10px 40px; border-radius: 30px; font-size: 1rem; cursor: pointer; display: block; margin: 12px auto 0; font-family: 'Georgia', serif; }
         .menu-close-btn:active { transform: translateY(2px); border-bottom-width: 2px; }
-        .menu-psychopedia { background: #dac9b0; border-radius: 12px; padding: 16px; margin: 12px 0; border: 2px solid #8a7a5a; max-height: 300px; overflow-y: auto; font-size: 0.9rem; line-height: 1.6; }
-        .menu-psychopedia h3 { color: #1a1612; margin: 8px 0 4px; border-bottom: 1px solid #b09a7a; }
-        .menu-psychopedia p { margin: 4px 0; }
+        .menu-psychopedia { background: #dac9b0; border-radius: 12px; padding: 16px; margin: 12px 0; border: 2px solid #8a7a5a; max-height: 400px; overflow-y: auto; font-size: 0.9rem; line-height: 1.6; }
+        .menu-psychopedia h3 { color: #1a1612; margin: 10px 0 6px; border-bottom: 1px solid #b09a7a; }
         .menu-psychopedia .entry { padding: 4px 0; border-bottom: 1px solid #b09a7a; }
         .menu-psychopedia .entry:last-child { border-bottom: none; }
         .menu-psychopedia .drug-entry { display: flex; gap: 8px; align-items: center; }
@@ -398,6 +397,13 @@ button:focus,
         .menu-psychopedia .disease-entry .name { font-weight: bold; }
         .menu-psychopedia .disease-entry .severity-badge { font-size: 0.7rem; padding: 1px 8px; border-radius: 10px; background: #b09a7a; }
         .bottom-panel{margin-top:0px !important;}
+        /* Стили для энциклопедии */
+        .encyclopedia-section { margin: 8px 0 12px; padding: 6px 0; border-bottom: 1px solid #a28d70; }
+        .encyclopedia-section:last-child { border-bottom: none; }
+        .encyclopedia-section h4 { color: #1a1612; font-size: 1.05rem; margin: 4px 0 2px; }
+        .encyclopedia-section .item { display: flex; align-items: center; gap: 8px; padding: 3px 0; flex-wrap: wrap; }
+        .encyclopedia-section .item .label { font-weight: bold; color: #2d2417; min-width: 80px; }
+        .encyclopedia-section .item .value { color: #4a3a2a; }
     </style>
 </head>
 <body>
@@ -595,7 +601,6 @@ button:focus,
                     dialogMessage.textContent = message || '';
                     dialogOverlay.classList.add('active');
                     
-                    // Настраиваем кнопки
                     const btns = dialogButtons;
                     btns.innerHTML = '';
                     buttons.forEach((label, index) => {
@@ -611,7 +616,6 @@ button:focus,
                         btns.appendChild(btn);
                     });
                     
-                    // Закрытие по клику вне
                     dialogOverlay.onclick = function(e) {
                         if (e.target === dialogOverlay) {
                             dialogOverlay.classList.remove('active');
@@ -621,7 +625,6 @@ button:focus,
                 });
             }
 
-            // Переопределяем alert и confirm
             window.alert = function(msg) {
                 showDialog('Внимание', msg, ['OK']);
             };
@@ -629,7 +632,7 @@ button:focus,
                 return showDialog('Подтверждение', msg, ['Да', 'Нет']).then(res => res === 0);
             };
 
-            // ===== ОСТАЛЬНОЙ КОД (полностью из оригинального файла, но с заменой alert) =====
+            // ===== ОСТАЛЬНОЙ КОД =====
             // === AUDIO ===
             const audio = new Audio('music.mp3');
             audio.loop = true;
@@ -3246,16 +3249,12 @@ button:focus,
 
             function toggleMenu(show) {
                 if (show) {
-                    // Закрываем все модалки
                     document.getElementById('bookModal').classList.remove('active');
                     document.getElementById('techTreeModal').classList.remove('active');
                     document.getElementById('infoModal').classList.remove('active');
-                    // Паузим музыку
                     pauseMusic();
                     menuModal.classList.add('active');
-                    // Скрываем психопедию при открытии
                     menuPsychopediaBlock.style.display = 'none';
-                    // Ставим игру на паузу, если она активна
                     if (gameActive && !gameOver && !pendingLevelTransition) {
                         isPaused = true;
                         statusMessage = '⏸️ ПАУЗА (меню)';
@@ -3263,7 +3262,6 @@ button:focus,
                     }
                 } else {
                     menuModal.classList.remove('active');
-                    // Снимаем паузу, если игра активна и не окончена
                     if (gameActive && !gameOver && !pendingLevelTransition) {
                         isPaused = false;
                         statusMessage = '▶️ Продолжение';
@@ -3282,53 +3280,87 @@ button:focus,
                 }
             }
 
+            // === НОВАЯ ПСИХОПЕДИЯ (полноценная энциклопедия) ===
             function renderPsychopedia() {
-                let html = '';
-                
-                // Психиатры
-                html += `<h3>🧠 Психиатры</h3>`;
-                PSYCHIATRISTS.forEach(d => {
-                    html += `<div class="entry"><strong>${d.name}</strong> — ${d.ability} (IQ ${d.iq}, эмпатия ${d.empathy})</div>`;
-                });
+                let html = `
+                    <div style="text-align:center; margin-bottom:12px; font-size:1.2rem; font-weight:bold; color:#1a1612; border-bottom:2px solid #8a7a5a; padding-bottom:8px;">📖 ПСИХОПЕДИЯ — энциклопедия игры</div>
+                    <div style="font-size:0.85rem; color:#4a3a2a; margin-bottom:12px; text-align:center;">Справочная информация по всем элементам игры «Психиатр»</div>
+                `;
 
-                // Уровни
-                html += `<h3>🏥 Уровни (больницы)</h3>`;
+                // --- 1. Психиатры ---
+                html += `<div class="encyclopedia-section"><h4>🧠 Психиатры (12)</h4>`;
+                PSYCHIATRISTS.forEach(d => {
+                    html += `<div class="item"><span class="label">${d.name}</span><span class="value">${d.ability} · IQ ${d.iq} · эмпатия ${d.empathy} · скорость ${d.speed.toFixed(2)}</span></div>`;
+                });
+                html += `</div>`;
+
+                // --- 2. Уровни (больницы) ---
+                html += `<div class="encyclopedia-section"><h4>🏥 Уровни (18 больниц)</h4>`;
                 LEVELS.forEach(l => {
                     const unlocked = l.unlocked || checkLevelUnlock(l.id);
-                    html += `<div class="entry"><strong>${l.name}</strong> — ${l.desc} (${unlocked ? '🔓 доступен' : '🔒 заблокирован'}), задача: вылечить ${l.taskTarget} пациентов, препаратов: ${l.availableDrugs.join(', ')}</div>`;
+                    html += `<div class="item"><span class="label">${l.name}</span><span class="value">${l.desc} · ${unlocked ? '🔓 доступен' : '🔒 заблокирован'} · задача: ${l.taskTarget} пациентов · препаратов: ${l.availableDrugs.join(', ')}</span></div>`;
                 });
+                html += `</div>`;
 
-                // Болезни
-                html += `<h3>📋 Болезни (МКБ-10)</h3>`;
+                // --- 3. Болезни (МКБ-10) ---
+                html += `<div class="encyclopedia-section"><h4>📋 Болезни (МКБ-10, ${ALL_DISEASES.length})</h4>`;
                 ALL_DISEASES.forEach(d => {
                     const sevLabel = getSeverityLabel(d.severity);
-                    html += `<div class="entry disease-entry"><span class="code">${d.code}</span><span class="name">${d.name}</span><span class="severity-badge">тяжесть ${d.severity} (${sevLabel})</span><span>лечится: ${d.treat.join(', ')}</span></div>`;
+                    html += `<div class="item disease-entry"><span class="code">${d.code}</span><span class="name">${d.name}</span><span class="severity-badge">тяжесть ${d.severity} (${sevLabel})</span><span class="value">лечится: ${d.treat.join(', ')}</span></div>`;
                 });
+                html += `</div>`;
 
-                // Препараты
-                html += `<h3>💊 Препараты</h3>`;
+                // --- 4. Препараты ---
+                html += `<div class="encyclopedia-section"><h4>💊 Препараты (10)</h4>`;
                 ALL_DRUGS.forEach(d => {
-                    html += `<div class="entry drug-entry"><span class="dot" style="background:${d.color}"></span><strong>${d.name}</strong> — побочный эффект: ${d.sideEffect}</div>`;
+                    html += `<div class="item drug-entry"><span class="dot" style="background:${d.color}; display:inline-block; width:12px; height:12px; border-radius:50%; border:1px solid #5a4a32;"></span><span class="label">${d.name}</span><span class="value">побочный эффект: ${d.sideEffect}</span></div>`;
                 });
+                html += `</div>`;
 
-                // Исследования
-                html += `<h3>🔬 Исследования (технологии)</h3>`;
+                // --- 5. Исследования (технологии) — теперь требования на РУССКОМ ---
+                html += `<div class="encyclopedia-section"><h4>🔬 Исследования (${TECH_TREE.length} технологий)</h4>`;
                 TECH_TREE.forEach(t => {
                     const status = getTechStatus(t.id);
                     const statusText = status === 'researched' ? '✅' : (status === 'available' ? '🔓' : '🔒');
-                    html += `<div class="entry"><strong>${statusText} ${t.name}</strong> — ${t.desc} (стоимость ${t.cost}🧪, требует: ${t.prereq.length ? t.prereq.join(', ') : 'нет'})</div>`;
+                    
+                    // Преобразуем ID требований в русские названия
+                    let prereqNames = t.prereq.map(id => {
+                        const found = TECH_TREE.find(tech => tech.id === id);
+                        return found ? found.name : id; // если не найден, показываем ID
+                    });
+                    
+                    html += `<div class="item"><span class="label">${statusText} ${t.name}</span><span class="value">${t.desc} (стоимость ${t.cost}🧪, требует: ${prereqNames.length ? prereqNames.join(', ') : 'нет'})</span></div>`;
                 });
+                html += `</div>`;
 
-                // Реальные факты
-                html += `<h3>📖 Реальные факты</h3>`;
-                html += `<p><strong>Психиатрия</strong> — раздел медицины, изучающий психические расстройства. МКБ-10 — международная классификация болезней 10-го пересмотра.</p>`;
-                html += `<p><strong>Зигмунд Фрейд</strong> — основатель психоанализа, исследовал бессознательное.</p>`;
-                html += `<p><strong>Эмиль Крепелин</strong> — создатель первой систематической классификации психических болезней, ввел понятие "dementia praecox" (раннее слабоумие).</p>`;
-                html += `<p><strong>Карл Юнг</strong> — основатель аналитической психологии, ввел понятия архетипов и коллективного бессознательного.</p>`;
-                html += `<p><strong>Аминазин</strong> — первый антипсихотик, открытый в 1950-х, произвел революцию в психиатрии.</p>`;
-                html += `<p><strong>Флуоксетин (Прозак)</strong> — первый СИОЗС, один из самых известных антидепрессантов.</p>`;
-                html += `<p><strong>Галоперидол</strong> — мощный антипсихотик, используется при острых психозах.</p>`;
-                html += `<p><strong>Клозапин</strong> — атипичный антипсихотик, эффективен при резистентной шизофрении, но требует контроля крови из-за риска агранулоцитоза.</p>`;
+                // --- 6. Персонал ---
+                html += `<div class="encyclopedia-section"><h4>🧑‍⚕️ Персонал</h4>`;
+                html += `<div class="item"><span class="label">🧹 Санитар</span><span class="value">замедляет ухудшение здоровья пациентов на 5% за каждого. Стоимость: 5 Ψ.</span></div>`;
+                html += `<div class="item"><span class="label">👩‍⚕️ Медсестра</span><span class="value">увеличивает силу препаратов на 5% за каждую. Стоимость: 10 Ψ.</span></div>`;
+                html += `<div class="item"><span class="label">💊 Ординатор</span><span class="value">даёт +0.5🧪 за вылеченного пациента за каждого. Стоимость: 25 Ψ.</span></div>`;
+                html += `</div>`;
+
+                // --- 7. Игровая механика ---
+                html += `<div class="encyclopedia-section"><h4>⚙️ Игровая механика</h4>`;
+                html += `<div class="item"><span class="label">🔄 Цикл дня</span><span class="value">Утро (300-600), День (600-1800), Вечер (1800-2100), Ночь (2100-300).</span></div>`;
+                html += `<div class="item"><span class="label">💤 Сон</span><span class="value">Ночью и вечером пациенты с здоровьем > 50 ложатся спать. Восстанавливают здоровье во сне.</span></div>`;
+                html += `<div class="item"><span class="label">⚔️ Драки</span><span class="value">Пациенты могут драться при близком контакте. Наносят урон друг другу.</span></div>`;
+                html += `<div class="item"><span class="label">💊 Лечение</span><span class="value">Препарат должен соответствовать болезни. Эффективность зависит от тяжести и бонусов.</span></div>`;
+                html += `<div class="item"><span class="label">🏆 Очки (Ψ)</span><span class="value">+10 за вылеченного, -5 за смерть. Трата на аптеку и персонал.</span></div>`;
+                html += `<div class="item"><span class="label">🧪 Очки исследований</span><span class="value">+2 за вылеченного + бонус от ординаторов. Трата на технологии.</span></div>`;
+                html += `</div>`;
+
+                // --- 8. Реальные факты ---
+                html += `<div class="encyclopedia-section"><h4>📖 Реальные факты</h4>`;
+                html += `<div class="item"><span class="label">Психиатрия</span><span class="value">раздел медицины, изучающий психические расстройства. МКБ-10 — международная классификация болезней 10-го пересмотра.</span></div>`;
+                html += `<div class="item"><span class="label">Зигмунд Фрейд</span><span class="value">основатель психоанализа, исследовал бессознательное.</span></div>`;
+                html += `<div class="item"><span class="label">Эмиль Крепелин</span><span class="value">создатель первой систематической классификации психических болезней, ввел понятие "dementia praecox".</span></div>`;
+                html += `<div class="item"><span class="label">Карл Юнг</span><span class="value">основатель аналитической психологии, ввел понятия архетипов и коллективного бессознательного.</span></div>`;
+                html += `<div class="item"><span class="label">Аминазин</span><span class="value">первый антипсихотик, открыт в 1950-х, произвел революцию в психиатрии.</span></div>`;
+                html += `<div class="item"><span class="label">Флуоксетин (Прозак)</span><span class="value">первый СИОЗС, один из самых известных антидепрессантов.</span></div>`;
+                html += `<div class="item"><span class="label">Галоперидол</span><span class="value">мощный антипсихотик, используется при острых психозах.</span></div>`;
+                html += `<div class="item"><span class="label">Клозапин</span><span class="value">атипичный антипсихотик, эффективен при резистентной шизофрении, требует контроля крови из-за риска агранулоцитоза.</span></div>`;
+                html += `</div>`;
 
                 menuPsychopediaContent.innerHTML = html;
             }
@@ -3403,7 +3435,6 @@ button:focus,
 
             // === СОБЫТИЯ ===
             document.addEventListener('keydown', function(e) {
-                // Если открыто диалоговое окно — игнорируем все, кроме Escape (закрывает диалог)
                 if (dialogOverlay.classList.contains('active')) {
                     if (e.key === 'Escape') {
                         dialogOverlay.classList.remove('active');
@@ -3414,13 +3445,11 @@ button:focus,
                 }
 
                 if (e.key === 'Escape') {
-                    // Если открыто меню — закрываем его
                     if (menuModal.classList.contains('active')) {
                         toggleMenu(false);
                         e.preventDefault();
                         return;
                     }
-                    // Если открыта модалка — закрываем её и открываем меню
                     const bookModal = document.getElementById('bookModal');
                     const techModal = document.getElementById('techTreeModal');
                     const infoModal = document.getElementById('infoModal');
@@ -3454,11 +3483,9 @@ button:focus,
                         return;
                     }
                     if (goModal.classList.contains('active')) {
-                        // Если GameOver, Escape ничего не делает, но можно вернуться в меню через кнопку
                         e.preventDefault();
                         return;
                     }
-                    // Иначе открываем меню, если игра активна или окончена
                     if (gameActive || gameOver) {
                         toggleMenu(true);
                         e.preventDefault();
@@ -3466,7 +3493,6 @@ button:focus,
                 }
                 if (e.key === ' ' || e.key === 'Space') {
                     e.preventDefault();
-                    // Не обрабатываем пробел, если открыто меню или диалог
                     if (menuModal.classList.contains('active') || dialogOverlay.classList.contains('active')) return;
                     
                     if (gameActive && !gameOver && !pendingLevelTransition) {
