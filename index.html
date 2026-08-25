@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -452,7 +450,6 @@ button:focus,
                             <span class="info-text" id="levelDisplay">📍 уровень</span>
                         </div>
                         <div class="bottom-right">
-                            <!-- Кнопка "Новая игра" удалена -->
                             <div class="status-msg" id="statusMsg">⚡ лечите пациентов</div>
                         </div>
                     </div>
@@ -566,6 +563,32 @@ button:focus,
 
     <script>
         (function() {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             // === ДИАЛОГОВОЕ ОКНО (замена alert/confirm) ===
             const dialogOverlay = document.getElementById('gameDialog');
             const dialogTitle = document.getElementById('dialogTitle');
@@ -684,7 +707,6 @@ button:focus,
                 { name: 'Личко', ability: '+25% к лечению психопатий', iq: 78, empathy: 72, speed: 0.85, bonus: { type: 'personality', value: 25 } },
                 { name: 'Лабори', ability: '+25% к эффективности аминазина', iq: 82, empathy: 70, speed: 0.8, bonus: { type: 'aminazine', value: 25 } }
             ];
-// ... (предыдущий код)
 
             const LEVELS = [
                 { 
@@ -771,8 +793,6 @@ button:focus,
                 }
             ];
 
-// ... (остальной код)
-
             // ТЕХНОЛОГИИ
             const TECH_TREE = [
                 { id: 'tech_psychopharmacology', name: 'Психофармакология', desc: '+15% эффективность всех препаратов', cost: 15, prereq: [], effect: 'drug_boost', value: 0.15 },
@@ -812,16 +832,16 @@ button:focus,
 
             // === ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===
             const ALL_DRUGS = [
-                { name: 'глицин', color: '#90a4ae', sideEffect: 'минимальные' },
-                { name: 'флуоксетин', color: '#ce93d8', sideEffect: 'бессонница, тревожность' },
-                { name: 'кветиапин', color: '#4dd0e1', sideEffect: 'сонливость, сухость во рту' },
-                { name: 'аминазин', color: '#e57373', sideEffect: 'сонливость, сухость во рту' },
-                { name: 'оланзапин', color: '#81c784', sideEffect: 'увеличение веса, седация' },
-                { name: 'галоперидол', color: '#64b5f6', sideEffect: 'экстрапирамидные расстройства' },
-                { name: 'рисперидон', color: '#ef9a9a', sideEffect: 'увеличение пролактина' },
-                { name: 'клозапин', color: '#ffb74d', sideEffect: 'агранулоцитоз, седация' },
-                { name: 'седалит', color: '#ff8a65', sideEffect: 'угнетение ЦНС, привыкание' },
-                { name: 'циклодол', color: '#aed581', sideEffect: 'запор, сухость во рту' }
+                { name: 'глицин', color: '#90a4ae', sideEffect: 'минимальные', price: 3 },
+                { name: 'флуоксетин', color: '#ce93d8', sideEffect: 'бессонница, тревожность', price: 7 },
+                { name: 'кветиапин', color: '#4dd0e1', sideEffect: 'сонливость, сухость во рту', price: 10 },
+                { name: 'аминазин', color: '#e57373', sideEffect: 'сонливость, сухость во рту', price: 5 },
+                { name: 'оланзапин', color: '#81c784', sideEffect: 'увеличение веса, седация', price: 15 },
+                { name: 'галоперидол', color: '#64b5f6', sideEffect: 'экстрапирамидные расстройства', price: 12 },
+                { name: 'рисперидон', color: '#ef9a9a', sideEffect: 'увеличение пролактина', price: 18 },
+                { name: 'клозапин', color: '#ffb74d', sideEffect: 'агранулоцитоз, седация', price: 25 },
+                { name: 'седалит', color: '#ff8a65', sideEffect: 'угнетение ЦНС, привыкание', price: 8 },
+                { name: 'циклодол', color: '#aed581', sideEffect: 'запор, сухость во рту', price: 6 }
             ];
 
             const DRUG_RARITY = {
@@ -1594,9 +1614,7 @@ button:focus,
                     if (isUnlocked) {
                         el.addEventListener('click', function() { 
                             if (isUnlocked) {
-                                // Останавливаем музыку перед началом игры, чтобы она корректно запустилась в initGameWithSettings
                                 stopMusic();
-                                // Музыка будет запущена в initGameWithSettings
                                 
                                 selectedLevelIndex = idx;
                                 renderLevelSelection();
@@ -1633,7 +1651,6 @@ button:focus,
 
             function onBackToPsych() {
                 showStep('psych');
-
                 renderPsychSelection();
             }
 
@@ -1756,7 +1773,7 @@ button:focus,
             const tipDrugSideEffect = document.getElementById('tipDrugSideEffect');
 
             function showDrugTooltip(drug, x, y) {
-                tipDrugName.textContent = '💊 ' + drug.name;
+                tipDrugName.textContent = '💊 ' + drug.name + ' (Цена: ' + drug.price + ' Ψ)';
                 let sideEffect = drug.sideEffect;
                 if (getSideEffectReduction() >= 1) sideEffect = '✅ Побочные эффекты устранены (Экстрапирамидные расстройства)';
                 tipDrugSideEffect.textContent = '⚠️ Побочный эффект: ' + sideEffect;
@@ -2206,7 +2223,6 @@ button:focus,
                 
                 document.getElementById('gameoverModal').classList.remove('active');
                 
-                // Запускаем музыку только если игра активна и не на паузе
                 if (isAudioPlaying && isAudioPaused) {
                     audio.play().then(() => {
                         isAudioPaused = false;
@@ -2255,93 +2271,128 @@ button:focus,
                 document.getElementById('timeText').textContent = getTimeText();
                 document.getElementById('timeCycle').textContent = isNight() ? '🌙' : (isMorning() ? '🌅' : (isEvening() ? '🌅' : '☀️'));
             }
+function renderDrugPanel() {
+    const panel = document.getElementById('drugPanel');
+    panel.innerHTML = '';
 
-            function renderDrugPanel() {
-                const panel = document.getElementById('drugPanel');
-                panel.innerHTML = '';
+    const pharmacyBtn = document.createElement('div');
+    pharmacyBtn.className = 'drug-pill pharmacy-pill';
+    pharmacyBtn.innerHTML = `<div style="font-size:1.4rem;">🏪</div><div class="drug-label">Аптека</div><div style="font-size:0.7rem;color:#1a1612;">${drugPrice}Ψ за шт.</div>`;
+    pharmacyBtn.addEventListener('click', function() {
+        if (gameOver || isPaused) return;
+        if (score < drugPrice) {
+            statusMessage = '❌ Недостаточно очков! Нужно ' + drugPrice + ' Ψ за препарат';
+            updateUI();
+            return;
+        }
+        let bought = 0;
+        for (let drug of ALL_DRUGS) {
+            if (availableDrugsList.includes(drug.name) && score >= drugPrice && drugInventory[drug.name] < drugLimit) {
+                score -= drugPrice;
+                drugInventory[drug.name] = (drugInventory[drug.name] || 0) + 1;
+                bought++;
+            }
+        }
+        if (bought === 0) { statusMessage = '❌ Нет средств или все препараты уже в наличии'; } 
+        else { statusMessage = '💊 Куплено ' + bought + ' препаратов в аптеке!'; }
+        updateUI();
+        renderDrugPanel();
+    });
+    panel.appendChild(pharmacyBtn);
 
-                const pharmacyBtn = document.createElement('div');
-                pharmacyBtn.className = 'drug-pill pharmacy-pill';
-                pharmacyBtn.innerHTML = `<div style="font-size:1.4rem;">🏪</div><div class="drug-label">Аптека</div><div style="font-size:0.7rem;color:#1a1612;">${drugPrice}Ψ за шт.</div>`;
-                pharmacyBtn.addEventListener('click', function() {
-                    if (gameOver || isPaused) return;
-                    if (score < drugPrice) {
-                        statusMessage = '❌ Недостаточно очков! Нужно ' + drugPrice + ' Ψ за препарат';
-                        updateUI();
-                        return;
-                    }
-                    let bought = 0;
-                    for (let drug of ALL_DRUGS) {
-                        if (availableDrugsList.includes(drug.name) && score >= drugPrice && drugInventory[drug.name] < drugLimit) {
-                            score -= drugPrice;
-                            drugInventory[drug.name] = (drugInventory[drug.name] || 0) + 1;
-                            bought++;
-                        }
-                    }
-                    if (bought === 0) { statusMessage = '❌ Нет средств или все препараты уже в наличии'; } 
-                    else { statusMessage = '💊 Куплено ' + bought + ' препаратов в аптеке!'; }
+    ALL_DRUGS.forEach(function(drug) {
+        const isAvailable = availableDrugsList.includes(drug.name);
+        const div = document.createElement('div');
+        div.className = 'drug-pill' + (isAvailable ? '' : ' locked-drug');
+        if (!isAvailable) div.draggable = false;
+        else div.draggable = true;
+        div.dataset.drug = drug.name;
+        const dot = document.createElement('div');
+        dot.className = 'color-dot';
+        dot.style.backgroundColor = isAvailable ? drug.color : '#888';
+        div.appendChild(dot);
+        const label = document.createElement('span');
+        label.className = 'drug-label';
+        label.textContent = drug.name;
+        div.appendChild(label);
+        const countSpan = document.createElement('span');
+        countSpan.className = 'drug-count';
+        countSpan.textContent = drugInventory[drug.name] || 0;
+        div.appendChild(countSpan);
+
+        if (isAvailable) {
+            div.addEventListener('mouseenter', function(e) { showDrugTooltip(drug, e.clientX, e.clientY); });
+            div.addEventListener('mousemove', function(e) {
+                let left = e.clientX + 15, top = e.clientY - 10;
+                if (left + 260 > window.innerWidth) left = e.clientX - 270;
+                if (top + 100 > window.innerHeight) top = window.innerHeight - 110;
+                if (top < 10) top = 10;
+                drugTooltip.style.left = left + 'px';
+                drugTooltip.style.top = top + 'px';
+            });
+            div.addEventListener('mouseleave', function() { hideDrugTooltip(); });
+
+            // --- ЛЕВЫЙ КЛИК: лечение выбранного пациента ---
+            div.addEventListener('click', function(event) {
+                if (gameOver || isPaused) return;
+                if (selectedPatient && selectedPatient.state !== 'healed') {
+                    applyDrug(selectedPatient, drug.name);
+                    if (selectedPatient.health <= 0) selectedPatient.state = 'healed';
                     updateUI();
                     renderDrugPanel();
-                });
-                panel.appendChild(pharmacyBtn);
+                } else {
+                    statusMessage = '❌ Выделите пациента для лечения';
+                    updateUI();
+                }
+            });
 
-                ALL_DRUGS.forEach(function(drug) {
-                    const isAvailable = availableDrugsList.includes(drug.name);
-                    const div = document.createElement('div');
-                    div.className = 'drug-pill' + (isAvailable ? '' : ' locked-drug');
-                    if (!isAvailable) div.draggable = false;
-                    else div.draggable = true;
-                    div.dataset.drug = drug.name;
-                    const dot = document.createElement('div');
-                    dot.className = 'color-dot';
-                    dot.style.backgroundColor = isAvailable ? drug.color : '#888';
-                    div.appendChild(dot);
-                    const label = document.createElement('span');
-                    label.className = 'drug-label';
-                    label.textContent = drug.name;
-                    div.appendChild(label);
-                    const countSpan = document.createElement('span');
-                    countSpan.className = 'drug-count';
-                    countSpan.textContent = drugInventory[drug.name] || 0;
-                    div.appendChild(countSpan);
+            // --- ПРАВЫЙ КЛИК (contextmenu): покупка препарата ---
+            div.addEventListener('contextmenu', function(event) {
+                event.preventDefault(); // Отключаем стандартное контекстное меню
+                
+                if (gameOver || isPaused) return;
 
-                    if (isAvailable) {
-                        div.addEventListener('mouseenter', function(e) { showDrugTooltip(drug, e.clientX, e.clientY); });
-                        div.addEventListener('mousemove', function(e) {
-                            let left = e.clientX + 15, top = e.clientY - 10;
-                            if (left + 260 > window.innerWidth) left = e.clientX - 270;
-                            if (top + 100 > window.innerHeight) top = window.innerHeight - 110;
-                            if (top < 10) top = 10;
-                            drugTooltip.style.left = left + 'px';
-                            drugTooltip.style.top = top + 'px';
-                        });
-                        div.addEventListener('mouseleave', function() { hideDrugTooltip(); });
+                // Проверяем, доступен ли препарат
+                if (!isAvailable) {
+                    statusMessage = '❌ Препарат "' + drug.name + '" недоступен на этом уровне!';
+                    updateUI();
+                    return;
+                }
 
-                        div.addEventListener('click', function() {
-                            if (gameOver || isPaused) return;
-                            if (selectedPatient && selectedPatient.state !== 'healed') {
-                                applyDrug(selectedPatient, drug.name);
-                                if (selectedPatient.health <= 0) selectedPatient.state = 'healed';
-                                updateUI();
-                                renderDrugPanel();
-                            } else {
-                                statusMessage = '❌ Выделите пациента для лечения';
-                                updateUI();
-                            }
-                        });
-                        div.addEventListener('dragstart', function(e) {
-                            if (gameOver || isPaused) { e.preventDefault(); return; }
-                            e.dataTransfer.setData('text/plain', drug.name);
-                            div.classList.add('dragging');
-                        });
-                        div.addEventListener('dragend', function() { div.classList.remove('dragging'); });
-                    } else {
-                        div.title = '🔒 Доступен на более высоких уровнях';
-                    }
-                    panel.appendChild(div);
-                });
-            }
+                // Проверяем, хватает ли очков
+                if (score < drug.price) {
+                    statusMessage = '❌ Недостаточно очков! Нужно ' + drug.price + ' Ψ для покупки ' + drug.name;
+                    updateUI();
+                    return;
+                }
 
+                // Проверяем, не превышен ли лимит
+                if (drugInventory[drug.name] >= drugLimit) {
+                    statusMessage = '❌ Лимит препарата "' + drug.name + '" достигнут!';
+                    updateUI();
+                    return;
+                }
+
+                // Покупаем препарат
+                score -= drug.price;
+                drugInventory[drug.name] = (drugInventory[drug.name] || 0) + 1;
+                statusMessage = '💊 Куплен ' + drug.name + ' за ' + drug.price + ' Ψ (ПКМ)';
+                updateUI();
+                renderDrugPanel();
+            });
+
+            div.addEventListener('dragstart', function(e) {
+                if (gameOver || isPaused) { e.preventDefault(); return; }
+                e.dataTransfer.setData('text/plain', drug.name);
+                div.classList.add('dragging');
+            });
+            div.addEventListener('dragend', function() { div.classList.remove('dragging'); });
+        } else {
+            div.title = '🔒 Доступен на более высоких уровнях';
+        }
+        panel.appendChild(div);
+    });
+}
             function renderBook() {
                 const container = document.getElementById('bookEntries');
                 container.innerHTML = '';
@@ -3244,7 +3295,7 @@ button:focus,
                 // --- 4. Препараты ---
                 html += `<div class="encyclopedia-section"><h4>💊 Препараты (10)</h4>`;
                 ALL_DRUGS.forEach(d => {
-                    html += `<div class="item drug-entry"><span class="dot" style="background:${d.color}; display:inline-block; width:12px; height:12px; border-radius:50%; border:1px solid #5a4a32;"></span><span class="label">${d.name}</span><span class="value">побочный эффект: ${d.sideEffect}</span></div>`;
+                    html += `<div class="item drug-entry"><span class="dot" style="background:${d.color}; display:inline-block; width:12px; height:12px; border-radius:50%; border:1px solid #5a4a32;"></span><span class="label">${d.name}</span><span class="value">побочный эффект: ${d.sideEffect}, цена: ${d.price} Ψ</span></div>`;
                 });
                 html += `</div>`;
 
@@ -3298,7 +3349,6 @@ button:focus,
 
             // === Обработчики меню ===
             document.getElementById('menuBtnTop').addEventListener('click', function() {
-                // Запрещаем открытие меню на экране выбора
                 if (!selectionScreen.classList.contains('hidden')) {
                     statusMessage = '⚠️ Сначала начните игру!';
                     updateUI();
@@ -3335,18 +3385,17 @@ button:focus,
                 showDialog('Новая игра', 'Начать новую игру? Текущий прогресс будет потерян.', ['Да', 'Нет']).then(res => {
                     if (res === 0) {
                         toggleMenu(false);
-                        // Остановка музыки при выходе в главное меню
                         stopMusic();
                         gameOver = true; gameActive = false; isPaused = false;
                         if (gameLoopId) { cancelAnimationFrame(gameLoopId); gameLoopId = null; }
                         gameWrapper.classList.remove('active');
                         selectionScreen.classList.remove('hidden');
                         showStep('psych');
-  stopMusic();
+                        stopMusic();
                         renderPsychSelection();
                         document.getElementById('gameoverModal').classList.remove('active');
                         document.getElementById('levelTransitionModal').classList.remove('active');
-  stopMusic();
+                        stopMusic();
                     }
                 });
             });
@@ -3354,7 +3403,7 @@ button:focus,
             document.getElementById('menuExitBtn').addEventListener('click', function() {
                 showDialog('Выход', 'Вы уверены, что хотите выйти?', ['Да', 'Нет']).then(res => {
                     if (res === 0) {
-     stopMusic();
+                        stopMusic();
                         window.close();
                     }
                 });
@@ -3475,9 +3524,7 @@ button:focus,
                             const doc = PSYCHIATRISTS[selectedPsychIndex];
                             const lvl = LEVELS[selectedLevelIndex];
                             if (doc && lvl && (lvl.unlocked || checkLevelUnlock(lvl.id))) {
-                                // Останавливаем музыку перед началом игры, чтобы она корректно запустилась в initGameWithSettings
                                 stopMusic();
-                                // Музыка будет запущена в initGameWithSettings
                                 selectedDoc = doc;
                                 selectedLevel = lvl;
                                 selectionScreen.classList.add('hidden');
@@ -3546,9 +3593,6 @@ button:focus,
                 if (selectedDoc) { statusMessage = '🧠 выбран ' + selectedDoc.name; document.getElementById('statusMsg').innerText = statusMessage; }
             });
 
-            // ===== УДАЛЯЕМ ОБРАБОТЧИК ДЛЯ КНОПКИ "Новая игра" в нижней панели =====
-            // document.getElementById('restartBtn').addEventListener('click', ...) — больше не используется
-
             document.getElementById('hireOrderlyBtn2').addEventListener('click', hireOrderly2);
             document.getElementById('hireNurseBtn').addEventListener('click', hireNurse);
             document.getElementById('hireOrderlyBtn').addEventListener('click', hireOrderly);
@@ -3595,7 +3639,6 @@ button:focus,
                 selectionScreen.classList.remove('hidden');
                 showStep('psych');
                 renderPsychSelection();
-                // Останавливаем музыку, так как мы на экране выбора
                 stopMusic();
             });
 
@@ -3609,7 +3652,6 @@ button:focus,
             // === INIT SELECTION ===
             renderPsychSelection();
             showStep('psych');
-            // Музыка на экране выбора не играет (stopMusic вызывается при инициализации)
             stopMusic();
 
             // === BUTTONS ===
@@ -3623,8 +3665,23 @@ button:focus,
             });
 
         })();
+
+
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    return false;
+});
+
+canvas.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    return false;
+});
+
+
+
+
+
+
     </script>
 </body>
 </html>
-
-
