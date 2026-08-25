@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -404,7 +405,7 @@ button:focus,
                         <div class="sel-levels" id="levelGrid"></div>
                         <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
                             <button class="sel-btn sel-back" id="backToPsychBtn">◀ НАЗАД</button>
-                            <button class="sel-btn sel-back" id="loadLevelBtn" style="background:#6a7a5a; border-bottom-color:#4a5a3a;">📂 ЗАГРУЗИТЬ УРОВЕНЬ</button>
+                            <button class="sel-btn sel-back" id="loadLevelBtn" style="background:#6a7a5a; border-bottom-color:#4a5a3a;">📂 РАЗБЛОКИРОВАТЬ</button>
                         </div>
                         <div class="sel-hint">Нажмите на больницу (уровень), чтобы начать игру</div>
                     </div>
@@ -504,7 +505,7 @@ button:focus,
                     </div>
                     <div>
                         <button class="lt-btn lt-btn-success" id="ltNextBtn">➡️ Продолжить</button>
-                        <button class="lt-btn" id="ltStayBtn">⏸️ Остаться</button>
+              
                     </div>
                 </div>
             </div>
@@ -683,6 +684,7 @@ button:focus,
                 { name: 'Личко', ability: '+25% к лечению психопатий', iq: 78, empathy: 72, speed: 0.85, bonus: { type: 'personality', value: 25 } },
                 { name: 'Лабори', ability: '+25% к эффективности аминазина', iq: 82, empathy: 70, speed: 0.8, bonus: { type: 'aminazine', value: 25 } }
             ];
+// ... (предыдущий код)
 
             const LEVELS = [
                 { 
@@ -695,19 +697,10 @@ button:focus,
                     theme: 'bechtereva' 
                 },
                 { 
-                    id: 'suhanova', name: 'Суханова', desc: 'Тревожные расстройства', 
-                    fightChance: 0.005, spawnInterval: 12, drugPrice: 6, drugLimit: 30, 
-                    task: 'Вылечить 4 пациентов', taskTarget: 4, healthRange: [60, 90], 
-                    unlocked: false, requiredLevel: 'bechtereva', 
-                    availableDrugs: ['глицин', 'флуоксетин'], diseaseCount: 8, 
-                    staffLimits: { orderlies2: 0, nurses: 0, orderlies: 0 },
-                    theme: 'suhanova' 
-                },
-                { 
                     id: 'alekseeva', name: 'Алексеева', desc: 'Расстройства пищевого поведения', 
                     fightChance: 0.006, spawnInterval: 11, drugPrice: 7, drugLimit: 28, 
                     task: 'Вылечить 4 пациентов', taskTarget: 4, healthRange: [55, 85], 
-                    unlocked: false, requiredLevel: 'suhanova', 
+                    unlocked: false, requiredLevel: 'bechtereva', 
                     availableDrugs: ['глицин', 'флуоксетин', 'кветиапин'], diseaseCount: 10, 
                     staffLimits: { orderlies2: 0, nurses: 0, orderlies: 0 },
                     theme: 'alekseeva' 
@@ -718,25 +711,17 @@ button:focus,
                     task: 'Вылечить 5 пациентов', taskTarget: 5, healthRange: [55, 85], 
                     unlocked: false, requiredLevel: 'alekseeva', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин'], diseaseCount: 12, 
-                    staffLimits: { orderlies2: 3, nurses: 0, orderlies: 0 },
+                    staffLimits: { orderlies2: 2, nurses: 0, orderlies: 0 },
                     theme: 'korsakov' 
                 },
-                { 
-                    id: 'balinsky', name: 'Балинский', desc: 'Психосоматика', 
-                    fightChance: 0.006, spawnInterval: 11, drugPrice: 9, drugLimit: 22, 
-                    task: 'Вылечить 6 пациентов', taskTarget: 6, healthRange: [55, 85], 
-                    unlocked: false, requiredLevel: 'korsakov', 
-                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин'], diseaseCount: 16, 
-                    staffLimits: { orderlies2: 3, nurses: 2, orderlies: 0 },
-                    theme: 'balinsky' 
-                },
+               
                 { 
                     id: 'gannushkina', name: 'Ганнушкина', desc: 'Расстройства личности', 
                     fightChance: 0.01, spawnInterval: 10, drugPrice: 8, drugLimit: 25, 
                     task: 'Вылечить 7 пациентов', taskTarget: 7, healthRange: [50, 80], 
-                    unlocked: false, requiredLevel: 'balinsky', 
+                    unlocked: false, requiredLevel: 'korsakov', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин'], diseaseCount: 20, 
-                    staffLimits: { orderlies2: 4, nurses: 3, orderlies: 0 },
+                    staffLimits: { orderlies2: 3, nurses: 2, orderlies: 0 },
                     theme: 'gannushkina' 
                 },
                 { 
@@ -749,30 +734,12 @@ button:focus,
                     theme: 'osipova' 
                 },
                 { 
-                    id: 'zhuravsky', name: 'Журавский', desc: 'Аффективные расстройства', 
-                    fightChance: 0.009, spawnInterval: 9, drugPrice: 11, drugLimit: 24, 
-                    task: 'Вылечить 9 пациентов', taskTarget: 9, healthRange: [50, 80], 
-                    unlocked: false, requiredLevel: 'osipova', 
-                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон'], diseaseCount: 30, 
-                    staffLimits: { orderlies2: 5, nurses: 4, orderlies: 3 },
-                    theme: 'zhuravsky' 
-                },
-                { 
-                    id: 'snezhnevsky', name: 'Снежневский', desc: 'Шизоаффективные расстройства', 
-                    fightChance: 0.02, spawnInterval: 9, drugPrice: 14, drugLimit: 12, 
-                    task: 'Вылечить 10 пациентов', taskTarget: 10, healthRange: [35, 65], 
-                    unlocked: false, requiredLevel: 'zhuravsky', 
-                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин'], diseaseCount: 35, 
-                    staffLimits: { orderlies2: 6, nurses: 5, orderlies: 4 },
-                    theme: 'snezhnevsky' 
-                },
-                { 
                     id: 'kashchenko', name: 'Кащенко', desc: 'Смешанные расстройства', 
                     fightChance: 0.018, spawnInterval: 9, drugPrice: 12, drugLimit: 18, 
                     task: 'Вылечить 12 пациентов', taskTarget: 12, healthRange: [40, 70], 
-                    unlocked: false, requiredLevel: 'snezhnevsky', 
+                    unlocked: false, requiredLevel: 'osipova', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит'], diseaseCount: 40, 
-                    staffLimits: { orderlies2: 6, nurses: 5, orderlies: 4 },
+                    staffLimits: { orderlies2: 5, nurses: 4, orderlies: 3 },
                     theme: 'kashchenko' 
                 },
                 { 
@@ -781,55 +748,30 @@ button:focus,
                     task: 'Вылечить 15 пациентов', taskTarget: 15, healthRange: [30, 60], 
                     unlocked: false, requiredLevel: 'kashchenko', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 50, 
-                    staffLimits: { orderlies2: 7, nurses: 6, orderlies: 5 },
+                    staffLimits: { orderlies2: 7, nurses: 6, orderlies: 4 },
                     theme: 'skvortsova' 
-                },
-                { 
-                    id: 'gilyarovsky', name: 'Гиляровский', desc: 'Психопатии', 
-                    fightChance: 0.035, spawnInterval: 8, drugPrice: 18, drugLimit: 8, 
-                    task: 'Вылечить 20 пациентов', taskTarget: 20, healthRange: [25, 55], 
-                    unlocked: false, requiredLevel: 'skvortsova-stepanova', 
-                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 55, 
-                    staffLimits: { orderlies2: 7, nurses: 6, orderlies: 5 },
-                    theme: 'gilyarovsky' 
-                },
-                { 
-                    id: 'serbsky', name: 'Сербский', desc: 'Судебная психиатрия', 
-                    fightChance: 0.04, spawnInterval: 8, drugPrice: 20, drugLimit: 6, 
-                    task: 'Вылечить 25 пациентов', taskTarget: 25, healthRange: [20, 50], 
-                    unlocked: false, requiredLevel: 'gilyarovsky', 
-                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 60, 
-                    staffLimits: { orderlies2: 8, nurses: 7, orderlies: 5 },
-                    theme: 'serbsky' 
                 },
                 { 
                     id: 'kandinsky', name: 'Кандинский', desc: 'Бредовые расстройства', 
                     fightChance: 0.045, spawnInterval: 8, drugPrice: 22, drugLimit: 5, 
                     task: 'Вылечить 30 пациентов', taskTarget: 30, healthRange: [15, 45], 
-                    unlocked: false, requiredLevel: 'serbsky', 
+                    unlocked: false, requiredLevel: 'skvortsova-stepanova', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 65, 
                     staffLimits: { orderlies2: 8, nurses: 7, orderlies: 5 },
                     theme: 'kandinsky' 
                 },
                 { 
-                    id: 'sukhanov', name: 'Суханов', desc: 'Редкие синдромы', 
-                    fightChance: 0.05, spawnInterval: 7, drugPrice: 25, drugLimit: 4, 
-                    task: 'Вылечить 35 пациентов', taskTarget: 35, healthRange: [10, 40], 
-                    unlocked: false, requiredLevel: 'kandinsky', 
-                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 70, 
-                    staffLimits: { orderlies2: 9, nurses: 8, orderlies: 5 },
-                    theme: 'sukhanov' 
-                },
-                { 
                     id: 'arsenalnaya', name: 'Арсенальная', desc: 'Особо опасные расстройства', 
                     fightChance: 0.08, spawnInterval: 6, drugPrice: 30, drugLimit: 3, 
                     task: 'Вылечить 40 пациентов', taskTarget: 40, healthRange: [5, 30], 
-                    unlocked: false, requiredLevel: 'sukhanov', 
+                    unlocked: false, requiredLevel: 'kandinsky', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 75, 
                     staffLimits: { orderlies2: 10, nurses: 8, orderlies: 5 },
                     theme: 'arsenalnaya' 
                 }
             ];
+
+// ... (остальной код)
 
             // ТЕХНОЛОГИИ
             const TECH_TREE = [
@@ -1691,6 +1633,7 @@ button:focus,
 
             function onBackToPsych() {
                 showStep('psych');
+
                 renderPsychSelection();
             }
 
@@ -3399,9 +3342,11 @@ button:focus,
                         gameWrapper.classList.remove('active');
                         selectionScreen.classList.remove('hidden');
                         showStep('psych');
+  stopMusic();
                         renderPsychSelection();
                         document.getElementById('gameoverModal').classList.remove('active');
                         document.getElementById('levelTransitionModal').classList.remove('active');
+  stopMusic();
                     }
                 });
             });
@@ -3409,6 +3354,7 @@ button:focus,
             document.getElementById('menuExitBtn').addEventListener('click', function() {
                 showDialog('Выход', 'Вы уверены, что хотите выйти?', ['Да', 'Нет']).then(res => {
                     if (res === 0) {
+     stopMusic();
                         window.close();
                     }
                 });
@@ -3626,14 +3572,7 @@ button:focus,
                 if (nextLevelData) goToNextLevel();
                 else { document.getElementById('levelTransitionModal').classList.remove('active'); showGameWin(); }
             });
-            document.getElementById('ltStayBtn').addEventListener('click', function() {
-                document.getElementById('levelTransitionModal').classList.remove('active');
-                pendingLevelTransition = false; nextLevelData = null; gameActive = true;
-                if (!gameLoopId) gameLoop();
-                statusMessage = '⏸️ Остались на уровне ' + (currentLevel ? currentLevel.name : '');
-                updateUI();
-            });
-
+          
             document.getElementById('goRestartBtn').addEventListener('click', function() {
                 document.getElementById('gameoverModal').classList.remove('active');
                 document.querySelector('.go-title').textContent = '💀 ИГРА ОКОНЧЕНА';
@@ -3687,3 +3626,5 @@ button:focus,
     </script>
 </body>
 </html>
+
+
