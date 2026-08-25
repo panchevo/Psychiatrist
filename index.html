@@ -642,6 +642,15 @@ button:focus,
                 }
             }
 
+            // Функция для остановки музыки при выходе в главное меню
+            function stopMusic() {
+                if (isAudioPlaying) {
+                    audio.pause();
+                    isAudioPlaying = false;
+                    isAudioPaused = false;
+                }
+            }
+
             // === SCALING ===
             const gameInner = document.getElementById('gameInner');
             const BASE_WIDTH = 1400, BASE_HEIGHT = 820;
@@ -3374,17 +3383,14 @@ button:focus,
                 showDialog('Новая игра', 'Начать новую игру? Текущий прогресс будет потерян.', ['Да', 'Нет']).then(res => {
                     if (res === 0) {
                         toggleMenu(false);
+                        // Остановка музыки при выходе в главное меню
+                        stopMusic();
                         gameOver = true; gameActive = false; isPaused = false;
                         if (gameLoopId) { cancelAnimationFrame(gameLoopId); gameLoopId = null; }
                         gameWrapper.classList.remove('active');
                         selectionScreen.classList.remove('hidden');
                         showStep('psych');
                         renderPsychSelection();
-                        if (isAudioPlaying) {
-                            audio.pause();
-                            isAudioPlaying = false;
-                            isAudioPaused = false;
-                        }
                         document.getElementById('gameoverModal').classList.remove('active');
                         document.getElementById('levelTransitionModal').classList.remove('active');
                     }
