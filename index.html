@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -24,30 +25,6 @@ button:focus,
     outline: none !important;
     box-shadow: none !important;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         /* --- Стили для диалоговых окон (замена alert) --- */
         .game-dialog-overlay {
@@ -474,7 +451,7 @@ button:focus,
                             <span class="info-text" id="levelDisplay">📍 уровень</span>
                         </div>
                         <div class="bottom-right">
-                            <button id="restartBtn">⚔️ Новая игра</button>
+                            <!-- Кнопка "Новая игра" удалена -->
                             <div class="status-msg" id="statusMsg">⚡ лечите пациентов</div>
                         </div>
                     </div>
@@ -560,7 +537,7 @@ button:focus,
                         <button class="menu-btn" id="menuPsychopediaBtn">📖 Психопедия</button>
                         <button class="menu-btn" id="menuSaveBtn">💾 Сохранить игру</button>
                         <button class="menu-btn" id="menuLoadBtn">📂 Загрузить игру</button>
-                        <button class="menu-btn" id="menuRestartBtn">🔄 В начало</button>
+                        <button class="menu-btn" id="menuRestartBtn">🔄 Новая игра</button>
                         <button class="menu-btn danger" id="menuExitBtn">🚪 Выйти</button>
                         <button class="menu-btn secondary" id="menuAuthorBtn">👤 Об авторе</button>
                     </div>
@@ -663,6 +640,14 @@ button:focus,
                 }
                 if (!isAudioPlaying) {
                     startMusic();
+                }
+            }
+
+            function stopMusic() {
+                if (isAudioPlaying) {
+                    audio.pause();
+                    isAudioPlaying = false;
+                    isAudioPaused = false;
                 }
             }
 
@@ -1667,7 +1652,9 @@ button:focus,
                     if (isUnlocked) {
                         el.addEventListener('click', function() { 
                             if (isUnlocked) {
-                                startMusic();
+                                // Останавливаем музыку перед началом игры, чтобы она корректно запустилась в initGameWithSettings
+                                stopMusic();
+                                // Музыка будет запущена в initGameWithSettings
                                 
                                 selectedLevelIndex = idx;
                                 renderLevelSelection();
@@ -2276,6 +2263,7 @@ button:focus,
                 
                 document.getElementById('gameoverModal').classList.remove('active');
                 
+                // Запускаем музыку только если игра активна и не на паузе
                 if (isAudioPlaying && isAudioPaused) {
                     audio.play().then(() => {
                         isAudioPaused = false;
@@ -3367,6 +3355,12 @@ button:focus,
 
             // === Обработчики меню ===
             document.getElementById('menuBtnTop').addEventListener('click', function() {
+                // Запрещаем открытие меню на экране выбора
+                if (!selectionScreen.classList.contains('hidden')) {
+                    statusMessage = '⚠️ Сначала начните игру!';
+                    updateUI();
+                    return;
+                }
                 toggleMenu(true);
             });
 
@@ -3393,21 +3387,19 @@ button:focus,
                 toggleMenu(false);
             });
 
+            // ===== НОВАЯ ИГРА В МЕНЮ =====
             document.getElementById('menuRestartBtn').addEventListener('click', function() {
-                showDialog('В главное меню', 'Вернуться в главное меню? Текущий прогресс будет потерян.', ['Да', 'Нет']).then(res => {
+                showDialog('Новая игра', 'Начать новую игру? Текущий прогресс будет потерян.', ['Да', 'Нет']).then(res => {
                     if (res === 0) {
                         toggleMenu(false);
+                        // Остановка музыки при выходе в главное меню
+                        stopMusic();
                         gameOver = true; gameActive = false; isPaused = false;
                         if (gameLoopId) { cancelAnimationFrame(gameLoopId); gameLoopId = null; }
                         gameWrapper.classList.remove('active');
                         selectionScreen.classList.remove('hidden');
                         showStep('psych');
                         renderPsychSelection();
-                        if (isAudioPlaying) {
-                            audio.pause();
-                            isAudioPlaying = false;
-                            isAudioPaused = false;
-                        }
                         document.getElementById('gameoverModal').classList.remove('active');
                         document.getElementById('levelTransitionModal').classList.remove('active');
                     }
@@ -3537,7 +3529,9 @@ button:focus,
                             const doc = PSYCHIATRISTS[selectedPsychIndex];
                             const lvl = LEVELS[selectedLevelIndex];
                             if (doc && lvl && (lvl.unlocked || checkLevelUnlock(lvl.id))) {
-                                startMusic();
+                                // Останавливаем музыку перед началом игры, чтобы она корректно запустилась в initGameWithSettings
+                                stopMusic();
+                                // Музыка будет запущена в initGameWithSettings
                                 selectedDoc = doc;
                                 selectedLevel = lvl;
                                 selectionScreen.classList.add('hidden');
@@ -3606,15 +3600,9 @@ button:focus,
                 if (selectedDoc) { statusMessage = '🧠 выбран ' + selectedDoc.name; document.getElementById('statusMsg').innerText = statusMessage; }
             });
 
-            document.getElementById('restartBtn').addEventListener('click', function() {
-                if (selectedDoc && currentLevel) { 
-                    isPaused = false;
-                    startMusic();
-                    initGameWithSettings(selectedDoc, currentLevel); 
-                    updateUI(); 
-                    renderDrugPanel(); 
-                } else { location.reload(); }
-            });
+            // ===== УДАЛЯЕМ ОБРАБОТЧИК ДЛЯ КНОПКИ "Новая игра" в нижней панели =====
+            // document.getElementById('restartBtn').addEventListener('click', ...) — больше не используется
+
             document.getElementById('hireOrderlyBtn2').addEventListener('click', hireOrderly2);
             document.getElementById('hireNurseBtn').addEventListener('click', hireNurse);
             document.getElementById('hireOrderlyBtn').addEventListener('click', hireOrderly);
@@ -3668,11 +3656,8 @@ button:focus,
                 selectionScreen.classList.remove('hidden');
                 showStep('psych');
                 renderPsychSelection();
-                if (isAudioPlaying) {
-                    audio.pause();
-                    isAudioPlaying = false;
-                    isAudioPaused = false;
-                }
+                // Останавливаем музыку, так как мы на экране выбора
+                stopMusic();
             });
 
             // === КНОПКИ СОХРАНЕНИЯ/ЗАГРУЗКИ ===
@@ -3685,6 +3670,8 @@ button:focus,
             // === INIT SELECTION ===
             renderPsychSelection();
             showStep('psych');
+            // Музыка на экране выбора не играет (stopMusic вызывается при инициализации)
+            stopMusic();
 
             // === BUTTONS ===
             backToPsychBtn.addEventListener('click', onBackToPsych);
