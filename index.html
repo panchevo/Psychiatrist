@@ -25,30 +25,6 @@ button:focus,
     box-shadow: none !important;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         /* --- Стили для диалоговых окон (замена alert) --- */
         .game-dialog-overlay {
             display: none;
@@ -474,7 +450,7 @@ button:focus,
                             <span class="info-text" id="levelDisplay">📍 уровень</span>
                         </div>
                         <div class="bottom-right">
-                            <button id="restartBtn">⚔️ Новая игра</button>
+                            <!-- Кнопка "Новая игра" удалена -->
                             <div class="status-msg" id="statusMsg">⚡ лечите пациентов</div>
                         </div>
                     </div>
@@ -560,7 +536,7 @@ button:focus,
                         <button class="menu-btn" id="menuPsychopediaBtn">📖 Психопедия</button>
                         <button class="menu-btn" id="menuSaveBtn">💾 Сохранить игру</button>
                         <button class="menu-btn" id="menuLoadBtn">📂 Загрузить игру</button>
-                        <button class="menu-btn" id="menuRestartBtn">🔄 В начало</button>
+                        <button class="menu-btn" id="menuRestartBtn">🔄 Новая игра</button>
                         <button class="menu-btn danger" id="menuExitBtn">🚪 Выйти</button>
                         <button class="menu-btn secondary" id="menuAuthorBtn">👤 Об авторе</button>
                     </div>
@@ -3393,8 +3369,9 @@ button:focus,
                 toggleMenu(false);
             });
 
+            // ===== НОВАЯ ИГРА В МЕНЮ =====
             document.getElementById('menuRestartBtn').addEventListener('click', function() {
-                showDialog('В главное меню', 'Вернуться в главное меню? Текущий прогресс будет потерян.', ['Да', 'Нет']).then(res => {
+                showDialog('Новая игра', 'Начать новую игру? Текущий прогресс будет потерян.', ['Да', 'Нет']).then(res => {
                     if (res === 0) {
                         toggleMenu(false);
                         gameOver = true; gameActive = false; isPaused = false;
@@ -3606,15 +3583,9 @@ button:focus,
                 if (selectedDoc) { statusMessage = '🧠 выбран ' + selectedDoc.name; document.getElementById('statusMsg').innerText = statusMessage; }
             });
 
-            document.getElementById('restartBtn').addEventListener('click', function() {
-                if (selectedDoc && currentLevel) { 
-                    isPaused = false;
-                    startMusic();
-                    initGameWithSettings(selectedDoc, currentLevel); 
-                    updateUI(); 
-                    renderDrugPanel(); 
-                } else { location.reload(); }
-            });
+            // ===== УДАЛЯЕМ ОБРАБОТЧИК ДЛЯ КНОПКИ "Новая игра" в нижней панели =====
+            // document.getElementById('restartBtn').addEventListener('click', ...) — больше не используется
+
             document.getElementById('hireOrderlyBtn2').addEventListener('click', hireOrderly2);
             document.getElementById('hireNurseBtn').addEventListener('click', hireNurse);
             document.getElementById('hireOrderlyBtn').addEventListener('click', hireOrderly);
