@@ -3230,6 +3230,14 @@ function renderDrugPanel() {
             const menuPsychopediaContent = document.getElementById('menuPsychopediaContent');
 
             function toggleMenu(show) {
+
+ if (show && !selectionScreen.classList.contains('hidden')) {
+        statusMessage = '⚠️ Сначала начните игру (выберите психиатра и уровень)!';
+        updateUI();
+        return;
+    }
+
+
                 if (show) {
                     document.getElementById('bookModal').classList.remove('active');
                     document.getElementById('techTreeModal').classList.remove('active');
@@ -3347,15 +3355,25 @@ function renderDrugPanel() {
                 menuPsychopediaContent.innerHTML = html;
             }
 
-            // === Обработчики меню ===
-            document.getElementById('menuBtnTop').addEventListener('click', function() {
-                if (!selectionScreen.classList.contains('hidden')) {
-                    statusMessage = '⚠️ Сначала начните игру!';
-                    updateUI();
-                    return;
-                }
-                toggleMenu(true);
-            });
+         document.getElementById('menuBtnTop').addEventListener('click', function() {
+    // Проверяем, виден ли экран выбора
+    if (!selectionScreen.classList.contains('hidden')) {
+        // Показываем сообщение и блокируем открытие меню
+        statusMessage = '⚠️ Выберите психиатра и уровень, чтобы начать игру!';
+        updateUI();
+        return;
+    }
+    // Проверяем, не находится ли игрок на первом шаге выбора психиатра
+    if (stepPsych.classList.contains('active') || stepLevel.classList.contains('active')) {
+        // На всякий случай двойная проверка
+        if (document.getElementById('selectionScreen') && !document.getElementById('selectionScreen').classList.contains('hidden')) {
+            statusMessage = '⚠️ Сначала завершите выбор!';
+            updateUI();
+            return;
+        }
+    }
+    toggleMenu(true);
+});
 
             document.getElementById('menuCloseBtn').addEventListener('click', function() {
                 toggleMenu(false);
