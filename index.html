@@ -1109,17 +1109,28 @@ button:focus,
                 return completedLevels[level.requiredLevel] === true;
             }
 
-            function completeLevel(levelId) {
-                completedLevels[levelId] = true;
-                LEVELS.forEach(l => {
-                    if (l.requiredLevel === levelId && !l.unlocked) {
-                        l.unlocked = true;
-                        unlockedLevels.push(l.id);
-                    }
-                });
-                renderLevelSelection();
-                showLevelTransition(levelId);
-            }
+           function completeLevel(levelId) {
+    if (completedLevels[levelId] === true) {
+        showLevelTransition(levelId);
+        return;
+    }
+    
+    completedLevels[levelId] = true;
+    
+    // Находим индекс пройденного уровня
+    const currentIndex = LEVELS.findIndex(l => l.id === levelId);
+    if (currentIndex !== -1 && currentIndex + 1 < LEVELS.length) {
+        // Разблокируем ТОЛЬКО следующий уровень
+        const nextLevel = LEVELS[currentIndex + 1];
+        if (!nextLevel.unlocked) {
+            nextLevel.unlocked = true;
+            unlockedLevels.push(nextLevel.id);
+        }
+    }
+    
+    renderLevelSelection();
+    showLevelTransition(levelId);
+}
 
             function showLevelTransition(levelId) {
                 const currentIdx = LEVELS.findIndex(l => l.id === levelId);
@@ -1162,25 +1173,24 @@ button:focus,
                 }
             }
 
-            function goToNextLevel() {
-                const currentIdx = LEVELS.findIndex(l => l.id === currentLevel.id);
-                if (currentIdx === -1 || currentIdx >= LEVELS.length - 1) {
-                    showGameWin();
-                    return;
-                }
-
-                const nextLevel = LEVELS[currentIdx + 1];
-                if (!nextLevel.unlocked && !checkLevelUnlock(nextLevel.id)) {
-                    statusMessage = '⚠️ Следующий уровень ещё не доступен!';
-                    updateUI();
-                    return;
-                }
+           function goToNextLevel() {
+    const currentIdx = LEVELS.findIndex(l => l.id === currentLevel.id);
+    if (currentIdx === -1 || currentIdx >= LEVELS.length - 1) {
+        showGameWin();
+        return;
+    }
+               const nextLevel = LEVELS[currentIdx + 1];
+    if (!nextLevel.unlocked && !checkLevelUnlock(nextLevel.id)) {
+        statusMessage = '⚠️ Следующий уровень ещё не доступен!';
+        updateUI();
+        return;
+    }
 
                 hideDrugTooltip();
 
                 selectedLevel = nextLevel;
                 currentLevel = nextLevel;
-                completedLevels[nextLevel.id] = false;
+               
 
                 availableDrugsList = getAvailableDrugsForLevel(nextLevel);
                 availableDiseases = getAvailableDiseasesForLevel(nextLevel);
@@ -2275,31 +2285,82 @@ function renderDrugPanel() {
     const panel = document.getElementById('drugPanel');
     panel.innerHTML = '';
 
+    // --- КНОПКА АПТЕКИ С ОТОБРАЖЕНИЕМ ОБЩЕЙ СТОИМОСТИ ---
     const pharmacyBtn = document.createElement('div');
     pharmacyBtn.className = 'drug-pill pharmacy-pill';
-    pharmacyBtn.innerHTML = `<div style="font-size:1.4rem;">🏪</div><div class="drug-label">Аптека</div><div style="font-size:0.7rem;color:#1a1612;">${drugPrice}Ψ за шт.</div>`;
-    pharmacyBtn.addEventListener('click', function() {
-        if (gameOver || isPaused) return;
-        if (score < drugPrice) {
-            statusMessage = '❌ Недостаточно очков! Нужно ' + drugPrice + ' Ψ за препарат';
-            updateUI();
-            return;
-        }
-        let bought = 0;
-        for (let drug of ALL_DRUGS) {
-            if (availableDrugsList.includes(drug.name) && score >= drugPrice && drugInventory[drug.name] < drugLimit) {
-                score -= drugPrice;
-                drugInventory[drug.name] = (drugInventory[drug.name] || 0) + 1;
-                bought++;
+    
+    // Рассчитываем общую стоимость всех доступных препаратов (по 1 шт.)
+    let totalCost = 0;
+    let availableCount = 0;
+    for (let drugName of availableDrugsList) {
+        if (drugInventory[drugName] < drugLimit) {
+            const drugInfo = ALL_DRUGS.find(d => d.name === drugName);
+            if (drugInfo) {
+                totalCost += drugInfo.price;
+                availableCount++;
             }
         }
-        if (bought === 0) { statusMessage = '❌ Нет средств или все препараты уже в наличии'; } 
-        else { statusMessage = '💊 Куплено ' + bought + ' препаратов в аптеке!'; }
+    }
+    
+    pharmacyBtn.innerHTML = `
+        <div style="font-size:1.4rem;">🏪</div>
+        <div class="drug-label">Аптека</div>
+        <div style="font-size:0.65rem;color:#1a1612;line-height:1.3;">
+          💰 ${totalCost} Ψ за всё
+           
+        </div>
+    `;
+    
+    pharmacyBtn.addEventListener('click', function() {
+        if (gameOver || isPaused) {
+            statusMessage = '❌ Действие недоступно на паузе или игра окончена!';
+            updateUI();
+            renderDrugPanel(); // Обновляем после сообщения
+            return;
+        }
+
+        // Находим все доступные препараты, которые ещё не достигли лимита
+        const availableToBuy = availableDrugsList.filter(drug => drugInventory[drug] < drugLimit);
+        if (availableToBuy.length === 0) {
+            statusMessage = '❌ Все препараты уже достигли лимита!';
+            updateUI();
+            renderDrugPanel(); // Обновляем после сообщения
+            return;
+        }
+
+        // Считаем общую стоимость
+        let totalCost = 0;
+        let drugsToBuy = [];
+        for (let drugName of availableToBuy) {
+            const drugInfo = ALL_DRUGS.find(d => d.name === drugName);
+            if (drugInfo) {
+                totalCost += drugInfo.price;
+                drugsToBuy.push({ name: drugName, price: drugInfo.price });
+            }
+        }
+
+        // Проверяем, хватает ли очков
+        if (score < totalCost) {
+            statusMessage = `❌ Недостаточно очков! Нужно ${totalCost} Ψ для покупки всех препаратов по 1 шт.`;
+            updateUI();
+            renderDrugPanel(); // Обновляем после сообщения
+            return;
+        }
+
+        // Совершаем покупку
+        score -= totalCost;
+        for (let { name, price } of drugsToBuy) {
+            drugInventory[name] = (drugInventory[name] || 0) + 1;
+        }
+
+        statusMessage = `💊 Куплено ${drugsToBuy.length} препаратов (по 1 шт.) за ${totalCost} Ψ!`;
         updateUI();
-        renderDrugPanel();
+        renderDrugPanel(); // ОБЯЗАТЕЛЬНО обновляем после покупки!
     });
+
     panel.appendChild(pharmacyBtn);
 
+    // --- КАЖДЫЙ ПРЕПАРАТ С ОТОБРАЖЕНИЕМ ЦЕНЫ ---
     ALL_DRUGS.forEach(function(drug) {
         const isAvailable = availableDrugsList.includes(drug.name);
         const div = document.createElement('div');
@@ -2307,14 +2368,27 @@ function renderDrugPanel() {
         if (!isAvailable) div.draggable = false;
         else div.draggable = true;
         div.dataset.drug = drug.name;
+        
         const dot = document.createElement('div');
         dot.className = 'color-dot';
         dot.style.backgroundColor = isAvailable ? drug.color : '#888';
         div.appendChild(dot);
+        
         const label = document.createElement('span');
         label.className = 'drug-label';
         label.textContent = drug.name;
         div.appendChild(label);
+        
+        // --- ОТОБРАЖЕНИЕ ЦЕНЫ ПРЕПАРАТА ---
+        const priceSpan = document.createElement('span');
+        priceSpan.className = 'drug-count';
+        priceSpan.style.background = '#b09a7a';
+        priceSpan.style.color = '#1a1612';
+        priceSpan.style.fontSize = '0.6rem';
+        priceSpan.style.padding = '0 6px';
+        
+        div.appendChild(priceSpan);
+        
         const countSpan = document.createElement('span');
         countSpan.className = 'drug-count';
         countSpan.textContent = drugInventory[drug.name] || 0;
@@ -2334,51 +2408,61 @@ function renderDrugPanel() {
 
             // --- ЛЕВЫЙ КЛИК: лечение выбранного пациента ---
             div.addEventListener('click', function(event) {
-                if (gameOver || isPaused) return;
+                if (gameOver || isPaused) {
+                    statusMessage = '❌ Действие недоступно на паузе или игра окончена!';
+                    updateUI();
+                    renderDrugPanel();
+                    return;
+                }
                 if (selectedPatient && selectedPatient.state !== 'healed') {
                     applyDrug(selectedPatient, drug.name);
                     if (selectedPatient.health <= 0) selectedPatient.state = 'healed';
                     updateUI();
-                    renderDrugPanel();
+                    renderDrugPanel(); // Обновляем после лечения
                 } else {
                     statusMessage = '❌ Выделите пациента для лечения';
                     updateUI();
+                    renderDrugPanel();
                 }
             });
 
             // --- ПРАВЫЙ КЛИК (contextmenu): покупка препарата ---
             div.addEventListener('contextmenu', function(event) {
-                event.preventDefault(); // Отключаем стандартное контекстное меню
+                event.preventDefault();
                 
-                if (gameOver || isPaused) return;
+                if (gameOver || isPaused) {
+                    statusMessage = '❌ Действие недоступно на паузе или игра окончена!';
+                    updateUI();
+                    renderDrugPanel();
+                    return;
+                }
 
-                // Проверяем, доступен ли препарат
                 if (!isAvailable) {
                     statusMessage = '❌ Препарат "' + drug.name + '" недоступен на этом уровне!';
                     updateUI();
+                    renderDrugPanel();
                     return;
                 }
 
-                // Проверяем, хватает ли очков
                 if (score < drug.price) {
                     statusMessage = '❌ Недостаточно очков! Нужно ' + drug.price + ' Ψ для покупки ' + drug.name;
                     updateUI();
+                    renderDrugPanel();
                     return;
                 }
 
-                // Проверяем, не превышен ли лимит
                 if (drugInventory[drug.name] >= drugLimit) {
                     statusMessage = '❌ Лимит препарата "' + drug.name + '" достигнут!';
                     updateUI();
+                    renderDrugPanel();
                     return;
                 }
 
-                // Покупаем препарат
                 score -= drug.price;
                 drugInventory[drug.name] = (drugInventory[drug.name] || 0) + 1;
                 statusMessage = '💊 Куплен ' + drug.name + ' за ' + drug.price + ' Ψ (ПКМ)';
                 updateUI();
-                renderDrugPanel();
+                renderDrugPanel(); // ОБЯЗАТЕЛЬНО обновляем после покупки!
             });
 
             div.addEventListener('dragstart', function(e) {
@@ -3399,24 +3483,69 @@ function renderDrugPanel() {
             });
 
             // ===== НОВАЯ ИГРА В МЕНЮ =====
-            document.getElementById('menuRestartBtn').addEventListener('click', function() {
-                showDialog('Новая игра', 'Начать новую игру? Текущий прогресс будет потерян.', ['Да', 'Нет']).then(res => {
-                    if (res === 0) {
-                        toggleMenu(false);
-                        stopMusic();
-                        gameOver = true; gameActive = false; isPaused = false;
-                        if (gameLoopId) { cancelAnimationFrame(gameLoopId); gameLoopId = null; }
-                        gameWrapper.classList.remove('active');
-                        selectionScreen.classList.remove('hidden');
-                        showStep('psych');
-                        stopMusic();
-                        renderPsychSelection();
-                        document.getElementById('gameoverModal').classList.remove('active');
-                        document.getElementById('levelTransitionModal').classList.remove('active');
-                        stopMusic();
-                    }
-                });
+           document.getElementById('menuRestartBtn').addEventListener('click', function() {
+    showDialog('Новая игра', 'Начать новую игру? Текущий прогресс будет потерян.', ['Да', 'Нет']).then(res => {
+        if (res === 0) {
+            toggleMenu(false);
+            stopMusic();
+            gameOver = true; gameActive = false; isPaused = false;
+            if (gameLoopId) { cancelAnimationFrame(gameLoopId); gameLoopId = null; }
+            gameWrapper.classList.remove('active');
+            selectionScreen.classList.remove('hidden');
+            showStep('psych');
+            stopMusic();
+            renderPsychSelection();
+            document.getElementById('gameoverModal').classList.remove('active');
+            document.getElementById('levelTransitionModal').classList.remove('active');
+            
+            // ---- СБРАСЫВАЕМ РАЗБЛОКИРОВКУ УРОВНЕЙ ----
+            completedLevels = {};
+            unlockedLevels = ['bechtereva'];
+            LEVELS.forEach(function(level) {
+                level.unlocked = (level.id === 'bechtereva');
             });
+            // -----------------------------------------
+            // 2. ИССЛЕДОВАНИЯ - ЖЁСТКИЙ СБРОС
+            window.techPoints = 0;
+            window.researchedTechs = [];
+            window.techEffects = {};
+            
+            // Также напрямую
+            techPoints = 0;
+            researchedTechs = [];
+            techEffects = {};
+            
+            // 3. Очки и счётчики
+            score = 0;
+            curedCount = 0;
+            levelCompleted = false;
+            
+            // 4. Персонал
+            nurseCount = 0;
+            orderlyCount = 0;
+            orderly2Count = 0;
+            
+            // 5. Инвентарь
+            drugInventory = {};
+            
+            // 6. Пациенты и эффекты
+            patients = [];
+            zLetters = [];
+            beds.forEach(function(bed) {
+                bed.occupied = false;
+            });
+            
+            // 7. Таймеры
+            spawnTimer = 0;
+            autoRestockCounter = 0;
+            zSpawnCounter = 0;
+            frameCounter = 0;
+            
+            renderLevelSelection();
+            stopMusic();
+        }
+    });
+});
 
             document.getElementById('menuExitBtn').addEventListener('click', function() {
                 showDialog('Выход', 'Вы уверены, что хотите выйти?', ['Да', 'Нет']).then(res => {
