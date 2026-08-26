@@ -634,6 +634,7 @@ button:focus,
                     <div class="menu-title">☰ ГЛАВНОЕ МЕНЮ</div>
                     <div class="menu-buttons">
                         <button class="menu-btn" id="menuPsychopediaBtn">📖 Психопедия</button>
+                       <button class="menu-btn" id="menuRestartLevelBtn">🔄 Заново уровень</button>
                         <button class="menu-btn" id="menuSaveBtn">💾 Сохранить игру</button>
                         <button class="menu-btn" id="menuLoadBtn">📂 Загрузить игру</button>
                         <button class="menu-btn" id="menuRestartBtn">🔄 Новая игра</button>
@@ -681,6 +682,57 @@ button:focus,
             const dialogMessage = document.getElementById('dialogMessage');
             const dialogButtons = document.getElementById('dialogButtons');
             let dialogResolve = null;
+
+function restartLevel() {
+    if (!currentLevel) {
+        statusMessage = '❌ Нет активного уровня для перезапуска!';
+        updateUI();
+        return;
+    }
+    showDialog('Перезапуск уровня', 'Вы уверены, что хотите перезапустить уровень "' + currentLevel.name + '"? Все очки и прогресс будут обнулены.', ['Да', 'Нет']).then(res => {
+        if (res === 0) {
+            const doc = selectedDoc;
+            const level = currentLevel;
+            
+            // Сброс игровых переменных
+            score = 0;
+            techPoints = 0;
+            researchedTechs = [];
+            techEffects = {};
+            curedCount = 0;
+            levelCompleted = false;
+            pendingLevelTransition = false;
+            gameOver = false;
+            gameActive = true;
+            isPaused = false;
+            nurseCount = 0;
+            orderlyCount = 0;
+            orderly2Count = 0;
+            
+            // Переинициализация уровня
+            initGameWithSettings(doc, level);
+            statusMessage = '🔄 Уровень "' + level.name + '" перезапущен!';
+            updateUI();
+            renderDrugPanel();
+            renderBook();
+            renderTechTree();
+            
+            // Закрываем меню
+            toggleMenu(false);
+        }
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
 
             function showDialog(title, message, buttons = ['OK']) {
                 return new Promise((resolve) => {
@@ -3583,6 +3635,10 @@ function renderDrugPanel() {
             });
 
             // Закрытие по Escape
+document.getElementById('menuRestartLevelBtn').addEventListener('click', function() {
+    restartLevel();
+});
+
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape' && psychopediaModal.classList.contains('active')) {
                     closePsychopedia();
