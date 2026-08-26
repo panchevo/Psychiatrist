@@ -723,17 +723,6 @@ function restartLevel() {
     });
 }
 
-
-
-
-
-
-
-
-
-
-
-
             function showDialog(title, message, buttons = ['OK']) {
                 return new Promise((resolve) => {
                     dialogTitle.textContent = title || 'Подтверждение';
@@ -922,7 +911,7 @@ function restartLevel() {
                 },
                 { 
                     id: 'arsenalnaya', name: 'Арсенальная', desc: 'Особо опасные расстройства', 
-                    fightChance: 0.08, spawnInterval: 6, drugPrice: 30, drugLimit: 3, 
+                    fightChance: 0.08, spawnInterval: 6, drugPrice: 30, drugLimit: 100, 
                     task: 'Вылечить 40 пациентов', taskTarget: 40, healthRange: [5, 30], 
                     unlocked: false, requiredLevel: 'kandinsky', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 75, 
@@ -968,41 +957,7 @@ function restartLevel() {
                 { id: 'tech_polytherapy', name: 'Политерапия', desc: 'Мгновенно добавляет 100% всех препаратов', cost: 40, prereq: ['tech_polypharmacy', 'tech_psychopharmacology'], effect: 'polytherapy', value: 1 }
             ];
 
-            // === ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===
-            const ALL_DRUGS = [
-                { name: 'глицин', color: '#90a4ae', sideEffect: 'минимальные', price: 3 },
-                { name: 'флуоксетин', color: '#ce93d8', sideEffect: 'бессонница, тревожность', price: 7 },
-                { name: 'кветиапин', color: '#4dd0e1', sideEffect: 'сонливость, сухость во рту', price: 10 },
-                { name: 'аминазин', color: '#e57373', sideEffect: 'сонливость, сухость во рту', price: 5 },
-                { name: 'оланзапин', color: '#81c784', sideEffect: 'увеличение веса, седация', price: 15 },
-                { name: 'галоперидол', color: '#64b5f6', sideEffect: 'экстрапирамидные расстройства', price: 12 },
-                { name: 'рисперидон', color: '#ef9a9a', sideEffect: 'увеличение пролактина', price: 18 },
-                { name: 'клозапин', color: '#ffb74d', sideEffect: 'агранулоцитоз, седация', price: 25 },
-                { name: 'седалит', color: '#ff8a65', sideEffect: 'угнетение ЦНС, привыкание', price: 8 },
-                { name: 'циклодол', color: '#aed581', sideEffect: 'запор, сухость во рту', price: 6 }
-            ];
-
-            const DRUG_RARITY = {
-                'глицин': 1,
-                'флуоксетин': 1,
-                'кветиапин': 1,
-                'аминазин': 1,
-                'оланзапин': 2,
-                'галоперидол': 2,
-                'рисперидон': 2,
-                'клозапин': 3,
-                'седалит': 3,
-                'циклодол': 3
-            };
-
-            const ALL_NAMES = [
-                'Алексей', 'Мария', 'Иван', 'Екатерина', 'Дмитрий', 'Анна', 'Сергей', 'Ольга', 'Павел', 'Татьяна',
-                'Николай', 'Наталья', 'Артём', 'Юлия', 'Максим', 'Елена', 'Владимир', 'Ирина', 'Андрей', 'Ксения',
-                'Георгий', 'София', 'Михаил', 'Алиса', 'Роман', 'Анастасия', 'Евгений', 'Виктория', 'Игорь', 'Полина',
-                'Василий', 'Дарья', 'Григорий', 'Марина', 'Анатолий', 'Светлана', 'Пётр', 'Юрий', 'Вероника', 'Антон',
-                'Никита', 'Тимофей', 'Константин', 'Александра', 'Кирилл', 'Оксана', 'Вячеслав', 'Лидия', 'Семён', 'Валентина'
-            ];
-
+            // === ВСЕ БОЛЕЗНИ (МКБ-10) ===
             const ALL_DISEASES = [
                 { code: 'F32.0', name: 'Лёгкий депрессивный эпизод', treat: ['флуоксетин', 'глицин'], weight: 6, category: 'depression', severity: 1, gender: 'neutral' },
                 { code: 'F32.1', name: 'Умеренный депрессивный эпизод', treat: ['флуоксетин', 'кветиапин'], weight: 5, category: 'depression', severity: 2, gender: 'neutral' },
@@ -1048,7 +1003,95 @@ function restartLevel() {
                 { code: 'F52.4', name: 'Преждевременная эякуляция', treat: ['седалит', 'глицин', 'кветиапин'], weight: 4, category: 'sexual', severity: 1, gender: 'male' }
             ];
 
-            // === ИГРОВЫЕ ПЕРЕМЕННЫЕ ===
+            // === ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===
+            const ALL_DRUGS = [
+                { name: 'глицин', color: '#90a4ae', sideEffect: 'минимальные', price: 3, rarity: 1 },
+                { name: 'флуоксетин', color: '#ce93d8', sideEffect: 'бессонница, тревожность', price: 7, rarity: 1 },
+                { name: 'кветиапин', color: '#4dd0e1', sideEffect: 'сонливость, сухость во рту', price: 10, rarity: 1 },
+                { name: 'аминазин', color: '#e57373', sideEffect: 'сонливость, сухость во рту', price: 5, rarity: 1 },
+                { name: 'оланзапин', color: '#81c784', sideEffect: 'увеличение веса, седация', price: 15, rarity: 2 },
+                { name: 'галоперидол', color: '#64b5f6', sideEffect: 'экстрапирамидные расстройства', price: 12, rarity: 2 },
+                { name: 'рисперидон', color: '#ef9a9a', sideEffect: 'увеличение пролактина', price: 18, rarity: 2 },
+                { name: 'клозапин', color: '#ffb74d', sideEffect: 'агранулоцитоз, седация', price: 25, rarity: 3 },
+                { name: 'седалит', color: '#ff8a65', sideEffect: 'угнетение ЦНС, привыкание', price: 8, rarity: 3 },
+                { name: 'циклодол', color: '#aed581', sideEffect: 'запор, сухость во рту', price: 6, rarity: 3 }
+            ];
+function getDrugMaxLimit(drugName, level) {
+    if (!level) return 50;
+    
+    const drug = ALL_DRUGS.find(d => d.name === drugName);
+    if (!drug) return 20;
+    
+    const rarity = drug.rarity || 1;
+    
+
+
+
+switch (drugName){case "глицин":
+
+
+
+        return 50;
+case "флуоксетин":
+return 45
+case "кветиапин":
+return 40;
+case "аминазин":return 45
+case "оланзапин":return 30
+case "галоперидол":return 28
+case "рисперидон":return 25
+case "клозапин":return 15
+case "седалит":return 15
+case "циклодол":return 15
+
+   
+   
+   
+
+
+
+
+}
+
+
+
+
+    // === ДЛЯ АРСЕНАЛЬНОЙ — фиксированные большие лимиты ===
+    if (level.id === 'bechtereva') {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+    
+    
+    // === ДЛЯ ВСЕХ ОСТАЛЬНЫХ УРОВНЕЙ ===
+    // Базовый лимит берём из уровня
+    const baseLimit = level.drugLimit || 20;
+    
+    // В зависимости от редкости — разные множители
+    if (rarity === 1) return Math.floor(baseLimit * 1.5);  // 28*1.5=42
+    if (rarity === 2) return Math.floor(baseLimit * 1.0);  // 28*1.0=28
+    if (rarity === 3) return Math.floor(baseLimit * 0.7);  // 28*0.7=19
+    
+    return Math.max(3, baseLimit);
+}
             let selectedPsychIndex = 0, selectedLevelIndex = 0, selectedDoc = null, selectedLevel = null;
             let unlockedLevels = ['bechtereva'];
             let completedLevels = {};
@@ -1172,19 +1215,20 @@ function restartLevel() {
                 else if (name.includes('Сербский')) base = 6;
                 else if (name.includes('Кандинский')) base = 5;
                 else if (name.includes('Суханов')) base = 4;
-                else if (name.includes('Арсенальная')) base = 3;
+                else if (name.includes('Арсенальная')) base = 100;
                 return base;
             }
 
             function initDrugInventory(level) {
-                const stock = getPharmacyStock(level);
                 const inv = {};
                 const availableDrugs = getAvailableDrugsForLevel(level);
                 ALL_DRUGS.forEach(d => {
                     if (availableDrugs.includes(d.name)) {
-                        let count = Math.floor(stock * (0.5 + Math.random() * 0.5));
-                        if (d.name === 'глицин') count = Math.floor(stock * (0.8 + Math.random() * 0.2));
+                        const maxLimit = getDrugMaxLimit(d.name, level);
+                        let count = Math.floor(maxLimit * (0.3 + Math.random() * 0.4));
+                        if (d.name === 'глицин') count = Math.floor(maxLimit * (0.5 + Math.random() * 0.3));
                         if (count < 1) count = 1;
+                        if (count > maxLimit) count = maxLimit;
                         inv[d.name] = count;
                     } else {
                         inv[d.name] = 0;
@@ -1211,10 +1255,13 @@ function restartLevel() {
                     drugName = drugsToRestock[randomIndex];
                 }
                 
-                drugInventory[drugName] = (drugInventory[drugName] || 0) + 1;
-                statusMessage = '💊 +1 ' + drugName + ' в аптеке (автопополнение)';
-                updateUI();
-                renderDrugPanel();
+                const maxLimit = getDrugMaxLimit(drugName, currentLevel);
+                if (drugInventory[drugName] < maxLimit) {
+                    drugInventory[drugName] = (drugInventory[drugName] || 0) + 1;
+                    statusMessage = '💊 +1 ' + drugName + ' в аптеке (автопополнение)';
+                    updateUI();
+                    renderDrugPanel();
+                }
             }
 
             function getWeightedRandomDrug() {
@@ -1223,7 +1270,8 @@ function restartLevel() {
                 
                 let weightedPool = [];
                 for (let drugName of availableDrugs) {
-                    const weight = DRUG_RARITY[drugName] || 1;
+                    const drug = ALL_DRUGS.find(d => d.name === drugName);
+                    const weight = drug ? drug.rarity || 1 : 1;
                     weightedPool.push({ name: drugName, weight: weight });
                 }
                 
@@ -1877,6 +1925,14 @@ function restartLevel() {
             let currentHealthRange = [50, 80];
             let gameActive = false;
 
+            const ALL_NAMES = [
+                'Алексей', 'Мария', 'Иван', 'Екатерина', 'Дмитрий', 'Анна', 'Сергей', 'Ольга', 'Павел', 'Татьяна',
+                'Николай', 'Наталья', 'Артём', 'Юлия', 'Максим', 'Елена', 'Владимир', 'Ирина', 'Андрей', 'Ксения',
+                'Георгий', 'София', 'Михаил', 'Алиса', 'Роман', 'Анастасия', 'Евгений', 'Виктория', 'Игорь', 'Полина',
+                'Василий', 'Дарья', 'Григорий', 'Марина', 'Анатолий', 'Светлана', 'Пётр', 'Юрий', 'Вероника', 'Антон',
+                'Никита', 'Тимофей', 'Константин', 'Александра', 'Кирилл', 'Оксана', 'Вячеслав', 'Лидия', 'Семён', 'Валентина'
+            ];
+
             const beds = [];
             for (let i = 0; i < 8; i++) beds.push({ x: 50 + i * 100, y: 480 + Math.sin(i * 1.2) * 20, occupied: false });
 
@@ -1919,20 +1975,22 @@ function restartLevel() {
             const drugTooltip = document.getElementById('drugTooltip');
             const tipDrugName = document.getElementById('tipDrugName');
             const tipDrugSideEffect = document.getElementById('tipDrugSideEffect');
-
-            function showDrugTooltip(drug, x, y) {
-                tipDrugName.textContent = '💊 ' + drug.name + ' (Цена: ' + drug.price + ' Ψ)';
-                let sideEffect = drug.sideEffect;
-                if (getSideEffectReduction() >= 1) sideEffect = '✅ Побочные эффекты устранены (Экстрапирамидные расстройства)';
-                tipDrugSideEffect.textContent = '⚠️ Побочный эффект: ' + sideEffect;
-                drugTooltip.style.display = 'block';
-                let left = x + 15, top = y - 10;
-                if (left + 260 > window.innerWidth) left = x - 270;
-                if (top + 100 > window.innerHeight) top = window.innerHeight - 110;
-                if (top < 10) top = 10;
-                drugTooltip.style.left = left + 'px';
-                drugTooltip.style.top = top + 'px';
-            }
+function showDrugTooltip(drug, x, y) {
+    // Используем currentLevel, но если его нет — показываем "?"
+    const maxLimit = currentLevel ? getDrugMaxLimit(drug.name, currentLevel) : '?';
+    const currentCount = drugInventory[drug.name] || 0;
+    tipDrugName.textContent = '💊 ' + drug.name + ' (Цена: ' + drug.price + ' Ψ)  [' + currentCount + '/' + maxLimit + ']';
+    let sideEffect = drug.sideEffect;
+    if (getSideEffectReduction() >= 1) sideEffect = '✅ Побочные эффекты устранены (Экстрапирамидные расстройства)';
+    tipDrugSideEffect.textContent = '⚠️ Побочный эффект: ' + sideEffect;
+    drugTooltip.style.display = 'block';
+    let left = x + 15, top = y - 10;
+    if (left + 260 > window.innerWidth) left = x - 270;
+    if (top + 100 > window.innerHeight) top = window.innerHeight - 110;
+    if (top < 10) top = 10;
+    drugTooltip.style.left = left + 'px';
+    drugTooltip.style.top = top + 'px';
+}
 
             function hideDrugTooltip() { drugTooltip.style.display = 'none'; }
 
@@ -2431,7 +2489,8 @@ function renderDrugPanel() {
     let totalCost = 0;
     let availableCount = 0;
     for (let drugName of availableDrugsList) {
-        if (drugInventory[drugName] < drugLimit) {
+        const maxLimit = getDrugMaxLimit(drugName, currentLevel);
+        if (drugInventory[drugName] < maxLimit) {
             const drugInfo = ALL_DRUGS.find(d => d.name === drugName);
             if (drugInfo) {
                 totalCost += drugInfo.price;
@@ -2453,16 +2512,19 @@ function renderDrugPanel() {
         if (gameOver || isPaused) {
             statusMessage = '❌ Действие недоступно на паузе или игра окончена!';
             updateUI();
-            renderDrugPanel(); // Обновляем после сообщения
+            renderDrugPanel();
             return;
         }
 
         // Находим все доступные препараты, которые ещё не достигли лимита
-        const availableToBuy = availableDrugsList.filter(drug => drugInventory[drug] < drugLimit);
+        const availableToBuy = availableDrugsList.filter(drug => {
+            const maxLimit = getDrugMaxLimit(drug, currentLevel);
+            return drugInventory[drug] < maxLimit;
+        });
         if (availableToBuy.length === 0) {
             statusMessage = '❌ Все препараты уже достигли лимита!';
             updateUI();
-            renderDrugPanel(); // Обновляем после сообщения
+            renderDrugPanel();
             return;
         }
 
@@ -2481,24 +2543,27 @@ function renderDrugPanel() {
         if (score < totalCost) {
             statusMessage = `❌ Недостаточно очков! Нужно ${totalCost} Ψ для покупки всех препаратов по 1 шт.`;
             updateUI();
-            renderDrugPanel(); // Обновляем после сообщения
+            renderDrugPanel();
             return;
         }
 
         // Совершаем покупку
         score -= totalCost;
         for (let { name, price } of drugsToBuy) {
-            drugInventory[name] = (drugInventory[name] || 0) + 1;
+            const maxLimit = getDrugMaxLimit(name, currentLevel);
+            if (drugInventory[name] < maxLimit) {
+                drugInventory[name] = (drugInventory[name] || 0) + 1;
+            }
         }
 
         statusMessage = `💊 Куплено ${drugsToBuy.length} препаратов (по 1 шт.) за ${totalCost} Ψ!`;
         updateUI();
-        renderDrugPanel(); // ОБЯЗАТЕЛЬНО обновляем после покупки!
+        renderDrugPanel();
     });
 
     panel.appendChild(pharmacyBtn);
 
-    // --- КАЖДЫЙ ПРЕПАРАТ С ОТОБРАЖЕНИЕМ ЦЕНЫ ---
+    // --- КАЖДЫЙ ПРЕПАРАТ С ОТОБРАЖЕНИЕМ ЦЕНЫ И МАКСИМАЛЬНОГО КОЛИЧЕСТВА В ТУЛТИПЕ ---
     ALL_DRUGS.forEach(function(drug) {
         const isAvailable = availableDrugsList.includes(drug.name);
         const div = document.createElement('div');
@@ -2517,23 +2582,15 @@ function renderDrugPanel() {
         label.textContent = drug.name;
         div.appendChild(label);
         
-        // --- ОТОБРАЖЕНИЕ ЦЕНЫ ПРЕПАРАТА ---
-        const priceSpan = document.createElement('span');
-        priceSpan.className = 'drug-count';
-        priceSpan.style.background = '#b09a7a';
-        priceSpan.style.color = '#1a1612';
-        priceSpan.style.fontSize = '0.6rem';
-        priceSpan.style.padding = '0 6px';
-        
-        div.appendChild(priceSpan);
-        
         const countSpan = document.createElement('span');
         countSpan.className = 'drug-count';
         countSpan.textContent = drugInventory[drug.name] || 0;
         div.appendChild(countSpan);
 
         if (isAvailable) {
-            div.addEventListener('mouseenter', function(e) { showDrugTooltip(drug, e.clientX, e.clientY); });
+            div.addEventListener('mouseenter', function(e) { 
+                showDrugTooltip(drug, e.clientX, e.clientY); 
+            });
             div.addEventListener('mousemove', function(e) {
                 let left = e.clientX + 15, top = e.clientY - 10;
                 if (left + 260 > window.innerWidth) left = e.clientX - 270;
@@ -2556,7 +2613,7 @@ function renderDrugPanel() {
                     applyDrug(selectedPatient, drug.name);
                     if (selectedPatient.health <= 0) selectedPatient.state = 'healed';
                     updateUI();
-                    renderDrugPanel(); // Обновляем после лечения
+                    renderDrugPanel();
                 } else {
                     statusMessage = '❌ Выделите пациента для лечения';
                     updateUI();
@@ -2589,8 +2646,9 @@ function renderDrugPanel() {
                     return;
                 }
 
-                if (drugInventory[drug.name] >= drugLimit) {
-                    statusMessage = '❌ Лимит препарата "' + drug.name + '" достигнут!';
+                const maxLimit = getDrugMaxLimit(drug.name, currentLevel);
+                if (drugInventory[drug.name] >= maxLimit) {
+                    statusMessage = '❌ Лимит препарата "' + drug.name + '" достигнут! (макс. ' + maxLimit + ')';
                     updateUI();
                     renderDrugPanel();
                     return;
@@ -2600,7 +2658,7 @@ function renderDrugPanel() {
                 drugInventory[drug.name] = (drugInventory[drug.name] || 0) + 1;
                 statusMessage = '💊 Куплен ' + drug.name + ' за ' + drug.price + ' Ψ (ПКМ)';
                 updateUI();
-                renderDrugPanel(); // ОБЯЗАТЕЛЬНО обновляем после покупки!
+                renderDrugPanel();
             });
 
             div.addEventListener('dragstart', function(e) {
@@ -3071,10 +3129,13 @@ function renderDrugPanel() {
                             if (!gameOver && gameActive && currentLevel) {
                                 const drugName = getWeightedRandomDrug();
                                 if (drugName && drugInventory[drugName] !== undefined) {
-                                    drugInventory[drugName] = (drugInventory[drugName] || 0) + 1;
-                                    statusMessage = '💊 +1 ' + drugName + ' (редкость: ' + DRUG_RARITY[drugName] || 1 + ')';
-                                    updateUI();
-                                    renderDrugPanel();
+                                    const maxLimit = getDrugMaxLimit(drugName, currentLevel);
+                                    if (drugInventory[drugName] < maxLimit) {
+                                        drugInventory[drugName] = (drugInventory[drugName] || 0) + 1;
+                                        statusMessage = '💊 +1 ' + drugName + ' (редкость: ' + (ALL_DRUGS.find(d => d.name === drugName)?.rarity || 1) + ')';
+                                        updateUI();
+                                        renderDrugPanel();
+                                    }
                                 }
                             }
                         }
@@ -3189,7 +3250,7 @@ function renderDrugPanel() {
                     return;
                 }
                 const saveData = {
-                    version: 1,
+                    version: 2,
                     levelId: currentLevel.id,
                     docIndex: PSYCHIATRISTS.indexOf(selectedDoc),
                     score: score,
