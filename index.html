@@ -380,6 +380,107 @@ button:focus,
         .encyclopedia-section .item { display: flex; align-items: center; gap: 8px; padding: 3px 0; flex-wrap: wrap; }
         .encyclopedia-section .item .label { font-weight: bold; color: #2d2417; min-width: 80px; }
         .encyclopedia-section .item .value { color: #4a3a2a; }
+        
+        /* --- НОВАЯ МОДАЛКА ПСИХОПЕДИИ --- */
+        .psychopedia-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 7000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+        }
+        .psychopedia-modal.active {
+            display: flex;
+        }
+        .psychopedia-content {
+            background: #cbb99e;
+            border: 6px solid #4a3a2a;
+            border-radius: 24px;
+            padding: 30px 36px;
+            max-width: 850px;
+            width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+            color: #2d2417;
+            box-shadow: 0 0 60px rgba(0,0,0,0.6);
+        }
+        .psychopedia-title {
+            font-size: 2.4rem;
+            text-align: center;
+            color: #1a1612;
+            border-bottom: 3px solid #8a7a5a;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+            font-family: 'Georgia', serif;
+        }
+        .psychopedia-sub {
+            text-align: center;
+            color: #4a3a2a;
+            margin-top: -8px;
+            margin-bottom: 16px;
+            font-style: italic;
+            font-size: 1rem;
+        }
+        .psychopedia-close-btn {
+            display: block;
+            margin: 18px auto 0;
+            padding: 10px 50px;
+            background: #b09a7a;
+            border: none;
+            border-bottom: 4px solid #6a5a42;
+            color: #1a1612;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Georgia', serif;
+        }
+        .psychopedia-close-btn:active {
+            transform: translateY(2px);
+            border-bottom-width: 2px;
+        }
+        .psychopedia-content .encyclopedia-section {
+            margin: 8px 0 12px;
+            padding: 6px 0;
+            border-bottom: 1px solid #a28d70;
+        }
+        .psychopedia-content .encyclopedia-section:last-child {
+            border-bottom: none;
+        }
+        .psychopedia-content .encyclopedia-section h4 {
+            color: #1a1612;
+            font-size: 1.05rem;
+            margin: 4px 0 2px;
+        }
+        .psychopedia-content .encyclopedia-section .item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 3px 0;
+            flex-wrap: wrap;
+        }
+        .psychopedia-content .encyclopedia-section .item .label {
+            font-weight: bold;
+            color: #2d2417;
+            min-width: 80px;
+        }
+        .psychopedia-content .encyclopedia-section .item .value {
+            color: #4a3a2a;
+        }
+        .psychopedia-content .drug-entry .dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 1px solid #5a4a32;
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body>
@@ -546,6 +647,16 @@ button:focus,
                 </div>
             </div>
 
+            <!-- === НОВАЯ МОДАЛКА ПСИХОПЕДИИ (ОТДЕЛЬНОЕ ОКНО) === -->
+            <div class="psychopedia-modal" id="psychopediaModal">
+                <div class="psychopedia-content" id="psychopediaContent">
+                    <div class="psychopedia-title">📖 ПСИХОПЕДИЯ</div>
+                    <div class="psychopedia-sub">Полная энциклопедия игры «Психиатр»</div>
+                    <div id="psychopediaBody"></div>
+                    <button class="psychopedia-close-btn" id="psychopediaCloseBtn">Закрыть</button>
+                </div>
+            </div>
+
             <!-- === ДИАЛОГОВОЕ ОКНО (замена alert) === -->
             <div class="game-dialog-overlay" id="gameDialog">
                 <div class="game-dialog-box">
@@ -563,31 +674,6 @@ button:focus,
 
     <script>
         (function() {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
             // === ДИАЛОГОВОЕ ОКНО (замена alert/confirm) ===
             const dialogOverlay = document.getElementById('gameDialog');
@@ -3354,11 +3440,14 @@ function renderDrugPanel() {
                 }
             }
 
-            // === НОВАЯ ПСИХОПЕДИЯ (полноценная энциклопедия) ===
-            function renderPsychopedia() {
+            // === НОВАЯ ПСИХОПЕДИЯ (отдельное окно) ===
+            const psychopediaModal = document.getElementById('psychopediaModal');
+            const psychopediaBody = document.getElementById('psychopediaBody');
+
+            function renderPsychopediaFull() {
                 let html = `
-                    <div style="text-align:center; margin-bottom:12px; font-size:1.2rem; font-weight:bold; color:#1a1612; border-bottom:2px solid #8a7a5a; padding-bottom:8px;">📖 ПСИХОПЕДИЯ — энциклопедия игры</div>
-                    <div style="font-size:0.85rem; color:#4a3a2a; margin-bottom:12px; text-align:center;">Справочная информация по всем элементам игры «Психиатр»</div>
+                    <div style="text-align:center; margin-bottom:12px; font-size:1.2rem; font-weight:bold; color:#1a1612; border-bottom:2px solid #8a7a5a; padding-bottom:8px;">📖 ПСИХОПЕДИЯ — полная энциклопедия игры</div>
+                    <div style="font-size:0.85rem; color:#4a3a2a; margin-bottom:12px; text-align:center;">Вся справочная информация по игре «Психиатр» в одном месте</div>
                 `;
 
                 // --- 1. Психиатры ---
@@ -3391,7 +3480,7 @@ function renderDrugPanel() {
                 });
                 html += `</div>`;
 
-                // --- 5. Исследования (технологии) — теперь требования на РУССКОМ ---
+                // --- 5. Исследования (технологии) ---
                 html += `<div class="encyclopedia-section"><h4>🔬 Исследования (${TECH_TREE.length} технологий)</h4>`;
                 TECH_TREE.forEach(t => {
                     const status = getTechStatus(t.id);
@@ -3400,7 +3489,7 @@ function renderDrugPanel() {
                     // Преобразуем ID требований в русские названия
                     let prereqNames = t.prereq.map(id => {
                         const found = TECH_TREE.find(tech => tech.id === id);
-                        return found ? found.name : id; // если не найден, показываем ID
+                        return found ? found.name : id;
                     });
                     
                     html += `<div class="item"><span class="label">${statusText} ${t.name}</span><span class="value">${t.desc} (стоимость ${t.cost}🧪, требует: ${prereqNames.length ? prereqNames.join(', ') : 'нет'})</span></div>`;
@@ -3436,40 +3525,90 @@ function renderDrugPanel() {
                 html += `<div class="item"><span class="label">Клозапин</span><span class="value">атипичный антипсихотик, эффективен при резистентной шизофрении, требует контроля крови из-за риска агранулоцитоза.</span></div>`;
                 html += `</div>`;
 
-                menuPsychopediaContent.innerHTML = html;
+                psychopediaBody.innerHTML = html;
             }
 
-         document.getElementById('menuBtnTop').addEventListener('click', function() {
-    // Проверяем, виден ли экран выбора
-    if (!selectionScreen.classList.contains('hidden')) {
-        // Показываем сообщение и блокируем открытие меню
-        statusMessage = '⚠️ Выберите психиатра и уровень, чтобы начать игру!';
-        updateUI();
-        return;
-    }
-    // Проверяем, не находится ли игрок на первом шаге выбора психиатра
-    if (stepPsych.classList.contains('active') || stepLevel.classList.contains('active')) {
-        // На всякий случай двойная проверка
-        if (document.getElementById('selectionScreen') && !document.getElementById('selectionScreen').classList.contains('hidden')) {
-            statusMessage = '⚠️ Сначала завершите выбор!';
-            updateUI();
-            return;
-        }
-    }
-    toggleMenu(true);
-});
+            // Открыть психопедию в отдельном окне
+            function openPsychopedia() {
+                if (!selectionScreen.classList.contains('hidden')) {
+                    statusMessage = '⚠️ Сначала начните игру!';
+                    updateUI();
+                    return;
+                }
+                renderPsychopediaFull();
+                psychopediaModal.classList.add('active');
+                // Приостанавливаем игру, если она активна
+                if (gameActive && !gameOver && !pendingLevelTransition && !isPaused) {
+                    isPaused = true;
+                    statusMessage = '⏸️ ПАУЗА (психопедия)';
+                    updateUI();
+                }
+                pauseMusic();
+            }
+
+            function closePsychopedia() {
+                psychopediaModal.classList.remove('active');
+                if (gameActive && !gameOver && !pendingLevelTransition) {
+                    isPaused = false;
+                    statusMessage = '▶️ Продолжение';
+                    updateUI();
+                    if (isAudioPlaying && isAudioPaused) {
+                        audio.play().then(() => {
+                            isAudioPaused = false;
+                        }).catch(err => console.warn('Audio resume failed:', err));
+                    }
+                    if (!isAudioPlaying) {
+                        startMusic();
+                    }
+                } else {
+                    resumeMusic();
+                }
+            }
+
+            document.getElementById('menuPsychopediaBtn').addEventListener('click', function() {
+                // Закрываем меню и открываем психопедию
+                toggleMenu(false);
+                openPsychopedia();
+            });
+
+            document.getElementById('psychopediaCloseBtn').addEventListener('click', function() {
+                closePsychopedia();
+            });
+
+            // Закрытие по клику вне
+            psychopediaModal.addEventListener('click', function(e) {
+                if (e.target === psychopediaModal) {
+                    closePsychopedia();
+                }
+            });
+
+            // Закрытие по Escape
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && psychopediaModal.classList.contains('active')) {
+                    closePsychopedia();
+                    e.preventDefault();
+                }
+            });
+
+            // === ОСТАЛЬНЫЕ СОБЫТИЯ ===
+            document.getElementById('menuBtnTop').addEventListener('click', function() {
+                if (!selectionScreen.classList.contains('hidden')) {
+                    statusMessage = '⚠️ Выберите психиатра и уровень, чтобы начать игру!';
+                    updateUI();
+                    return;
+                }
+                if (stepPsych.classList.contains('active') || stepLevel.classList.contains('active')) {
+                    if (document.getElementById('selectionScreen') && !document.getElementById('selectionScreen').classList.contains('hidden')) {
+                        statusMessage = '⚠️ Сначала завершите выбор!';
+                        updateUI();
+                        return;
+                    }
+                }
+                toggleMenu(true);
+            });
 
             document.getElementById('menuCloseBtn').addEventListener('click', function() {
                 toggleMenu(false);
-            });
-
-            document.getElementById('menuPsychopediaBtn').addEventListener('click', function() {
-                if (menuPsychopediaBlock.style.display === 'none') {
-                    renderPsychopedia();
-                    menuPsychopediaBlock.style.display = 'block';
-                } else {
-                    menuPsychopediaBlock.style.display = 'none';
-                }
             });
 
             document.getElementById('menuSaveBtn').addEventListener('click', function() {
@@ -3482,70 +3621,53 @@ function renderDrugPanel() {
                 toggleMenu(false);
             });
 
-            // ===== НОВАЯ ИГРА В МЕНЮ =====
-           document.getElementById('menuRestartBtn').addEventListener('click', function() {
-    showDialog('Новая игра', 'Начать новую игру? Текущий прогресс будет потерян.', ['Да', 'Нет']).then(res => {
-        if (res === 0) {
-            toggleMenu(false);
-            stopMusic();
-            gameOver = true; gameActive = false; isPaused = false;
-            if (gameLoopId) { cancelAnimationFrame(gameLoopId); gameLoopId = null; }
-            gameWrapper.classList.remove('active');
-            selectionScreen.classList.remove('hidden');
-            showStep('psych');
-            stopMusic();
-            renderPsychSelection();
-            document.getElementById('gameoverModal').classList.remove('active');
-            document.getElementById('levelTransitionModal').classList.remove('active');
-            
-            // ---- СБРАСЫВАЕМ РАЗБЛОКИРОВКУ УРОВНЕЙ ----
-            completedLevels = {};
-            unlockedLevels = ['bechtereva'];
-            LEVELS.forEach(function(level) {
-                level.unlocked = (level.id === 'bechtereva');
+            document.getElementById('menuRestartBtn').addEventListener('click', function() {
+                showDialog('Новая игра', 'Начать новую игру? Текущий прогресс будет потерян.', ['Да', 'Нет']).then(res => {
+                    if (res === 0) {
+                        toggleMenu(false);
+                        stopMusic();
+                        gameOver = true; gameActive = false; isPaused = false;
+                        if (gameLoopId) { cancelAnimationFrame(gameLoopId); gameLoopId = null; }
+                        gameWrapper.classList.remove('active');
+                        selectionScreen.classList.remove('hidden');
+                        showStep('psych');
+                        stopMusic();
+                        renderPsychSelection();
+                        document.getElementById('gameoverModal').classList.remove('active');
+                        document.getElementById('levelTransitionModal').classList.remove('active');
+                        
+                        completedLevels = {};
+                        unlockedLevels = ['bechtereva'];
+                        LEVELS.forEach(function(level) {
+                            level.unlocked = (level.id === 'bechtereva');
+                        });
+                        window.techPoints = 0;
+                        window.researchedTechs = [];
+                        window.techEffects = {};
+                        techPoints = 0;
+                        researchedTechs = [];
+                        techEffects = {};
+                        score = 0;
+                        curedCount = 0;
+                        levelCompleted = false;
+                        nurseCount = 0;
+                        orderlyCount = 0;
+                        orderly2Count = 0;
+                        drugInventory = {};
+                        patients = [];
+                        zLetters = [];
+                        beds.forEach(function(bed) {
+                            bed.occupied = false;
+                        });
+                        spawnTimer = 0;
+                        autoRestockCounter = 0;
+                        zSpawnCounter = 0;
+                        frameCounter = 0;
+                        renderLevelSelection();
+                        stopMusic();
+                    }
+                });
             });
-            // -----------------------------------------
-            // 2. ИССЛЕДОВАНИЯ - ЖЁСТКИЙ СБРОС
-            window.techPoints = 0;
-            window.researchedTechs = [];
-            window.techEffects = {};
-            
-            // Также напрямую
-            techPoints = 0;
-            researchedTechs = [];
-            techEffects = {};
-            
-            // 3. Очки и счётчики
-            score = 0;
-            curedCount = 0;
-            levelCompleted = false;
-            
-            // 4. Персонал
-            nurseCount = 0;
-            orderlyCount = 0;
-            orderly2Count = 0;
-            
-            // 5. Инвентарь
-            drugInventory = {};
-            
-            // 6. Пациенты и эффекты
-            patients = [];
-            zLetters = [];
-            beds.forEach(function(bed) {
-                bed.occupied = false;
-            });
-            
-            // 7. Таймеры
-            spawnTimer = 0;
-            autoRestockCounter = 0;
-            zSpawnCounter = 0;
-            frameCounter = 0;
-            
-            renderLevelSelection();
-            stopMusic();
-        }
-    });
-});
 
             document.getElementById('menuExitBtn').addEventListener('click', function() {
                 showDialog('Выход', 'Вы уверены, что хотите выйти?', ['Да', 'Нет']).then(res => {
@@ -3560,7 +3682,6 @@ function renderDrugPanel() {
                 showDialog('Об авторе', '👤 Автор: Панченко М. А.\n📍 Санкт-Петербург, Россия\n💻 Программист\n📧 mercury.nosov@gmail.com', ['OK']);
             });
 
-            // Закрытие меню по клику вне
             menuModal.addEventListener('click', function(e) {
                 if (e.target === menuModal) {
                     toggleMenu(false);
@@ -3579,6 +3700,12 @@ function renderDrugPanel() {
                 }
 
                 if (e.key === 'Escape') {
+                    // Закрываем психопедию, если она открыта
+                    if (psychopediaModal.classList.contains('active')) {
+                        closePsychopedia();
+                        e.preventDefault();
+                        return;
+                    }
                     if (menuModal.classList.contains('active')) {
                         toggleMenu(false);
                         e.preventDefault();
@@ -3627,7 +3754,7 @@ function renderDrugPanel() {
                 }
                 if (e.key === ' ' || e.key === 'Space') {
                     e.preventDefault();
-                    if (menuModal.classList.contains('active') || dialogOverlay.classList.contains('active')) return;
+                    if (menuModal.classList.contains('active') || dialogOverlay.classList.contains('active') || psychopediaModal.classList.contains('active')) return;
                     
                     if (gameActive && !gameOver && !pendingLevelTransition) {
                         isPaused = !isPaused;
@@ -3789,19 +3916,14 @@ function renderDrugPanel() {
                 stopMusic();
             });
 
-            // === КНОПКИ СОХРАНЕНИЯ/ЗАГРУЗКИ ===
             document.getElementById('saveBtnTop').addEventListener('click', saveGame);
             document.getElementById('loadBtnTop').addEventListener('click', loadGame);
-
-            // === КНОПКА ЗАГРУЗКИ УРОВНЯ ИЗ МЕНЮ ===
             loadLevelBtn.addEventListener('click', loadLevelFromMenu);
 
-            // === INIT SELECTION ===
             renderPsychSelection();
             showStep('psych');
             stopMusic();
 
-            // === BUTTONS ===
             backToPsychBtn.addEventListener('click', onBackToPsych);
 
             window.addEventListener('beforeunload', function() {
@@ -3813,7 +3935,6 @@ function renderDrugPanel() {
 
         })();
 
-
 document.addEventListener('contextmenu', function(e) {
     e.preventDefault();
     return false;
@@ -3823,11 +3944,6 @@ canvas.addEventListener('contextmenu', function(e) {
     e.preventDefault();
     return false;
 });
-
-
-
-
-
 
     </script>
 </body>
