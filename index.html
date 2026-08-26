@@ -209,7 +209,7 @@ button:focus,
         .left-panel .drug-pill:active { cursor: grabbing; opacity: 0.6; }
         .left-panel .drug-pill.dragging { opacity: 0.3; transform: scale(0.95); }
         .left-panel .drug-pill.locked-drug { opacity: 0.4; cursor: not-allowed; filter: grayscale(0.8); }
-        .left-panel .drug-pill.locked-drug:hover::after { content: '🔒 Требуется уровень выше'; position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); background: #1a1612; color: #dac9b0; padding: 2px 8px; border-radius: 4px; font-size: 0.6rem; white-space: nowrap; z-index: 10; }
+        .left-panel .drug-pill.locked-drug:hover::after { content: '🔒 Требуется уровень выше'; position: absolute; bottom: 0px; left: 50%; transform: translateX(-50%); background: #1a1612; color: #dac9b0; padding: 2px 8px; border-radius: 4px; font-size: 0.6rem; white-space: nowrap; z-index: 10; }
         .left-panel .color-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #5a4a32; flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(255,215,140,0.5); margin-bottom: 2px; }
         .left-panel .drug-label { font-size: 0.8rem; word-break: break-word; text-align: center; line-height: 1.2; max-width: 120px; font-weight: bold; color: #2d2417; }
         .left-panel .drug-count { font-size: 0.75rem; color: #5a4a32; background: #dac9b0; padding: 0 10px; border-radius: 10px; margin-top: 2px; font-weight: bold; }
@@ -2558,7 +2558,7 @@ function renderDrugPanel() {
             });
             div.addEventListener('dragend', function() { div.classList.remove('dragging'); });
         } else {
-            div.title = '🔒 Доступен на более высоких уровнях';
+            div.title = '';
         }
         panel.appendChild(div);
     });
