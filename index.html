@@ -3732,6 +3732,7 @@ for (let i = 0; i < fighters.length - 1; i++) {
 
             // Открыть психопедию в отдельном окне
             function openPsychopedia() {
+stopMusic()
                 if (!selectionScreen.classList.contains('hidden')) {
                     statusMessage = '⚠️ Сначала начните игру!';
                     updateUI();
@@ -3744,6 +3745,7 @@ for (let i = 0; i < fighters.length - 1; i++) {
                     isPaused = true;
                     statusMessage = '⏸️ ПАУЗА (психопедия)';
                     updateUI();
+
                 }
                 pauseMusic();
             }
@@ -3760,10 +3762,10 @@ for (let i = 0; i < fighters.length - 1; i++) {
                         }).catch(err => console.warn('Audio resume failed:', err));
                     }
                     if (!isAudioPlaying) {
-                        startMusic();
+                      startMusic();
                     }
                 } else {
-                    resumeMusic();
+                 resumeMusic();
                 }
             }
 
