@@ -700,6 +700,7 @@ function restartLevel() {
            // researchedTechs = [];
             //techEffects = {};
             curedCount = 0;
+levelScore = 0;  
             levelCompleted = false;
             pendingLevelTransition = false;
             gameOver = false;
@@ -1335,7 +1336,7 @@ case "циклодол":return 15
 
                 const modal = document.getElementById('levelTransitionModal');
                 document.getElementById('ltLevelName').textContent = currentLevel ? currentLevel.name + ' (' + currentLevel.desc + ')' : '—';
-                document.getElementById('ltScore').textContent = score;
+           document.getElementById('ltScore').textContent = levelScore;
                 document.getElementById('ltTech').textContent = techPoints;
                 document.getElementById('ltCured').textContent = curedCount;
                 document.getElementById('ltTask').textContent = currentTaskTarget;
@@ -1397,6 +1398,7 @@ case "циклодол":return 15
                 maxPatients = currentMaxPatients;
                 
                 score = 0;
+levelScore = 0;  // ← ДОБАВИТЬ
                 nurseCount = 0;
                 orderlyCount = 0;
                 orderly2Count = 0;
@@ -1919,8 +1921,9 @@ case "циклодол":return 15
             let namePool = [], spawnTimer = 0, drugPrice = 10, drugLimit = 20;
             let zLetters = [], timeOfDay = 600, DAY_SPEED = 0.3, currentLevel = null;
             let fightChance = 0.01, spawnInterval = 12, maxPatients = 6;
-            let score = 0, frameCounter = 0, hoveredPatient = null;
-            let curedCount = 0, taskTarget = 5;
+       let score = 0, frameCounter = 0, hoveredPatient = null;
+let curedCount = 0, taskTarget = 5;
+let levelScore = 0;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
             let levelCompleted = false;
             let currentHealthRange = [50, 80];
             let gameActive = false;
@@ -2366,8 +2369,9 @@ const health = Math.floor(random(minHealth, maxHealth));
                     if (patient.health >= 100) {
                         patient.state = 'healed';
                         returnNameToPool(patient.name);
-                        const bonusPoints = 10 + Math.floor(disease.severity * 2);
-                        score += bonusPoints;
+              const bonusPoints = 5 + Math.floor(Math.pow(disease.severity, 2) * 2);
+          score += bonusPoints;
+levelScore += bonusPoints;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
                         const orderlyBonus = getOrderlyBonus();
                         const techEarn = 5 + Math.floor(disease.severity * 1.0) + Math.floor(orderlyBonus*1.5);
                         techPoints += techEarn;
@@ -2429,7 +2433,8 @@ const health = Math.floor(random(minHealth, maxHealth));
                 availableDiseases = getAvailableDiseasesForLevel(level);
                 drugInventory = initDrugInventory(level);
                 
-                score = 0; 
+           score = 0;
+levelScore = 0;  // ← ДОБАВИТЬ 
                 curedCount = 0; 
                 levelCompleted = false;
                 
@@ -3339,10 +3344,11 @@ for (let i = 0; i < fighters.length - 1; i++) {
                     return;
                 }
                 const saveData = {
-                    version: 2,
-                    levelId: currentLevel.id,
-                    docIndex: PSYCHIATRISTS.indexOf(selectedDoc),
-                    score: score,
+                      version: 2,
+    levelId: currentLevel.id,
+    docIndex: PSYCHIATRISTS.indexOf(selectedDoc),
+    score: score,
+    levelScore: levelScore,  // ← ДОБАВИТЬ
                     techPoints: techPoints,
                     researchedTechs: researchedTechs,
                     nurseCount: nurseCount,
@@ -3480,7 +3486,8 @@ for (let i = 0; i < fighters.length - 1; i++) {
                             selectedPsychIndex = Math.max(0, PSYCHIATRISTS.indexOf(selectedDoc));
                             selectedLevelIndex = Math.max(0, LEVELS.indexOf(level));
                             
-                            score = data.score || 0;
+                     score = data.score || 0;
+levelScore = data.levelScore || 0;  // ← ДОБАВИТЬ
                             techPoints = data.techPoints || 0;
                             researchedTechs = data.researchedTechs || [];
                             nurseCount = data.nurseCount || 0;
