@@ -3209,6 +3209,39 @@ if (!gameOver && gameActive && !isPaused) {
         baseSpeed = minSpeed + (levelIndex / maxIndex) * (maxSpeed - minSpeed);
     }
     
+ const sleepingPatients = patients.filter(p => p.state !== 'healed' && p.isSleeping);
+    
+    sleepingPatients.forEach(function(p) {
+        // Базовая скорость восстановления
+        let healSpeed = 0.03; // 3% за тик (примерно 1.8% в секунду при 60fps)
+        
+        // Ночью восстанавливаются быстрее
+        if (isNight()) {
+            healSpeed *= 1.8; // 5.4% за тик
+        }
+        
+        // Днём спят редко, но если спят - медленнее
+        if (isDay()) {
+            healSpeed *= 0.5;
+        }
+        
+        // Бонус от исследований
+        if (techEffects.physicalTherapy) {
+            healSpeed *= (1 + techEffects.physicalTherapy);
+        }
+        
+        // Бонус от медсестёр (медсёстры ухаживают за спящими)
+        const nurseBonus = 1 + getNurseBonus() * 0.5;
+        healSpeed *= nurseBonus;
+        
+        // Применяем восстановление
+        p.health = Math.min(100, p.health + healSpeed);
+        
+        // Если здоровье восстановилось до 100% во сне - пациент не вылечивается автоматически,
+        // ему всё равно нужен препарат, но он просыпается здоровее
+    });
+
+
     // Применяем потерю здоровья
     activePatients.forEach(function(p) {
         if (p.state !== 'healed' && !p.isSleeping && !levelCompleted) {
