@@ -174,23 +174,126 @@ button:focus,
             max-height: 80vh;
             overflow-y: auto;
         }
-        /* Адаптация под мобильные */
-        @media (max-width: 700px) {
-            .game-dialog-box {
-                padding: 20px 16px;
-            }
-            .game-dialog-box .dialog-title {
-                font-size: 1.4rem;
-            }
-            .game-dialog-box .dialog-message {
-                font-size: 1rem;
-            }
-            .game-dialog-box .dialog-btn {
-                padding: 6px 16px;
-                font-size: 0.9rem;
-                min-width: 60px;
-            }
-        }
+
+@media (max-width: 700px) {
+    /* Увеличиваем всё для пальцев */
+    .game-wrapper {
+        padding: 6px;
+        gap: 4px;
+    }
+    
+    /* Левая панель с препаратами - горизонтальная прокрутка */
+    .left-panel {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        max-height: 80px !important;
+        min-height: 70px !important;
+        padding: 6px 8px !important;
+        gap: 6px !important;
+        width: 100% !important;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Каждая пилюля препарата - больше и кликабельнее */
+    .left-panel .drug-pill {
+        min-width: 80px !important;
+        min-height: 55px !important;
+        padding: 4px 10px !important;
+        flex-shrink: 0 !important;
+        font-size: 0.8rem !important;
+        touch-action: manipulation !important;
+        user-select: none !important;
+        -webkit-tap-highlight-color: transparent;
+    }
+    
+    .left-panel .color-dot {
+        width: 24px !important;
+        height: 24px !important;
+    }
+    
+    /* Пациенты на канвасе - больше */
+    canvas {
+        touch-action: none !important;
+        cursor: pointer !important;
+    }
+    
+    /* Нижняя панель - компактнее */
+    .bottom-panel {
+        padding: 8px 12px !important;
+        font-size: 0.75rem !important;
+        gap: 4px !important;
+        flex-wrap: wrap !important;
+    }
+    
+    .bottom-left, .bottom-right {
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 4px !important;
+    }
+    
+    .bottom-panel span {
+        font-size: 0.7rem !important;
+        padding: 2px 10px !important;
+    }
+    
+    /* Верхняя панель - всё компактнее */
+    .top-bar {
+        padding: 4px 8px !important;
+        gap: 4px !important;
+        flex-wrap: wrap !important;
+    }
+    
+    .top-bar button {
+        padding: 4px 12px !important;
+        font-size: 0.75rem !important;
+        min-height: 30px !important;
+    }
+    
+    .top-score-bar, .time-indicator {
+        padding: 2px 10px !important;
+        font-size: 0.75rem !important;
+    }
+    
+    /* Модальные окна - на весь экран */
+    .game-dialog-box,
+    .book-content,
+    .tech-tree-content,
+    .info-content,
+    .menu-content,
+    .psychopedia-content {
+        padding: 16px !important;
+        max-width: 98% !important;
+        width: 98% !important;
+        max-height: 92vh !important;
+        border-radius: 12px !important;
+    }
+    
+    .sel-container {
+        padding: 16px !important;
+        max-height: 95vh !important;
+    }
+    
+    .sel-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important;
+        gap: 8px !important;
+    }
+    
+    .sel-levels {
+        grid-template-columns: 1fr !important;
+        gap: 6px !important;
+    }
+    
+    .sel-card, .sel-level {
+        padding: 10px !important;
+        font-size: 0.85rem !important;
+    }
+    
+    .sel-title {
+        font-size: 1.6rem !important;
+    }
+}
         /* Остальные стили из оригинального файла (сохранены) */
         .staff-panel.hidden-staff-panel { 
             display: none !important; 
