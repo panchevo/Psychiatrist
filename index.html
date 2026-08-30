@@ -4546,7 +4546,10 @@ document.getElementById('menuCloseBtn').addEventListener('click', function() {
             document.getElementById('saveBtnTop').addEventListener('click', saveGame);
             document.getElementById('loadBtnTop').addEventListener('click', loadGame);
             loadLevelBtn.addEventListener('click', loadLevelFromMenu);
-
+document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        return false;
+    });
             renderPsychSelection();
             showStep('psych');
             stopMusic();
