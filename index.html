@@ -4012,6 +4012,7 @@ let levelScore = 0;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
         statusMessage = '⚠️ Сначала начните игру (выберите психиатра и уровень)!';
         updateUI();
         return;
+
     }
 
 
@@ -4129,7 +4130,7 @@ let levelScore = 0;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
             }
 
             function openPsychopedia() {
-                stopMusic()
+             stopMusic()
                 if (!selectionScreen.classList.contains('hidden')) {
                     statusMessage = '⚠️ Сначала начните игру!';
                     updateUI();
@@ -4145,26 +4146,49 @@ let levelScore = 0;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
                 }
                 pauseMusic();
             }
-
-            function closePsychopedia() {
-                psychopediaModal.classList.remove('active');
-                if (gameActive && !gameOver && !pendingLevelTransition) {
-                    isPaused = false;
-                    statusMessage = '▶️ Продолжение';
-                    updateUI();
-                    if (isAudioPlaying && isAudioPaused) {
-                        audio.play().then(() => {
-                            isAudioPaused = false;
-                        }).catch(err => console.warn('Audio resume failed:', err));
-                    }
-                    if (!isAudioPlaying) {
-                      startMusic();
-                    }
-                } else {
-                 resumeMusic();
-                }
+function closePsychopedia() {
+    // Сначала закрываем Психопедию
+    psychopediaModal.classList.remove('active');
+    
+    // Если главное меню открыто — закрываем его
+    if (menuModal.classList.contains('active')) {
+        menuModal.classList.remove('active');
+        // Возвращаем игру из паузы, если она была
+        if (gameActive && !gameOver && !pendingLevelTransition) {
+            isPaused = false;
+            statusMessage = '▶️ Продолжение';
+            updateUI();
+            if (isAudioPlaying && isAudioPaused) {
+                audio.play().then(() => {
+                    isAudioPaused = false;
+                }).catch(err => console.warn('Audio resume failed:', err));
             }
-
+            if (!isAudioPlaying) {
+                startMusic();
+            }
+        } else {
+            resumeMusic();
+        }
+        return; // Выходим, чтобы не дублировать действия
+    }
+    
+    // Если меню не было открыто — просто продолжаем игру
+    if (gameActive && !gameOver && !pendingLevelTransition) {
+        isPaused = false;
+        statusMessage = '▶️ Продолжение';
+        updateUI();
+        if (isAudioPlaying && isAudioPaused) {
+            audio.play().then(() => {
+                isAudioPaused = false;
+            }).catch(err => console.warn('Audio resume failed:', err));
+        }
+        if (!isAudioPlaying) {
+            startMusic();
+        }
+    } else {
+        resumeMusic();
+    }
+}
             document.getElementById('menuPsychopediaBtn').addEventListener('click', function() {
                 toggleMenu(false);
                 openPsychopedia();
@@ -4223,95 +4247,6 @@ let levelScore = 0;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
                 restartLevel();
             });
 
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && psychopediaModal.classList.contains('active')) {
-                    closePsychopedia();
-                    e.preventDefault();
-                }
-            });
-
-            // === ОСТАЛЬНЫЕ СОБЫТИЯ ===
-            document.getElementById('menuBtnTop').addEventListener('click', function() {
-                if (!selectionScreen.classList.contains('hidden')) {
-                    statusMessage = '⚠️ Выберите психиатра и уровень, чтобы начать игру!';
-                    updateUI();
-                    return;
-                }
-                if (stepPsych.classList.contains('active') || stepLevel.classList.contains('active')) {
-                    if (document.getElementById('selectionScreen') && !document.getElementById('selectionScreen').classList.contains('hidden')) {
-                        statusMessage = '⚠️ Сначала завершите выбор!';
-                        updateUI();
-                        return;
-                    }
-                }
-                toggleMenu(true);
-            });
-
-            document.getElementById('menuCloseBtn').addEventListener('click', function() {
-                toggleMenu(false);
-            });
-
-            document.getElementById('menuSaveBtn').addEventListener('click', function() {
-                saveGame();
-                toggleMenu(false);
-            });
-
-            document.getElementById('menuLoadBtn').addEventListener('click', function() {
-                loadGame();
-                toggleMenu(false);
-            });
-
-            document.getElementById('menuRestartBtn').addEventListener('click', function() {
-                showDialog('Новая игра', 'Начать новую игру? Текущий прогресс будет потерян.', ['Да', 'Нет']).then(res => {
-                    if (res === 0) {
-                        toggleMenu(false);
-                        stopMusic();
-                        gameOver = true; gameActive = false; isPaused = false;
-                        if (gameLoopId) { cancelAnimationFrame(gameLoopId); gameLoopId = null; }
-                        gameWrapper.classList.remove('active');
-                        selectionScreen.classList.remove('hidden');
-                        showStep('psych');
-                        stopMusic();
-                        renderPsychSelection();
-                        document.getElementById('gameoverModal').classList.remove('active');
-                        document.getElementById('levelTransitionModal').classList.remove('active');
-                        
-                        completedLevels = {};
-                        unlockedLevels = ['bechtereva'];
-                        LEVELS.forEach(function(level) {
-                            level.unlocked = (level.id === 'bechtereva');
-                        });
-                        window.techPoints = 0;
-                        window.researchedTechs = [];
-                        window.techEffects = {};
-                        techPoints = 0;
-                        researchedTechs = [];
-                        techEffects = {};
-                        score = 0;
-                        curedCount = 0;
-                        levelCompleted = false;
-                        nurseCount = 0;
-                        orderlyCount = 0;
-                        orderly2Count = 0;
-                        ectCount = 0;
-                        ectTimer = 0;
-                        ectTarget = null;
-                        isEctSelectMode = false;
-                        drugInventory = {};
-                        patients = [];
-                        zLetters = [];
-                        beds.forEach(function(bed) {
-                            bed.occupied = false;
-                        });
-                        spawnTimer = 0;
-                        autoRestockCounter = 0;
-                        zSpawnCounter = 0;
-                        frameCounter = 0;
-                        renderLevelSelection();
-                        stopMusic();
-                    }
-                });
-            });
 
             document.getElementById('menuExitBtn').addEventListener('click', function() {
                 showDialog('Выход', 'Вы уверены, что хотите выйти?', ['Да', 'Нет']).then(res => {
@@ -4332,137 +4267,154 @@ let levelScore = 0;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
                 }
             });
 
-            // === СОБЫТИЯ ===
-            document.addEventListener('keydown', function(e) {
-                if (dialogOverlay.classList.contains('active')) {
-                    if (e.key === 'Escape') {
-                        dialogOverlay.classList.remove('active');
-                        if (dialogResolve) dialogResolve(-1);
-                        e.preventDefault();
-                    }
-                    return;
+      document.addEventListener('keydown', function(e) {
+    // === ДИАЛОГ ===
+    if (dialogOverlay.classList.contains('active')) {
+        if (e.key === 'Escape') {
+            dialogOverlay.classList.remove('active');
+            if (dialogResolve) dialogResolve(-1);
+            e.preventDefault();
+        }
+        return;
+    }
+    
+    // === ESCAPE ===
+    if (e.key === 'Escape') {
+        // 1. Режим ЭСТ
+        if (isEctSelectMode) {
+            isEctSelectMode = false;
+            statusMessage = '⚡ Режим выбора ЭСТ отменён';
+            updateUI();
+            e.preventDefault();
+            return;
+        }
+        
+        // 2. ПСИХОПЕДИЯ — закрываем и ВОЗВРАЩАЕМСЯ (важно!)
+        if (psychopediaModal.classList.contains('active')) {
+            closePsychopedia();
+            e.preventDefault();
+            return; // ← КЛЮЧЕВОЙ МОМЕНТ: выходим, чтобы не обрабатывать другие условия
+        }
+        
+        // 3. ГЛАВНОЕ МЕНЮ
+        if (menuModal.classList.contains('active')) {
+            toggleMenu(false);
+            e.preventDefault();
+            return;
+        }
+        
+        // 4. Книга, технологии, информация
+        const bookModal = document.getElementById('bookModal');
+        const techModal = document.getElementById('techTreeModal');
+        const infoModal = document.getElementById('infoModal');
+        const ltModal = document.getElementById('levelTransitionModal');
+        const goModal = document.getElementById('gameoverModal');
+        
+        if (bookModal.classList.contains('active')) {
+            bookModal.classList.remove('active');
+            e.preventDefault();
+            return;
+        }
+        if (techModal.classList.contains('active')) {
+            techModal.classList.remove('active');
+            e.preventDefault();
+            return;
+        }
+        if (infoModal.classList.contains('active')) {
+            infoModal.classList.remove('active');
+            e.preventDefault();
+            return;
+        }
+        if (ltModal.classList.contains('active')) {
+            statusMessage = '❌ Нажмите "Продолжить" для перехода на следующий уровень!';
+            updateUI();
+            e.preventDefault();
+            return;
+        }
+        if (goModal.classList.contains('active')) {
+            e.preventDefault();
+            return;
+        }
+        
+        // 5. Если игра активна — открываем меню
+        if (gameActive || gameOver) {
+            toggleMenu(true);
+            e.preventDefault();
+            return;
+        }
+    }
+    
+    // === ПРОБЕЛ ===
+    if (e.key === ' ' || e.key === 'Space') {
+        e.preventDefault();
+        if (menuModal.classList.contains('active') || dialogOverlay.classList.contains('active') || psychopediaModal.classList.contains('active') || isEctSelectMode) return;
+        
+        if (gameActive && !gameOver && !pendingLevelTransition) {
+            isPaused = !isPaused;
+            statusMessage = isPaused ? '⏸️ ПАУЗА' : '▶️ Продолжение';
+            
+            if (isPaused) {
+                if (isAudioPlaying && !isAudioPaused) {
+                    audio.pause();
+                    isAudioPaused = true;
                 }
-
-                if (e.key === 'Escape') {
-                    if (isEctSelectMode) {
-                        isEctSelectMode = false;
-                        statusMessage = '⚡ Режим выбора ЭСТ отменён';
-                        updateUI();
-                        e.preventDefault();
-                        return;
-                    }
-                    if (psychopediaModal.classList.contains('active')) {
-                        closePsychopedia();
-                        e.preventDefault();
-                        return;
-                    }
-                    if (menuModal.classList.contains('active')) {
-                        toggleMenu(false);
-                        e.preventDefault();
-                        return;
-                    }
-                    const bookModal = document.getElementById('bookModal');
-                    const techModal = document.getElementById('techTreeModal');
-                    const infoModal = document.getElementById('infoModal');
-                    const ltModal = document.getElementById('levelTransitionModal');
-                    const goModal = document.getElementById('gameoverModal');
-                    
-                    if (bookModal.classList.contains('active')) {
-                        bookModal.classList.remove('active');
-                        e.preventDefault();
-                        return;
-                    }
-                    if (techModal.classList.contains('active')) {
-                        techModal.classList.remove('active');
-                        e.preventDefault();
-                        return;
-                    }
-                    if (infoModal.classList.contains('active')) {
-                        infoModal.classList.remove('active');
-                        e.preventDefault();
-                        return;
-                    }
-                    if (ltModal.classList.contains('active')) {
-                        statusMessage = '❌ Нажмите "Продолжить" для перехода на следующий уровень!';
-                        e.preventDefault();
-                        return;
-                    }
-                    if (goModal.classList.contains('active')) {
-                        e.preventDefault();
-                        return;
-                    }
-                    if (gameActive || gameOver) {
-                        toggleMenu(true);
-                        e.preventDefault();
-                    }
+            } else {
+                if (isAudioPlaying && isAudioPaused) {
+                    audio.play().then(() => {
+                        isAudioPaused = false;
+                    }).catch(err => console.warn('Audio resume failed:', err));
                 }
-                if (e.key === ' ' || e.key === 'Space') {
-                    e.preventDefault();
-                    if (menuModal.classList.contains('active') || dialogOverlay.classList.contains('active') || psychopediaModal.classList.contains('active') || isEctSelectMode) return;
-                    
-                    if (gameActive && !gameOver && !pendingLevelTransition) {
-                        isPaused = !isPaused;
-                        statusMessage = isPaused ? '⏸️ ПАУЗА' : '▶️ Продолжение';
-                        
-                        if (isPaused) {
-                            if (isAudioPlaying && !isAudioPaused) {
-                                audio.pause();
-                                isAudioPaused = true;
-                            }
-                        } else {
-                            if (isAudioPlaying && isAudioPaused) {
-                                audio.play().then(() => {
-                                    isAudioPaused = false;
-                                }).catch(err => console.warn('Audio resume failed:', err));
-                            }
-                            if (!isAudioPlaying) {
-                                startMusic();
-                            }
-                        }
-                        
-                        updateUI();
-                        renderDrugPanel();
-                    }
+                if (!isAudioPlaying) {
+                    startMusic();
                 }
-                if (e.key === 'Enter') {
-                    const levelModal = document.getElementById('levelTransitionModal');
-                    if (levelModal.classList.contains('active') && nextLevelData) {
-                        e.preventDefault();
-                        goToNextLevel();
-                    }
+            }
+            
+            updateUI();
+            renderDrugPanel();
+        }
+    }
+    
+    // === ENTER ===
+    if (e.key === 'Enter') {
+        const levelModal = document.getElementById('levelTransitionModal');
+        if (levelModal.classList.contains('active') && nextLevelData) {
+            e.preventDefault();
+            goToNextLevel();
+            return;
+        }
+        
+        if (!selectionScreen.classList.contains('hidden')) {
+            if (stepPsych.classList.contains('active')) {
+                selectedDoc = PSYCHIATRISTS[selectedPsychIndex];
+                selectedDocDisplay.textContent = 'Выбран: ' + selectedDoc.name;
+                showStep('level');
+                renderLevelSelection();
+            } else if (stepLevel.classList.contains('active')) {
+                const doc = PSYCHIATRISTS[selectedPsychIndex];
+                const lvl = LEVELS[selectedLevelIndex];
+                if (doc && lvl && (lvl.unlocked || checkLevelUnlock(lvl.id))) {
+                    stopMusic();
+                    selectedDoc = doc;
+                    selectedLevel = lvl;
+                    selectionScreen.classList.add('hidden');
+                    gameWrapper.classList.add('active');
+                    isPaused = false;
+                    initGameWithSettings(doc, lvl);
                 }
-                if (e.key === 'Enter') {
-                    if (!selectionScreen.classList.contains('hidden')) {
-                        if (stepPsych.classList.contains('active')) {
-                            selectedDoc = PSYCHIATRISTS[selectedPsychIndex];
-                            selectedDocDisplay.textContent = 'Выбран: ' + selectedDoc.name;
-                            showStep('level');
-                            renderLevelSelection();
-                        } else if (stepLevel.classList.contains('active')) {
-                            const doc = PSYCHIATRISTS[selectedPsychIndex];
-                            const lvl = LEVELS[selectedLevelIndex];
-                            if (doc && lvl && (lvl.unlocked || checkLevelUnlock(lvl.id))) {
-                                stopMusic();
-                                selectedDoc = doc;
-                                selectedLevel = lvl;
-                                selectionScreen.classList.add('hidden');
-                                gameWrapper.classList.add('active');
-                                isPaused = false;
-                                initGameWithSettings(doc, lvl);
-                            }
-                        }
-                    }
-                }
-                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                    e.preventDefault();
-                    saveGame();
-                }
-                if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
-                    e.preventDefault();
-                    loadGame();
-                }
-            });
-
+            }
+        }
+    }
+    
+    // === CTRL+S / CTRL+O ===
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        saveGame();
+    }
+    if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
+        e.preventDefault();
+        loadGame();
+    }
+});
             canvas.addEventListener('mousemove', function(e) {
                 if (gameOver || isPaused) {
                     hideTooltip();
@@ -4611,21 +4563,8 @@ let levelScore = 0;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
 
         })();
 
-document.addEventListener('contextmenu', function(e) {
-    e.preventDefault();
-    return false;
-});
 
 
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-const W = 900, H = 550;
-
-
-canvas.addEventListener('contextmenu', function(e) {
-    e.preventDefault();
-    return false;
-});
 
     </script>
 </body>
