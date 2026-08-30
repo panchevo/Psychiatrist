@@ -3978,6 +3978,10 @@ document.getElementById('menuRestartLevelBtn').addEventListener('click', functio
 });
 
             document.addEventListener('keydown', function(e) {
+psychopediaModal.classList.remove('active');
+
+
+
                 if (e.key === 'Escape' && psychopediaModal.classList.contains('active')) {
                     closePsychopedia();
                     e.preventDefault();
