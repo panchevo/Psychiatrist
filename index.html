@@ -1898,48 +1898,52 @@ levelScore = 0;  // ← ДОБАВИТЬ
                 updateUI();
             }
 
-            function applyEct(patient) {
-                if (!isEctSelectMode) return;
-                if (gameOver || isPaused) {
-                    isEctSelectMode = false;
-                    statusMessage = '❌ Действие отменено';
-                    updateUI();
-                    return;
-                }
-                if (!patient || patient.state === 'healed') {
-                    statusMessage = '❌ Неверный пациент';
-                    isEctSelectMode = false;
-                    updateUI();
-                    return;
-                }
-                if (patient.isSleeping) {
-                    statusMessage = '💤 Пациент спит, ЭСТ не требуется';
-                    isEctSelectMode = false;
-                    updateUI();
-                    return;
-                }
-                if (ectTimer > 0) {
-                    statusMessage = '⏳ ЭСТ уже активно';
-                    isEctSelectMode = false;
-                    updateUI();
-                    return;
-                }
+           function applyEct(patient) {
+    if (!isEctSelectMode) return;
+    if (gameOver || isPaused) {
+        isEctSelectMode = false;
+        statusMessage = '❌ Действие отменено';
+        updateUI();
+        return;
+    }
+    if (!patient || patient.state === 'healed') {
+        statusMessage = '❌ Неверный пациент';
+        isEctSelectMode = false;
+        updateUI();
+        return;
+    }
+    if (patient.isSleeping) {
+        statusMessage = '💤 Пациент спит, ЭСТ не требуется';
+        isEctSelectMode = false;
+        updateUI();
+        return;
+    }
+    if (ectTimer > 0) {
+        statusMessage = '⏳ ЭСТ уже активно';
+        isEctSelectMode = false;
+        updateUI();
+        return;
+    }
 
-                // Применяем ЭСТ
-                ectTarget = patient;
-                ectTimer = 300; // 5 секунд при 60fps
-                patient.isEct = true;
-                patient.ectTimer = 300;
-                patient.ectHealBoost = 0.2; // +20% к восприимчивости
-                patient.ectOriginalHealBoost = getTotalHealBoost(patient.disease);
-                
-                // Обездвиживаем пациента (он не двигается, не теряет здоровье)
-                patient.isEctStunned = true;
-                
-                statusMessage = '⚡ ЭСТ применена к ' + patient.name + '! +20% к эффективности лечения на 5с.';
-                isEctSelectMode = false;
-                updateUI();
-            }
+    // Применяем ЭСТ
+    ectTarget = patient;
+    ectTimer = 300; // 5 секунд при 60fps
+    patient.isEct = true;
+    patient.ectTimer = 300;
+    patient.ectHealBoost = 0.2; // +20% к восприимчивости
+    patient.ectOriginalHealBoost = getTotalHealBoost(patient.disease);
+    
+    // Обездвиживаем пациента (он не двигается, не теряет здоровье)
+    patient.isEctStunned = true;
+    
+    // ⭐ НОВОЕ: автоматически выделяем пациента для лечения
+    selectedPatient = patient;
+    document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + patient.disease.code + ' ' + patient.disease.name;
+    
+    statusMessage = '⚡ ЭСТ применена к ' + patient.name + '! +20% к эффективности лечения на 5с. Теперь лечите его!';
+    isEctSelectMode = false;
+    updateUI();
+}
 
             function updateStaffPanel() {
                 const staffPanel = document.getElementById('staffPanel');
