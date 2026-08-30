@@ -1019,93 +1019,249 @@ border:5px solid rgb(148, 124, 92) !important;
                 { name: 'Лабори', ability: '+25% к эффективности аминазина', iq: 82, empathy: 70, speed: 0.8, bonus: { type: 'aminazine', value: 25 } }
             ];
 const LEVELS = [
-    { 
-        id: 'bechtereva', name: 'Бехтерева', desc: 'Неврозы', 
-        fightChance: 0.003, spawnInterval: 12, drugPrice: 5, drugLimit: 35, 
-        task: 'Вылечить 4 пациентов', taskTarget: 4, maxPatients: 4,  // ← изменено
-        healthRange: [70, 95], 
-        unlocked: true, requiredLevel: null, 
-        availableDrugs: ['глицин'], diseaseCount: 5, 
-        staffLimits: { orderlies2: 0, nurses: 0, orderlies: 0, ect: 0 },
-        theme: 'bechtereva' 
+  { 
+    id: 'bechtereva', 
+    name: 'Бехтерева', 
+    desc: 'Неврозы и лёгкие расстройства', 
+    diseaseCategory: null,  // ← Убираем фильтр, чтобы использовать веса
+    categoryWeights: {
+        'depression': 30,    // Депрессии — основной фокус
+        'neurosis': 25,      // Неврозы — тоже часто
+        'psychosomatic': 15, // Психосоматика — реже
+        'sexual': 10         // Сексуальные расстройства — редко
+        // Убираем anxiety, schizophrenia и другие категории
     },
+    fightChance: 0.001,      // Минимальный шанс драк
+    spawnInterval: 15,       // Медленное появление пациентов
+    drugPrice: 3,            // Цена глицина
+    drugLimit: 50,           // Много глицина
+    taskTarget: 3,           // Нужно вылечить 3 пациентов
+    maxPatients: 4,          // Не больше 4 пациентов одновременно
+    healthRange: [75, 95],   // Пациенты приходят с хорошим здоровьем
+    unlocked: true, 
+    requiredLevel: null, 
+    availableDrugs: ['глицин'],  // ← ТОЛЬКО ГЛИЦИН!
+    diseaseCount: 6,              // 6 разных болезней
+    staffLimits: { orderlies2: 0, nurses: 0, orderlies: 0, ect: 0 },
+    theme: 'bechtereva' 
+},
     { 
-        id: 'alekseeva', name: 'Алексеева', desc: 'Расстройства пищевого поведения', 
-        fightChance: 0.006, spawnInterval: 11, drugPrice: 7, drugLimit: 28, 
-        task: 'Вылечить 4 пациентов', taskTarget: 4, maxPatients: 4,  // ← изменено
+        id: 'alekseeva', 
+        name: 'Алексеева', 
+        desc: 'Расстройства пищевого поведения', 
+        diseaseCategory: 'psychosomatic',
+        categoryWeights: {
+            'psychosomatic': 25,    // Очень высокий шанс
+            'neurosis': 3,
+            'depression': 3,
+            'anxiety': 2,
+            'personality': 1
+        },
+        fightChance: 0.006, 
+        spawnInterval: 11, 
+        drugPrice: 7, 
+        drugLimit: 28, 
+        taskTarget: 4, 
+        maxPatients: 4,
         healthRange: [55, 85], 
-        unlocked: false, requiredLevel: 'bechtereva', 
-        availableDrugs: ['глицин', 'флуоксетин', 'кветиапин'], diseaseCount: 10, 
+        unlocked: false, 
+        requiredLevel: 'bechtereva', 
+        availableDrugs: ['глицин', 'флуоксетин', 'кветиапин'], 
+        diseaseCount: 10, 
         staffLimits: { orderlies2: 0, nurses: 0, orderlies: 0, ect: 0 },
         theme: 'alekseeva' 
     },
     { 
-        id: 'korsakov', name: 'Корсаков', desc: 'Психозы и деменции', 
-        fightChance: 0.008, spawnInterval: 11, drugPrice: 7, drugLimit: 28, 
-        task: 'Вылечить 5 пациентов', taskTarget: 5, maxPatients: 5,  // ← изменено
+     id: 'korsakov', 
+        name: 'Корсаков', 
+        desc: 'Психозы и деменции', 
+        diseaseCategory: null,
+        categoryWeights: {
+            'schizophrenia': 20,  // Шизофрения
+            'delusional': 15,     // Бредовые
+            'schizotypal': 8,     // Шизотипические
+            'dementia': 25,       // ДЕМЕНЦИИ — добавили, теперь они будут часто появляться
+            'depression': 5,      
+            'neurosis': 2,
+            'anxiety': 2,
+            'psychosomatic': 1
+    },
+           fightChance: 0.008, 
+        spawnInterval: 11, 
+        drugPrice: 7, 
+        drugLimit: 28, 
+        taskTarget: 5, 
+        maxPatients: 5,
         healthRange: [55, 85], 
-        unlocked: false, requiredLevel: 'alekseeva', 
-        availableDrugs: ['глицин', 'флуоксетин', 'аминазин'], diseaseCount: 12, 
+        unlocked: false, 
+        requiredLevel: 'alekseeva', 
+        availableDrugs: ['глицин', 'флуоксетин', 'аминазин'], 
+        diseaseCount: 12, 
         staffLimits: { orderlies2: 2, nurses: 0, orderlies: 0, ect: 0 },
         theme: 'korsakov' 
     },
     { 
-        id: 'gannushkina', name: 'Ганнушкина', desc: 'Расстройства личности', 
-        fightChance: 0.01, spawnInterval: 10, drugPrice: 8, drugLimit: 25, 
-        task: 'Вылечить 6 пациентов', taskTarget: 6, maxPatients: 6,  // ← изменено
+        id: 'gannushkina', 
+        name: 'Ганнушкина', 
+        desc: 'Расстройства личности', 
+        diseaseCategory: 'personality',
+        categoryWeights: {
+            'personality': 25,
+            'schizotypal': 8,
+            'neurosis': 5,
+            'depression': 3,
+            'anxiety': 2
+        },
+        fightChance: 0.01, 
+        spawnInterval: 10, 
+        drugPrice: 8, 
+        drugLimit: 25, 
+        taskTarget: 6, 
+        maxPatients: 6,
         healthRange: [50, 80], 
-        unlocked: false, requiredLevel: 'korsakov', 
-        availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин'], diseaseCount: 20, 
+        unlocked: false, 
+        requiredLevel: 'korsakov', 
+        availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин'], 
+        diseaseCount: 20, 
         staffLimits: { orderlies2: 3, nurses: 2, orderlies: 0, ect: 0 },
         theme: 'gannushkina' 
     },
     { 
-        id: 'osipova', name: 'Осипова', desc: 'Шизофрения', 
-        fightChance: 0.012, spawnInterval: 10, drugPrice: 10, drugLimit: 20, 
-        task: 'Вылечить 7 пациентов', taskTarget: 7, maxPatients: 7,  // ← изменено
+        id: 'osipova', 
+        name: 'Осипова', 
+        desc: 'Шизофрения', 
+        diseaseCategory: 'schizophrenia',
+        categoryWeights: {
+            'schizophrenia': 25,
+            'schizotypal': 10,
+            'delusional': 8,
+            'personality': 4,
+            'depression': 2
+        },
+        fightChance: 0.012, 
+        spawnInterval: 10, 
+        drugPrice: 10, 
+        drugLimit: 20, 
+        taskTarget: 7, 
+        maxPatients: 7,
         healthRange: [45, 75], 
-        unlocked: false, requiredLevel: 'gannushkina', 
-        availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол'], diseaseCount: 25, 
+        unlocked: false, 
+        requiredLevel: 'gannushkina', 
+        availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол'], 
+        diseaseCount: 25, 
         staffLimits: { orderlies2: 4, nurses: 3, orderlies: 2, ect: 0 },
         theme: 'osipova' 
     },
     { 
-        id: 'kashchenko', name: 'Кащенко', desc: 'Смешанные расстройства', 
-        fightChance: 0.018, spawnInterval: 9, drugPrice: 12, drugLimit: 18, 
-        task: 'Вылечить 8 пациентов', taskTarget: 8, maxPatients: 8,  // ← изменено
+        id: 'kashchenko', 
+        name: 'Кащенко', 
+        desc: 'Смешанные расстройства', 
+        diseaseCategory: null,
+        categoryWeights: {
+            'schizophrenia': 8,
+            'depression': 8,
+            'anxiety': 8,
+            'personality': 8,
+            'neurosis': 8,
+            'psychosomatic': 8,
+            'delusional': 8,
+            'schizotypal': 6,
+            'developmental': 4,
+            'sexual': 3
+        },
+        fightChance: 0.018, 
+        spawnInterval: 9, 
+        drugPrice: 12, 
+        drugLimit: 18, 
+        taskTarget: 8, 
+        maxPatients: 8,
         healthRange: [40, 70], 
-        unlocked: false, requiredLevel: 'osipova', 
-        availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит'], diseaseCount: 40, 
+        unlocked: false, 
+        requiredLevel: 'osipova', 
+        availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит'], 
+        diseaseCount: 40, 
         staffLimits: { orderlies2: 5, nurses: 4, orderlies: 3, ect: 0 },
         theme: 'kashchenko' 
     },
     { 
-        id: 'skvortsova-stepanova', name: 'Скворцова-Степанова', desc: 'Резистентные формы', 
-        fightChance: 0.025, spawnInterval: 9, drugPrice: 15, drugLimit: 10, 
-        task: 'Вылечить 9 пациентов', taskTarget: 9, maxPatients: 9,  // ← изменено
+        id: 'skvortsova-stepanova', 
+        name: 'Скворцова-Степанова', 
+        desc: 'Резистентные формы', 
+        diseaseCategory: null,
+        categoryWeights: {
+            'schizophrenia': 15,
+            'personality': 12,
+            'delusional': 10,
+            'depression': 8,
+            'anxiety': 5,
+            'psychosomatic': 3,
+            'neurosis': 2
+        },
+        fightChance: 0.025, 
+        spawnInterval: 9, 
+        drugPrice: 15, 
+        drugLimit: 10, 
+        taskTarget: 9, 
+        maxPatients: 9,
         healthRange: [30, 60], 
-        unlocked: false, requiredLevel: 'kashchenko', 
-        availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 50, 
+        unlocked: false, 
+        requiredLevel: 'kashchenko', 
+        availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], 
+        diseaseCount: 50, 
         staffLimits: { orderlies2: 7, nurses: 6, orderlies: 4, ect: 1 },
         theme: 'skvortsova' 
     },
     { 
-        id: 'kandinsky', name: 'Кандинский', desc: 'Бредовые расстройства', 
-        fightChance: 0.045, spawnInterval: 8, drugPrice: 22, drugLimit: 5, 
-        task: 'Вылечить 10 пациентов', taskTarget: 10, maxPatients: 10,  // ← изменено
+        id: 'kandinsky', 
+        name: 'Кандинский', 
+        desc: 'Бредовые расстройства', 
+        diseaseCategory: 'delusional',
+        categoryWeights: {
+            'delusional': 25,
+            'schizophrenia': 10,
+            'schizotypal': 8,
+            'personality': 5,
+            'depression': 2
+        },
+        fightChance: 0.045, 
+        spawnInterval: 8, 
+        drugPrice: 22, 
+        drugLimit: 5, 
+        taskTarget: 10, 
+        maxPatients: 10,
         healthRange: [15, 45], 
-        unlocked: false, requiredLevel: 'skvortsova-stepanova', 
-        availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 65, 
+        unlocked: false, 
+        requiredLevel: 'skvortsova-stepanova', 
+        availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], 
+        diseaseCount: 65, 
         staffLimits: { orderlies2: 8, nurses: 7, orderlies: 5, ect: 1 },
         theme: 'kandinsky' 
     },
     { 
-        id: 'arsenalnaya', name: 'Арсенальная', desc: 'Особо опасные расстройства', 
-        fightChance: 0.08, spawnInterval: 6, drugPrice: 30, drugLimit: 100, 
-        task: 'Вылечить 12 пациентов', taskTarget: 12, maxPatients: 12,  // ← изменено
+        id: 'arsenalnaya', 
+        name: 'Арсенальная', 
+        desc: 'Особо опасные расстройства', 
+        diseaseCategory: null,
+        categoryWeights: {
+            'schizophrenia': 15,
+            'delusional': 15,
+            'personality': 12,
+            'depression': 8,
+            'psychosomatic': 5,
+            'anxiety': 4,
+            'neurosis': 2
+        },
+        fightChance: 0.08, 
+        spawnInterval: 6, 
+        drugPrice: 30, 
+        drugLimit: 100, 
+        taskTarget: 12, 
+        maxPatients: 12,
         healthRange: [5, 30], 
-        unlocked: false, requiredLevel: 'kandinsky', 
-        availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 75, 
+        unlocked: false, 
+        requiredLevel: 'kandinsky', 
+        availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], 
+        diseaseCount: 75, 
         staffLimits: { orderlies2: 10, nurses: 8, orderlies: 5, ect: 1 },
         theme: 'arsenalnaya' 
     }
@@ -1149,6 +1305,34 @@ const LEVELS = [
 
             // === ВСЕ БОЛЕЗНИ (МКБ-10) ===
             const ALL_DISEASES = [
+
+
+
+
+// Добавьте эти болезни в массив ALL_DISEASES
+{ code: 'F00.0', name: 'Болезнь Альцгеймера (раннее начало)', treat: ['аминазин', 'кветиапин'], weight: 3, category: 'dementia', severity: 4, gender: 'neutral' },
+{ code: 'F00.1', name: 'Болезнь Альцгеймера (позднее начало)', treat: ['аминазин', 'кветиапин'], weight: 4, category: 'dementia', severity: 4, gender: 'neutral' },
+{ code: 'F01.0', name: 'Сосудистая деменция (острая)', treat: ['аминазин', 'глицин'], weight: 4, category: 'dementia', severity: 3, gender: 'neutral' },
+{ code: 'F01.1', name: 'Сосудистая деменция (мультиинфарктная)', treat: ['аминазин', 'глицин'], weight: 5, category: 'dementia', severity: 4, gender: 'neutral' },
+{ code: 'F03', name: 'Деменция неуточнённая', treat: ['аминазин', 'кветиапин'], weight: 4, category: 'dementia', severity: 3, gender: 'neutral' },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 { code: 'F32.0', name: 'Лёгкий депрессивный эпизод', treat: ['флуоксетин', 'глицин'], weight: 6, category: 'depression', severity: 1, gender: 'neutral' },
                 { code: 'F32.1', name: 'Умеренный депрессивный эпизод', treat: ['флуоксетин', 'кветиапин'], weight: 5, category: 'depression', severity: 2, gender: 'neutral' },
                 { code: 'F32.2', name: 'Тяжёлый депрессивный эпизод', treat: ['флуоксетин', 'кветиапин', 'оланзапин'], weight: 4, category: 'depression', severity: 3, gender: 'neutral' },
@@ -1387,30 +1571,143 @@ case "циклодол":return 15
                 }
                 return arr;
             }
-
-            function getDiseasesForAvailableDrugs(availableDrugs, count) {
-                let candidates = ALL_DISEASES.filter(disease => {
-                    return disease.treat.some(drug => availableDrugs.includes(drug));
-                });
-                if (candidates.length < count) {
-                    candidates = ALL_DISEASES.slice();
-                }
-                candidates = shuffleArray([...candidates]);
-                return candidates.slice(0, Math.min(count, candidates.length));
+function getDiseasesForAvailableDrugs(availableDrugs, count, categoryFilter) {
+    let candidates = ALL_DISEASES.filter(disease => {
+        // 1. Должен лечиться доступными препаратами
+        const hasDrug = disease.treat.some(drug => availableDrugs.includes(drug));
+        if (!hasDrug) return false;
+        
+        // 2. Фильтр по категории, если передан
+        if (categoryFilter) {
+            return disease.category === categoryFilter;
+        }
+        
+        return true;
+    });
+    
+    // Если болезней нужной категории мало — расширяем поиск
+    if (candidates.length < count && categoryFilter) {
+        // Добавляем болезни той же категории, даже если их лечат не все препараты
+        const fallback = ALL_DISEASES.filter(d => 
+            d.category === categoryFilter && 
+            !candidates.includes(d) &&
+            d.treat.some(drug => availableDrugs.includes(drug))
+        );
+        for (let d of fallback) {
+            if (!candidates.includes(d)) {
+                candidates.push(d);
             }
+        }
+    }
+    
+    // Если всё равно мало — берём любые болезни, лечащиеся доступными препаратами
+    if (candidates.length < count) {
+        const fallback2 = ALL_DISEASES.filter(d => 
+            d.treat.some(drug => availableDrugs.includes(drug)) &&
+            !candidates.includes(d)
+        );
+        for (let d of fallback2) {
+            if (!candidates.includes(d)) {
+                candidates.push(d);
+            }
+        }
+    }
+    
+    candidates = shuffleArray([...candidates]);
+    return candidates.slice(0, Math.min(count, candidates.length));
+}
+
+
+
+
+
+
+
+function getDiseasesWithWeights(availableDrugs, count, categoryFilter, categoryWeights) {
+    // 1. Собираем все подходящие болезни
+    let candidates = ALL_DISEASES.filter(function(disease) {
+        var hasDrug = disease.treat.some(function(drug) {
+            return availableDrugs.includes(drug);
+        });
+        if (!hasDrug) return false;
+        
+        // Если есть фильтр по категории — оставляем только её
+        if (categoryFilter) {
+            return disease.category === categoryFilter;
+        }
+        
+        return true;
+    });
+    
+    // 2. Если есть веса категорий — применяем их
+    if (categoryWeights && Object.keys(categoryWeights).length > 0) {
+        // Создаём массив с весами для каждой болезни
+        var weightedCandidates = candidates.map(function(disease) {
+            var weight = categoryWeights[disease.category] || 1;
+            return { disease: disease, weight: weight };
+        });
+        
+        // Сортируем по весу (по убыванию)
+        weightedCandidates.sort(function(a, b) {
+            return b.weight - a.weight;
+        });
+        
+        // Выбираем болезни с учётом весов
+        var selected = [];
+        var pool = weightedCandidates.slice(); // копируем массив
+        var actualCount = Math.min(count, pool.length);
+        
+        // НЕ дублируем болезни! Берём только уникальные
+        for (var i = 0; i < actualCount; i++) {
+            // Вычисляем общий вес
+            var totalWeight = 0;
+            for (var k = 0; k < pool.length; k++) {
+                totalWeight += pool[k].weight;
+            }
+            
+            // Случайный выбор с учётом веса
+            var random = Math.random() * totalWeight;
+            var selectedIndex = 0;
+            for (var j = 0; j < pool.length; j++) {
+                random -= pool[j].weight;
+                if (random <= 0) {
+                    selectedIndex = j;
+                    break;
+                }
+            }
+            
+            var chosen = pool[selectedIndex];
+            selected.push(chosen.disease);
+            
+            // УДАЛЯЕМ выбранную болезнь из пула, чтобы не было дублей
+            pool.splice(selectedIndex, 1);
+        }
+        
+        // Перемешиваем финальный список для разнообразия
+        return shuffleArray(selected);
+    }
+    
+    // 3. Если весов нет — просто перемешиваем и берём первые count
+    candidates = shuffleArray(candidates.slice());
+    return candidates.slice(0, Math.min(count, candidates.length));
+}
+
+
+
 
             function getAvailableDrugsForLevel(level) {
                 if (!level) return ['глицин'];
                 return level.availableDrugs || ['глицин'];
             }
-
-            function getAvailableDiseasesForLevel(level) {
-                if (!level) return ALL_DISEASES.slice(0, 5);
-                const availableDrugs = getAvailableDrugsForLevel(level);
-                const count = level.diseaseCount || 5;
-                return getDiseasesForAvailableDrugs(availableDrugs, count);
-            }
-
+function getAvailableDiseasesForLevel(level) {
+    if (!level) return ALL_DISEASES.slice(0, 5);
+    const availableDrugs = getAvailableDrugsForLevel(level);
+    const count = level.diseaseCount || 5;
+    const categoryFilter = level.diseaseCategory || null;
+    const categoryWeights = level.categoryWeights || null; // ← читаем веса
+    
+    return getDiseasesWithWeights(availableDrugs, count, categoryFilter, categoryWeights);
+}
             function getPharmacyStock(level) {
                 let base = 20;
                 const name = level.name;
