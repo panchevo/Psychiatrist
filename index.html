@@ -591,6 +591,7 @@ button:focus,
 
 
 
+
 @media (max-width: 700px) {
     /* Скрываем лишние элементы */
     .staff-panel .staff-item .action-btn {
@@ -610,8 +611,22 @@ button:focus,
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
     }
 }
-
-
+.bottom-panel { 
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-top: 0px; 
+    padding: 8px 12px;  /* было 20px 25px - уменьшили */
+    background: rgb(189, 172, 149); 
+    border-radius: 30px; 
+    box-shadow: inset 0 4px 0 #b09a7a, 0 4px 0 #6a5a42; 
+    color: #2d2417; 
+    font-weight: bold; 
+    gap: 4px 8px;  /* было 6px 10px - уменьшили */
+    font-size: 0.85rem;  /* было 0.95rem - уменьшили */
+    font-family: 'Georgia', serif; 
+}
 
 
 
@@ -680,6 +695,7 @@ button:focus,
                             <div class="staff-item hidden-staff" id="staffOrderly2"><span class="icon">🧹</span> Санитар <span class="count" id="orderly2Count">0/0</span><button class="action-btn" id="hireOrderlyBtn2">5Ψ</button></div>
                             <div class="staff-item hidden-staff" id="staffNurse"><span class="icon">👩‍⚕️</span> Медсестра <span class="count" id="nurseCount">0/0</span><button class="action-btn" id="hireNurseBtn">10Ψ</button></div>
                             <div class="staff-item hidden-staff" id="staffOrderly"><span class="icon">💊</span> Ординатор <span class="count" id="orderlyCount">0/0</span><button class="action-btn" id="hireOrderlyBtn" disabled>🔒</button></div>
+                            <div class="staff-item hidden-staff" id="staffEct"><span class="icon">⚡</span> ЭСТ <span class="count" id="ectCount">0/1</span><button class="action-btn" id="hireEctBtn">40Ψ</button></div>
                         </div>
                         <div class="time-indicator"><span class="time-icon" id="timeIcon">🌞</span><span class="time-text" id="timeText">День</span><span style="font-size:0.8rem;color:#5a4a32;" id="timeCycle">⚡</span></div>
                     </div>
@@ -690,8 +706,8 @@ button:focus,
                     <!-- BOTTOM PANEL -->
                     <div class="bottom-panel">
                         <div class="bottom-left">
-                            <span class="psychiatrist-badge" id="docDisplay">🧠 Фрейд</span>
-                            <span class="score-text" id="scoreDisplay">Ψ 0</span>
+                        <span class="psychiatrist-badge" id="docDisplay">🧠 Фрейд</span>
+                                     <span class="score-text" id="scoreDisplay">Ψ 0</span>
                             <span class="info-text" id="patientCount">👥 0</span>
                             <span class="info-text" id="diagnosisDisplay">🔍 наведи на пациента</span>
                             <span class="info-text" id="levelDisplay">📍 уровень</span>
@@ -842,11 +858,8 @@ function restartLevel() {
             
             // Сброс игровых переменных
             score = 0;
-            //techPoints = 0;
-           // researchedTechs = [];
-            //techEffects = {};
+           levelScore = 0;
             curedCount = 0;
-levelScore = 0;  
             levelCompleted = false;
             pendingLevelTransition = false;
             gameOver = false;
@@ -855,6 +868,10 @@ levelScore = 0;
             nurseCount = 0;
             orderlyCount = 0;
             orderly2Count = 0;
+            ectCount = 0;
+            ectTimer = 0;
+            ectTarget = null;
+            isEctSelectMode = false;
             
             // Переинициализация уровня
             initGameWithSettings(doc, level);
@@ -989,7 +1006,7 @@ levelScore = 0;
                     task: 'Вылечить 3 пациентов', taskTarget: 3, healthRange: [70, 95], 
                     unlocked: true, requiredLevel: null, 
                     availableDrugs: ['глицин'], diseaseCount: 5, 
-                    staffLimits: { orderlies2: 0, nurses: 0, orderlies: 0 },
+                    staffLimits: { orderlies2: 0, nurses: 0, orderlies: 0, ect: 0 },
                     theme: 'bechtereva' 
                 },
                 { 
@@ -998,7 +1015,7 @@ levelScore = 0;
                     task: 'Вылечить 4 пациентов', taskTarget: 4, healthRange: [55, 85], 
                     unlocked: false, requiredLevel: 'bechtereva', 
                     availableDrugs: ['глицин', 'флуоксетин', 'кветиапин'], diseaseCount: 10, 
-                    staffLimits: { orderlies2: 0, nurses: 0, orderlies: 0 },
+                    staffLimits: { orderlies2: 0, nurses: 0, orderlies: 0, ect: 0 },
                     theme: 'alekseeva' 
                 },
                 { 
@@ -1007,7 +1024,7 @@ levelScore = 0;
                     task: 'Вылечить 5 пациентов', taskTarget: 5, healthRange: [55, 85], 
                     unlocked: false, requiredLevel: 'alekseeva', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин'], diseaseCount: 12, 
-                    staffLimits: { orderlies2: 2, nurses: 0, orderlies: 0 },
+                    staffLimits: { orderlies2: 2, nurses: 0, orderlies: 0, ect: 0 },
                     theme: 'korsakov' 
                 },
                
@@ -1017,7 +1034,7 @@ levelScore = 0;
                     task: 'Вылечить 7 пациентов', taskTarget: 7, healthRange: [50, 80], 
                     unlocked: false, requiredLevel: 'korsakov', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин'], diseaseCount: 20, 
-                    staffLimits: { orderlies2: 3, nurses: 2, orderlies: 0 },
+                    staffLimits: { orderlies2: 3, nurses: 2, orderlies: 0, ect: 0 },
                     theme: 'gannushkina' 
                 },
                 { 
@@ -1026,7 +1043,7 @@ levelScore = 0;
                     task: 'Вылечить 8 пациентов', taskTarget: 8, healthRange: [45, 75], 
                     unlocked: false, requiredLevel: 'gannushkina', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол'], diseaseCount: 25, 
-                    staffLimits: { orderlies2: 4, nurses: 3, orderlies: 2 },
+                    staffLimits: { orderlies2: 4, nurses: 3, orderlies: 2, ect: 0 },
                     theme: 'osipova' 
                 },
                 { 
@@ -1035,7 +1052,7 @@ levelScore = 0;
                     task: 'Вылечить 12 пациентов', taskTarget: 12, healthRange: [40, 70], 
                     unlocked: false, requiredLevel: 'osipova', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит'], diseaseCount: 40, 
-                    staffLimits: { orderlies2: 5, nurses: 4, orderlies: 3 },
+                    staffLimits: { orderlies2: 5, nurses: 4, orderlies: 3, ect: 0 },
                     theme: 'kashchenko' 
                 },
                 { 
@@ -1044,7 +1061,7 @@ levelScore = 0;
                     task: 'Вылечить 15 пациентов', taskTarget: 15, healthRange: [30, 60], 
                     unlocked: false, requiredLevel: 'kashchenko', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 50, 
-                    staffLimits: { orderlies2: 7, nurses: 6, orderlies: 4 },
+                    staffLimits: { orderlies2: 7, nurses: 6, orderlies: 4, ect: 1 },
                     theme: 'skvortsova' 
                 },
                 { 
@@ -1053,7 +1070,7 @@ levelScore = 0;
                     task: 'Вылечить 30 пациентов', taskTarget: 30, healthRange: [15, 45], 
                     unlocked: false, requiredLevel: 'skvortsova-stepanova', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 65, 
-                    staffLimits: { orderlies2: 8, nurses: 7, orderlies: 5 },
+                    staffLimits: { orderlies2: 8, nurses: 7, orderlies: 5, ect: 1 },
                     theme: 'kandinsky' 
                 },
                 { 
@@ -1062,7 +1079,7 @@ levelScore = 0;
                     task: 'Вылечить 40 пациентов', taskTarget: 40, healthRange: [5, 30], 
                     unlocked: false, requiredLevel: 'kandinsky', 
                     availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 75, 
-                    staffLimits: { orderlies2: 10, nurses: 8, orderlies: 5 },
+                    staffLimits: { orderlies2: 10, nurses: 8, orderlies: 5, ect: 1 },
                     theme: 'arsenalnaya' 
                 }
             ];
@@ -1163,6 +1180,7 @@ levelScore = 0;
                 { name: 'седалит', color: '#ff8a65', sideEffect: 'угнетение ЦНС, привыкание', price: 8, rarity: 3 },
                 { name: 'циклодол', color: '#aed581', sideEffect: 'запор, сухость во рту', price: 6, rarity: 3 }
             ];
+
 function getDrugMaxLimit(drugName, level) {
     if (!level) return 50;
     
@@ -1175,6 +1193,7 @@ function getDrugMaxLimit(drugName, level) {
 
 
 switch (drugName){case "глицин":
+
 
 
 
@@ -1193,12 +1212,10 @@ case "циклодол":return 15
 
    
    
-   
 
 
 
 
-}
 
 
 
@@ -1225,6 +1242,20 @@ case "циклодол":return 15
 
 
 
+
+}
+    
+    
+    // === ДЛЯ ВСЕХ ОСТАЛЬНЫХ УРОВНЕЙ ===
+    // Базовый лимит берём из уровня
+    const baseLimit = level.drugLimit || 20;
+    
+    // В зависимости от редкости — разные множители
+    if (rarity === 1) return Math.floor(baseLimit * 1.5);  // 28*1.5=42
+    if (rarity === 2) return Math.floor(baseLimit * 1.0);  // 28*1.0=28
+    if (rarity === 3) return Math.floor(baseLimit * 0.7);  // 28*0.7=19
+    
+    return Math.max(3, baseLimit);
 }
     
     
@@ -1272,6 +1303,11 @@ case "циклодол":return 15
             let nurseCount = 0;
             let orderlyCount = 0;
             let orderly2Count = 0;
+            let ectCount = 0;
+            let maxEct = 0;
+            let ectTimer = 0;
+            let ectTarget = null;
+            let isEctSelectMode = false;
             
             let maxNurses = 0;
             let maxOrderlies = 0;
@@ -1309,7 +1345,7 @@ case "циклодол":return 15
             };
 
             function getStaffLimits(level) {
-                if (!level || !level.staffLimits) return { orderlies2: 0, nurses: 0, orderlies: 0 };
+                if (!level || !level.staffLimits) return { orderlies2: 0, nurses: 0, orderlies: 0, ect: 0 };
                 return level.staffLimits;
             }
 
@@ -1548,11 +1584,16 @@ levelScore = 0;  // ← ДОБАВИТЬ
                 nurseCount = 0;
                 orderlyCount = 0;
                 orderly2Count = 0;
+                ectCount = 0;
+                ectTimer = 0;
+                ectTarget = null;
+                isEctSelectMode = false;
                 
                 const limits = getStaffLimits(nextLevel);
                 maxOrderlies2 = limits.orderlies2;
                 maxNurses = limits.nurses;
                 maxOrderlies = limits.orderlies;
+                maxEct = limits.ect || 0;
                 
                 curedCount = 0;
                 levelCompleted = false;
@@ -1832,13 +1873,82 @@ levelScore = 0;  // ← ДОБАВИТЬ
                 updateUI();
             }
 
+            function hireEct() {
+                if (gameOver || isPaused) return;
+                if (maxEct === 0) { statusMessage = '❌ Прибор ЭСТ не доступен на этом уровне'; updateUI(); return; }
+                if (ectCount >= maxEct) { statusMessage = '❌ У вас уже есть прибор ЭСТ'; updateUI(); return; }
+                if (score < 40) { statusMessage = '❌ Недостаточно очков! Нужно 40 Ψ'; updateUI(); return; }
+                score -= 40;
+                ectCount++;
+                statusMessage = '⚡ Прибор ЭСТ готов к использованию! Нажмите кнопку в панели персонала.';
+                updateUI();
+                updateStaffPanel();
+            }
+
+            function activateEct() {
+                if (gameOver || isPaused) return;
+                if (ectCount <= 0) { statusMessage = '❌ Нет прибора ЭСТ! Купите его за 40 Ψ.'; updateUI(); return; }
+                if (ectTimer > 0) { statusMessage = '⏳ ЭСТ уже применяется к пациенту!'; updateUI(); return; }
+                if (isEctSelectMode) { statusMessage = '⚡ Уже в режиме выбора пациента для ЭСТ.'; updateUI(); return; }
+                
+                // Входим в режим выбора пациента
+                isEctSelectMode = true;
+                statusMessage = '⚡ Выберите пациента для ЭСТ (кликните по нему)';
+                document.getElementById('diagnosisDisplay').innerHTML = '⚡ Выберите цель для ЭСТ';
+                updateUI();
+            }
+
+            function applyEct(patient) {
+                if (!isEctSelectMode) return;
+                if (gameOver || isPaused) {
+                    isEctSelectMode = false;
+                    statusMessage = '❌ Действие отменено';
+                    updateUI();
+                    return;
+                }
+                if (!patient || patient.state === 'healed') {
+                    statusMessage = '❌ Неверный пациент';
+                    isEctSelectMode = false;
+                    updateUI();
+                    return;
+                }
+                if (patient.isSleeping) {
+                    statusMessage = '💤 Пациент спит, ЭСТ не требуется';
+                    isEctSelectMode = false;
+                    updateUI();
+                    return;
+                }
+                if (ectTimer > 0) {
+                    statusMessage = '⏳ ЭСТ уже активно';
+                    isEctSelectMode = false;
+                    updateUI();
+                    return;
+                }
+
+                // Применяем ЭСТ
+                ectTarget = patient;
+                ectTimer = 300; // 5 секунд при 60fps
+                patient.isEct = true;
+                patient.ectTimer = 300;
+                patient.ectHealBoost = 0.2; // +20% к восприимчивости
+                patient.ectOriginalHealBoost = getTotalHealBoost(patient.disease);
+                
+                // Обездвиживаем пациента (он не двигается, не теряет здоровье)
+                patient.isEctStunned = true;
+                
+                statusMessage = '⚡ ЭСТ применена к ' + patient.name + '! +20% к эффективности лечения на 5с.';
+                isEctSelectMode = false;
+                updateUI();
+            }
+
             function updateStaffPanel() {
                 const staffPanel = document.getElementById('staffPanel');
                 const nurseItem = document.getElementById('staffNurse');
                 const orderlyItem = document.getElementById('staffOrderly');
                 const orderly2Item = document.getElementById('staffOrderly2');
+                const ectItem = document.getElementById('staffEct');
                 
-                const hasAnyStaff = maxOrderlies2 > 0 || maxNurses > 0 || maxOrderlies > 0;
+                const hasAnyStaff = maxOrderlies2 > 0 || maxNurses > 0 || maxOrderlies > 0 || maxEct > 0;
                 if (hasAnyStaff) {
                     staffPanel.classList.remove('hidden-staff-panel');
                 } else {
@@ -1861,6 +1971,32 @@ levelScore = 0;  // ← ДОБАВИТЬ
                     orderlyItem.classList.remove('hidden-staff');
                 } else {
                     orderlyItem.classList.add('hidden-staff');
+                }
+
+                if (maxEct > 0) {
+                    ectItem.classList.remove('hidden-staff');
+                } else {
+                    ectItem.classList.add('hidden-staff');
+                }
+
+                // Обновляем кнопку ЭСТ
+                const ectBtn = document.getElementById('hireEctBtn');
+                if (maxEct === 0) {
+                    ectBtn.textContent = '🔒';
+                    ectBtn.disabled = true;
+                } else {
+                    if (ectCount >= maxEct) {
+                        if (ectTimer > 0) {
+                            ectBtn.textContent = '⏳ ' + Math.ceil(ectTimer/60) + 'с';
+                            ectBtn.disabled = true;
+                        } else {
+                            ectBtn.textContent = '⚡ Применить ЭСТ';
+                            ectBtn.disabled = false;
+                        }
+                    } else {
+                        ectBtn.textContent = '40Ψ';
+                        ectBtn.disabled = score < 40 || gameOver || isPaused;
+                    }
                 }
             }
 
@@ -1943,8 +2079,8 @@ levelScore = 0;  // ← ДОБАВИТЬ
                         progressText = '<span class="level-progress">✅ Пройден</span>';
                     } else if (isUnlocked) {
                         const drugCount = level.availableDrugs.length;
-                        const limits = level.staffLimits || { orderlies2: 0, nurses: 0, orderlies: 0 };
-                        progressText = `<span class="level-progress">🔓 ${drugCount} препаратов · 🧹${limits.orderlies2} 👩‍⚕️${limits.nurses} 💊${limits.orderlies}</span>`;
+                        const limits = level.staffLimits || { orderlies2: 0, nurses: 0, orderlies: 0, ect: 0 };
+                        progressText = `<span class="level-progress">🔓 ${drugCount} препаратов · 🧹${limits.orderlies2} 👩‍⚕️${limits.nurses} 💊${limits.orderlies} ⚡${limits.ect}</span>`;
                     } else {
                         const required = LEVELS.find(l => l.id === level.requiredLevel);
                         progressText = `<span class="level-progress">🔒 Требуется: ${required ? required.name : ''}</span>`;
@@ -2104,6 +2240,7 @@ let levelScore = 0;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
                 if (patient.isSleeping) status = '💤 Спит';
                 else if (patient.isFighting) status = '⚔️ Дерётся';
                 else if (patient.isInjectedSleep) status = '💉 Усыплён';
+                else if (patient.isEct) status = '⚡ ЭСТ (' + Math.ceil(patient.ectTimer/60) + 'с)';
                 else if (patient.health < 30) status = '🔴 Критическое состояние!';
                 else if (patient.health < 60) status = '🟡 Требует лечения';
                 tipStatus.textContent = '📌 ' + status;
@@ -2185,7 +2322,7 @@ function showDrugTooltip(drug, x, y) {
             }
 
             function resolveCollisions() {
-                const active = patients.filter(p => p.state !== 'healed' && !p.isSleeping && !p.isFighting);
+                const active = patients.filter(p => p.state !== 'healed' && !p.isSleeping && !p.isFighting && !p.isEctStunned);
                 for (let iter = 0; iter < MAX_SEPARATION_ITERATIONS; iter++) {
                     let moved = false;
                     for (let i = 0; i < active.length; i++) {
@@ -2227,14 +2364,14 @@ function showDrugTooltip(drug, x, y) {
             function isPositionBlocked(p, tx, ty) {
                 for (let other of patients) {
                     if (other === p || other.state === 'healed') continue;
-                    if (other.isSleeping || other.isFighting) continue;
+                    if (other.isSleeping || other.isFighting || other.isEctStunned) continue;
                     if (Math.hypot(other.x - tx, other.y - ty) < MIN_PATIENT_DISTANCE + 10) return true;
                 }
                 return false;
             }
 
             function movePatient(p) {
-                if (p.isSleeping || p.isFighting || p.state === 'healed') return;
+                if (p.isSleeping || p.isFighting || p.state === 'healed' || p.isEctStunned) return;
                 const dx = p.targetX - p.x, dy = p.targetY - p.y;
                 const distance = Math.hypot(dx, dy);
                 if (distance < 2) {
@@ -2250,7 +2387,7 @@ function showDrugTooltip(drug, x, y) {
                 let blocked = false;
                 for (let other of patients) {
                     if (other === p || other.state === 'healed') continue;
-                    if (other.isSleeping || other.isFighting) continue;
+                    if (other.isSleeping || other.isFighting || other.isEctStunned) continue;
                     if (Math.hypot(newX - other.x, newY - other.y) < MIN_PATIENT_DISTANCE - 5) {
                         blocked = true; break;
                     }
@@ -2348,7 +2485,9 @@ const health = Math.floor(random(minHealth, maxHealth));
                     bedTarget: null, goingToBed: false, bedIndex: -1,
                     gender: gender, animPhase: Math.random() * Math.PI * 2,
                     breathPhase: Math.random() * Math.PI * 2,
-                    shakeX: 0, shakeY: 0, stuckCounter: 0
+                    shakeX: 0, shakeY: 0, stuckCounter: 0,
+                    isEct: false, ectTimer: 0, isEctStunned: false, ectHealBoost: 0,
+                    ectOriginalHealBoost: 0
                 };
             }
 
@@ -2466,7 +2605,13 @@ const health = Math.floor(random(minHealth, maxHealth));
                 let baseHeal = 15;
                 const difficulty = getHealDifficulty(disease.severity);
                 let healAmount = baseHeal * difficulty;
-                const healBoost = getTotalHealBoost(disease);
+                let healBoost = getTotalHealBoost(disease);
+                
+                // Бонус от ЭСТ (+20%)
+                if (patient.isEct && patient.ectHealBoost > 0) {
+                    healBoost += patient.ectHealBoost;
+                }
+                
                 healAmount = healAmount * healBoost;
 
                 const nurseBonus = 1 + getNurseBonus();
@@ -2515,9 +2660,9 @@ const health = Math.floor(random(minHealth, maxHealth));
                     if (patient.health >= 100) {
                         patient.state = 'healed';
                         returnNameToPool(patient.name);
-              const bonusPoints = 5 + Math.floor(Math.pow(disease.severity, 2) * 2);
-          score += bonusPoints;
-levelScore += bonusPoints;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
+                        const bonusPoints = 5 + Math.floor(Math.pow(disease.severity, 2) * 2);
+                        score += bonusPoints;
+                        levelScore += bonusPoints;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
                         const orderlyBonus = getOrderlyBonus();
                         const techEarn = 5 + Math.floor(disease.severity * 1.0) + Math.floor(orderlyBonus*1.5);
                         techPoints += techEarn;
@@ -2579,8 +2724,8 @@ levelScore += bonusPoints;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
                 availableDiseases = getAvailableDiseasesForLevel(level);
                 drugInventory = initDrugInventory(level);
                 
-           score = 0;
-levelScore = 0;  // ← ДОБАВИТЬ 
+                score = 0;
+                levelScore = 0;  // ← ДОБАВИТЬ 
                 curedCount = 0; 
                 levelCompleted = false;
                 
@@ -2588,10 +2733,11 @@ levelScore = 0;  // ← ДОБАВИТЬ
                 maxOrderlies2 = limits.orderlies2;
                 maxNurses = limits.nurses;
                 maxOrderlies = limits.orderlies;
+                maxEct = limits.ect || 0;
                 if (researchedTechs.includes('tech_residency')) {
                     maxOrderlies = Math.floor(maxOrderlies * 2);
                 }
-                nurseCount = 0; orderlyCount = 0; orderly2Count = 0;
+                nurseCount = 0; orderlyCount = 0; orderly2Count = 0; ectCount = 0; ectTimer = 0; ectTarget = null; isEctSelectMode = false;
 
                 namePool = shuffleArray([...ALL_NAMES]);
                 
@@ -2633,12 +2779,13 @@ levelScore = 0;  // ← ДОБАВИТЬ
             function updateUI() {
                 if (gameOver) return;
                 const doc = selectedDoc || PSYCHIATRISTS[0];
-                document.getElementById('docDisplay').innerHTML = '🧠 ' + doc.name;
+             document.getElementById('docDisplay').innerHTML = '🧠 ' + doc.name;
                 const active = patients.filter(p => p.state !== 'healed').length;
                 document.getElementById('patientCount').innerText = '👥 ' + active;
                 document.getElementById('orderly2Count').textContent = orderly2Count + '/' + maxOrderlies2;
                 document.getElementById('nurseCount').textContent = nurseCount + '/' + maxNurses;
                 document.getElementById('orderlyCount').textContent = orderlyCount + '/' + maxOrderlies;
+                document.getElementById('ectCount').textContent = ectCount + '/' + maxEct;
                 
                 const orderly2Btn = document.getElementById('hireOrderlyBtn2');
                 if (maxOrderlies2 === 0) { orderly2Btn.textContent = '🔒'; orderly2Btn.disabled = true; } 
@@ -2651,14 +2798,37 @@ levelScore = 0;  // ← ДОБАВИТЬ
                 const orderlyBtn = document.getElementById('hireOrderlyBtn');
                 if (maxOrderlies === 0) { orderlyBtn.textContent = '🔒'; orderlyBtn.disabled = true; } 
                 else { orderlyBtn.textContent = orderlyCount >= maxOrderlies ? 'MAX' : '25Ψ'; orderlyBtn.disabled = orderlyCount >= maxOrderlies || score < 25 || gameOver || isPaused; }
+
+                const ectBtn = document.getElementById('hireEctBtn');
+                if (maxEct === 0) {
+                    ectBtn.textContent = '🔒';
+                    ectBtn.disabled = true;
+                } else {
+                    if (ectCount >= maxEct) {
+                        if (ectTimer > 0) {
+                            ectBtn.textContent = '⏳ ' + Math.ceil(ectTimer/60) + 'с';
+                            ectBtn.disabled = true;
+                        } else {
+                            ectBtn.textContent = '⚡ Применить ЭСТ';
+                            ectBtn.disabled = false;
+                        }
+                    } else {
+                        ectBtn.textContent = '40Ψ';
+                        ectBtn.disabled = score < 40 || gameOver || isPaused;
+                    }
+                }
                 
-                document.getElementById('scoreDisplay').textContent = 'Ψ ' + score;
+               document.getElementById('scoreDisplay').textContent = 'Ψ ' + score;
                 document.getElementById('topScoreValue').textContent = score;
                 document.getElementById('techPointsDisplay').textContent = '🧪 ' + techPoints;
                 if (hoveredPatient && hoveredPatient.state !== 'healed' && !gameOver) document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + hoveredPatient.disease.code + ' ' + hoveredPatient.disease.name;
                 else if (selectedPatient && selectedPatient.state !== 'healed' && !gameOver) document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + selectedPatient.disease.code + ' ' + selectedPatient.disease.name;
+                else if (isEctSelectMode) document.getElementById('diagnosisDisplay').innerHTML = '⚡ Выберите цель для ЭСТ';
                 else document.getElementById('diagnosisDisplay').innerHTML = '🔍 наведи на пациента';
-                document.getElementById('statusMsg').innerText = statusMessage + ' | Вылечено: ' + curedCount + '/' + taskTarget + (isPaused ? ' ⏸️ ПАУЗА' : '');
+                
+                let statusMsgText = statusMessage + ' | Вылечено: ' + curedCount + '/' + taskTarget + (isPaused ? ' ⏸️ ПАУЗА' : '');
+                if (isEctSelectMode) statusMsgText = '⚡ Кликните на пациента для ЭСТ (Esc для отмены)';
+                document.getElementById('statusMsg').innerText = statusMsgText;
                 document.getElementById('timeIcon').textContent = getTimeIcon();
                 document.getElementById('timeText').textContent = getTimeText();
                 document.getElementById('timeCycle').textContent = isNight() ? '🌙' : (isMorning() ? '🌅' : (isEvening() ? '🌅' : '☀️'));
@@ -2901,20 +3071,27 @@ function renderDrugPanel() {
                 const breathe = Math.sin(time * 1.5 + p.breathPhase) * 0.04;
                 const scale = 1 + breathe;
                 let alpha = 1;
-                if (p.health < 30 && !p.isSleeping && !p.isFighting) {
+                if (p.health < 30 && !p.isSleeping && !p.isFighting && !p.isEct) {
                     alpha = 0.05 + (p.health / 30) * 0.65;
                     alpha = Math.max(0.05, Math.min(0.7, alpha));
                 } else if (p.isFighting) {
                     p.shakeX = (Math.random() - 0.5) * 8;
                     p.shakeY = (Math.random() - 0.5) * 8;
                     alpha = 1;
+                } else if (p.isEct) {
+                    // Эффект мерцания при ЭСТ
+                    alpha = 0.8 + Math.sin(time * 20) * 0.2;
+                    p.shakeX = (Math.random() - 0.5) * 3;
+                    p.shakeY = (Math.random() - 0.5) * 3;
                 } else { p.shakeX *= 0.9; p.shakeY *= 0.9; alpha = 1; }
                 const x = p.x + p.shakeX, y = p.y + p.shakeY, r = p.size * scale;
                 ctx.globalAlpha = alpha;
-                if (hoveredPatient === p) {
-                    ctx.shadowColor = '#4a3a2a'; ctx.shadowBlur = 25;
+                if (hoveredPatient === p || (isEctSelectMode && p.state !== 'healed')) {
+                    ctx.shadowColor = isEctSelectMode ? '#4a7a3a' : '#4a3a2a';
+                    ctx.shadowBlur = 25;
                     ctx.beginPath(); ctx.arc(x, y, r + 12, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(74,58,42,0.15)'; ctx.fill();
+                    ctx.fillStyle = isEctSelectMode ? 'rgba(74,122,58,0.2)' : 'rgba(74,58,42,0.15)';
+                    ctx.fill();
                     ctx.shadowBlur = 0;
                 }
                 for (let i = zLetters.length - 1; i >= 0; i--) {
@@ -2936,6 +3113,22 @@ function renderDrugPanel() {
                     ctx.strokeStyle = '#8a3a2a'; ctx.lineWidth = 2; ctx.setLineDash([4, 6]);
                     ctx.beginPath(); ctx.arc(x, y, r + 14, 0, Math.PI * 2); ctx.stroke();
                     ctx.setLineDash([]);
+                }
+                if (p.isEct) {
+                    // Свечение ЭСТ
+                    ctx.shadowColor = '#4a7a3a'; ctx.shadowBlur = 30;
+                    ctx.strokeStyle = '#4a7a3a'; ctx.lineWidth = 3;
+                    ctx.beginPath(); ctx.arc(x, y, r + 10, 0, Math.PI * 2); ctx.stroke();
+                    ctx.shadowBlur = 0;
+                    // Молния
+                    ctx.fillStyle = '#ffff00'; ctx.shadowColor = '#ffff00'; ctx.shadowBlur = 15;
+                    ctx.font = 'bold 24px "Georgia"';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('⚡', x + 20, y - 30);
+                    ctx.shadowBlur = 0;
+                    // Таймер
+                    ctx.fillStyle = '#ffffff'; ctx.font = 'bold 12px "Georgia"';
+                    ctx.fillText(Math.ceil(p.ectTimer/60) + 'с', x + 20, y - 10);
                 }
                 ctx.textAlign = 'center'; ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 8;
                 ctx.font = 'bold 13px "Georgia"'; ctx.fillStyle = '#ffffff';
@@ -3236,6 +3429,13 @@ function renderDrugPanel() {
                     ctx.fillText('Нажмите Пробел для продолжения', W / 2, H / 2 + 60);
                     return;
                 }
+                if (isEctSelectMode) {
+                    ctx.fillStyle = 'rgba(74,122,58,0.1)'; ctx.fillRect(0, 0, W, H);
+                    ctx.fillStyle = '#4a7a3a'; ctx.font = 'bold 24px "Georgia"'; ctx.textAlign = 'center';
+                    ctx.fillText('⚡ Выберите пациента для ЭСТ', W / 2, 40);
+                    ctx.font = '16px "Georgia"'; ctx.fillStyle = '#6a8a5a';
+                    ctx.fillText('Нажмите Esc для отмены', W / 2, 70);
+                }
                 const isNightTime = isNight();
                 const theme = currentLevel ? LEVEL_THEMES[currentLevel.theme] : LEVEL_THEMES['bechtereva'];
                 const bgColors = theme.bg || ['#4a7a5a', '#3a5a4a'];
@@ -3327,6 +3527,27 @@ function renderDrugPanel() {
                         }
                     }
 
+                    // Обработка ЭСТ
+                    if (ectTimer > 0) {
+                        ectTimer--;
+                        if (ectTarget && ectTarget.state !== 'healed') {
+                            ectTarget.ectTimer = ectTimer;
+                            if (ectTimer <= 0) {
+                                // Завершение ЭСТ
+                                ectTarget.isEct = false;
+                                ectTarget.isEctStunned = false;
+                                ectTarget.ectHealBoost = 0;
+                                statusMessage = '⚡ ЭСТ завершена для ' + ectTarget.name;
+                                ectTarget = null;
+                                updateUI();
+                            }
+                        } else {
+                            // Цель исчезла
+                            ectTimer = 0;
+                            ectTarget = null;
+                        }
+                    }
+
                     zSpawnCounter++;
                     if (zSpawnCounter >= 300 && !gameOver && gameActive) {
                         zSpawnCounter = 0;
@@ -3344,12 +3565,12 @@ if (!gameOver && gameActive && !isPaused) {
     // Определяем базовую скорость в зависимости от уровня
     const levelIndex = LEVELS.findIndex(l => l.id === currentLevel?.id);
     
-    let baseSpeed = 0.01; // Минимальная скорость для Бехтерева
+    let baseSpeed = 0.0005; // Минимальная скорость для Бехтерева
     
     if (levelIndex !== -1) {
         const maxIndex = LEVELS.length - 1; // Арсенальная (индекс 8)
-        const minSpeed = 0.01;   // Бехтерева
-        const maxSpeed = 0.05;   // Арсенальная (как вы просили)
+        const minSpeed = 0.0005;   // Бехтерева
+        const maxSpeed = 0.0100;   // Арсенальная (как вы просили)
         
         // Линейное увеличение
         baseSpeed = minSpeed + (levelIndex / maxIndex) * (maxSpeed - minSpeed);
@@ -3391,6 +3612,11 @@ if (!gameOver && gameActive && !isPaused) {
     // Применяем потерю здоровья
     activePatients.forEach(function(p) {
         if (p.state !== 'healed' && !p.isSleeping && !levelCompleted) {
+            // Если пациент под ЭСТ - он не теряет здоровье
+            if (p.isEctStunned) {
+                return;
+            }
+            
             let dropSpeed = baseSpeed;
             
             // Дополнительные модификаторы
@@ -3434,7 +3660,7 @@ if (!gameOver && gameActive && !isPaused) {
                             }
                             const sleepChance = evening && p.health > 50 ? 1 : 0;
                             const circadianChance = circadianBoost > 0 ? circadianBoost : 0;
-                            if ((evening || (circadianBoost > 0 && Math.random() < circadianChance)) && p.health > 50 && !p.isSleeping && !p.goingToBed && p.bedIndex < 0) {
+                            if ((evening || (circadianBoost > 0 && Math.random() < circadianChance)) && p.health > 50 && !p.isSleeping && !p.goingToBed && p.bedIndex < 0 && !p.isEctStunned) {
                                 for (let i = 0; i < beds.length; i++) {
                                     if (!beds[i].occupied) { p.bedIndex = i; p.bedTarget = { x: beds[i].x, y: beds[i].y - 5 }; p.goingToBed = true; beds[i].occupied = true; p.targetX = p.bedTarget.x; p.targetY = p.bedTarget.y; break; }
                                 }
@@ -3446,7 +3672,7 @@ if (!gameOver && gameActive && !isPaused) {
                                     for (let i = 0; i < 3; i++) { zLetters.push({ x: p.x + random(-15, 15), y: p.y - 30 - i * 12, size: 14 + random(0, 6), life: 80 + i * 15, maxLife: 80 + i * 15, dx: random(-0.2, 0.2), dy: -0.4 - random(0, 0.2) }); }
                                 }
                             }
-                            if (night && p.health > 50 && !p.isSleeping && !p.goingToBed) {
+                            if (night && p.health > 50 && !p.isSleeping && !p.goingToBed && !p.isEctStunned) {
                                 if (p.bedIndex >= 0) { p.isSleeping = true } else {
                                     for (let i = 0; i < beds.length; i++) {
                                         if (!beds[i].occupied) { p.bedIndex = i; p.bedTarget = { x: beds[i].x, y: beds[i].y - 5 }; p.goingToBed = true; beds[i].occupied = true; p.targetX = p.bedTarget.x; p.targetY = p.bedTarget.y; break; }
@@ -3462,7 +3688,7 @@ if (!gameOver && gameActive && !isPaused) {
                             }
                         });
 // ===== ДРАКИ ТОЛЬКО НА ПОЗДНИХ УРОВНЯХ И РЕДКО =====
-const fighters = activePatients.filter(p => !p.isFighting && !p.isSleeping);
+const fighters = activePatients.filter(p => !p.isFighting && !p.isSleeping && !p.isEctStunned);
 
 // Определяем индекс уровня
 const levelIndex = LEVELS.findIndex(l => l.id === currentLevel?.id);
@@ -3533,6 +3759,8 @@ for (let i = 0; i < fighters.length - 1; i++) {
                     nurseCount: nurseCount,
                     orderlyCount: orderlyCount,
                     orderly2Count: orderly2Count,
+                    ectCount: ectCount,
+                    ectTimer: ectTimer,
                     curedCount: curedCount,
                     levelCompleted: levelCompleted,
                     timeOfDay: timeOfDay,
@@ -3557,7 +3785,11 @@ for (let i = 0; i < fighters.length - 1; i++) {
                         animPhase: p.animPhase,
                         breathPhase: p.breathPhase,
                         stuckCounter: p.stuckCounter,
-                        size: p.size
+                        size: p.size,
+                        isEct: p.isEct,
+                        ectTimer: p.ectTimer,
+                        isEctStunned: p.isEctStunned,
+                        ectHealBoost: p.ectHealBoost
                     })),
                     drugInventory: drugInventory,
                     completedLevels: completedLevels,
@@ -3578,6 +3810,7 @@ for (let i = 0; i < fighters.length - 1; i++) {
                     maxNurses: maxNurses,
                     maxOrderlies: maxOrderlies,
                     maxOrderlies2: maxOrderlies2,
+                    maxEct: maxEct,
                     isAudioPlaying: isAudioPlaying,
                     isAudioPaused: isAudioPaused,
                     isPaused: isPaused
@@ -3672,6 +3905,8 @@ levelScore = data.levelScore || 0;  // ← ДОБАВИТЬ
                             nurseCount = data.nurseCount || 0;
                             orderlyCount = data.orderlyCount || 0;
                             orderly2Count = data.orderly2Count || 0;
+                            ectCount = data.ectCount || 0;
+                            ectTimer = data.ectTimer || 0;
                             curedCount = data.curedCount || 0;
                             levelCompleted = data.levelCompleted || false;
                             timeOfDay = data.timeOfDay || 600;
@@ -3687,6 +3922,7 @@ levelScore = data.levelScore || 0;  // ← ДОБАВИТЬ
                             maxNurses = data.maxNurses || 0;
                             maxOrderlies = data.maxOrderlies || 0;
                             maxOrderlies2 = data.maxOrderlies2 || 0;
+                            maxEct = data.maxEct || 0;
                             
                             completedLevels = data.completedLevels || {};
                             
@@ -3706,6 +3942,7 @@ levelScore = data.levelScore || 0;  // ← ДОБАВИТЬ
                             if (!maxNurses) maxNurses = limits.nurses;
                             if (!maxOrderlies) maxOrderlies = limits.orderlies;
                             if (!maxOrderlies2) maxOrderlies2 = limits.orderlies2;
+                            if (!maxEct) maxEct = limits.ect || 0;
                             
                             patients = (data.patients || []).map(p => ({
                                 ...p,
@@ -3756,6 +3993,7 @@ levelScore = data.levelScore || 0;  // ← ДОБАВИТЬ
                             gameOver = false;
                             gameActive = true;
                             selectedPatient = null;
+                            isEctSelectMode = false;
                             document.getElementById('diagnosisDisplay').innerHTML = '🔍 наведи на пациента';
                             
                             renderPsychSelection();
@@ -3849,7 +4087,8 @@ levelScore = data.levelScore || 0;  // ← ДОБАВИТЬ
                 html += `<div class="encyclopedia-section"><h4>🏥 Уровни (18 больниц)</h4>`;
                 LEVELS.forEach(l => {
                     const unlocked = l.unlocked || checkLevelUnlock(l.id);
-                    html += `<div class="item"><span class="label">${l.name}</span><span class="value">${l.desc} · ${unlocked ? '🔓 доступен' : '🔒 заблокирован'} · задача: ${l.taskTarget} пациентов · препаратов: ${l.availableDrugs.join(', ')}</span></div>`;
+                    const ectStr = l.staffLimits?.ect || 0;
+                    html += `<div class="item"><span class="label">${l.name}</span><span class="value">${l.desc} · ${unlocked ? '🔓 доступен' : '🔒 заблокирован'} · задача: ${l.taskTarget} пациентов · препаратов: ${l.availableDrugs.join(', ')} · ЭСТ: ${ectStr}</span></div>`;
                 });
                 html += `</div>`;
 
@@ -3889,6 +4128,7 @@ levelScore = data.levelScore || 0;  // ← ДОБАВИТЬ
                 html += `<div class="item"><span class="label">🧹 Санитар</span><span class="value">замедляет ухудшение здоровья пациентов на 5% за каждого. Стоимость: 5 Ψ.</span></div>`;
                 html += `<div class="item"><span class="label">👩‍⚕️ Медсестра</span><span class="value">увеличивает силу препаратов на 5% за каждую. Стоимость: 10 Ψ.</span></div>`;
                 html += `<div class="item"><span class="label">💊 Ординатор</span><span class="value">даёт +0.5🧪 за вылеченного пациента за каждого. Стоимость: 25 Ψ.</span></div>`;
+                html += `<div class="item"><span class="label">⚡ Прибор ЭСТ</span><span class="value">доступен на уровнях Скворцова-Степанова, Кандинский, Арсенальная. Стоимость: 40 Ψ. Применяется к пациенту: обездвиживает на 5с, останавливает потерю здоровья, +20% к эффективности лечения.</span></div>`;
                 html += `</div>`;
 
                 // --- 7. Игровая механика ---
@@ -4051,6 +4291,10 @@ psychopediaModal.classList.remove('active');
                         nurseCount = 0;
                         orderlyCount = 0;
                         orderly2Count = 0;
+                        ectCount = 0;
+                        ectTimer = 0;
+                        ectTarget = null;
+                        isEctSelectMode = false;
                         drugInventory = {};
                         patients = [];
                         zLetters = [];
@@ -4098,6 +4342,14 @@ psychopediaModal.classList.remove('active');
                 }
 
                 if (e.key === 'Escape') {
+                    // Отмена режима выбора ЭСТ
+                    if (isEctSelectMode) {
+                        isEctSelectMode = false;
+                        statusMessage = '⚡ Режим выбора ЭСТ отменён';
+                        updateUI();
+                        e.preventDefault();
+                        return;
+                    }
                     // Закрываем психопедию, если она открыта
                     if (psychopediaModal.classList.contains('active')) {
                         closePsychopedia();
@@ -4153,7 +4405,7 @@ psychopediaModal.classList.remove('active');
                 }
                 if (e.key === ' ' || e.key === 'Space') {
                     e.preventDefault();
-                    if (menuModal.classList.contains('active') || dialogOverlay.classList.contains('active') || psychopediaModal.classList.contains('active')) return;
+                    if (menuModal.classList.contains('active') || dialogOverlay.classList.contains('active') || psychopediaModal.classList.contains('active') || isEctSelectMode) return;
                     
                     if (gameActive && !gameOver && !pendingLevelTransition) {
                         isPaused = !isPaused;
@@ -4229,22 +4481,49 @@ psychopediaModal.classList.remove('active');
                 let found = null;
                 for (let p of patients) { if (p.state === 'healed') continue; if (dist({ x: mx, y: my }, p) < p.size + 12) { found = p; break; } }
                 if (found) { hoveredPatient = found; showTooltip(found, e.clientX, e.clientY); document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + found.disease.code + ' ' + found.disease.name; } 
-                else { if (hoveredPatient) { hideTooltip(); if (selectedPatient && selectedPatient.state !== 'healed') document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + selectedPatient.disease.code + ' ' + selectedPatient.disease.name; else document.getElementById('diagnosisDisplay').innerHTML = '🔍 наведи на пациента' } }
+                else { if (hoveredPatient) { hideTooltip(); if (selectedPatient && selectedPatient.state !== 'healed') document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + selectedPatient.disease.code + ' ' + selectedPatient.disease.name; else if (isEctSelectMode) document.getElementById('diagnosisDisplay').innerHTML = '⚡ Выберите цель для ЭСТ'; else document.getElementById('diagnosisDisplay').innerHTML = '🔍 наведи на пациента' } }
             });
             canvas.addEventListener('mouseleave', function() {
                 if (gameOver) return;
                 hideTooltip();
                 if (selectedPatient && selectedPatient.state !== 'healed') document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + selectedPatient.disease.code + ' ' + selectedPatient.disease.name;
+                else if (isEctSelectMode) document.getElementById('diagnosisDisplay').innerHTML = '⚡ Выберите цель для ЭСТ';
                 else document.getElementById('diagnosisDisplay').innerHTML = '🔍 наведи на пациента';
             });
             canvas.addEventListener('click', function(e) {
                 if (gameOver) return;
+                
+                // Режим выбора ЭСТ
+                if (isEctSelectMode) {
+                    const rect = canvas.getBoundingClientRect();
+                    const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
+                    const mx = (e.clientX - rect.left) * scaleX, my = (e.clientY - rect.top) * scaleY;
+                    let found = null;
+                    for (let p of patients) { 
+                        if (p.state === 'healed') continue; 
+                        if (dist({ x: mx, y: my }, p) < p.size + 12) { 
+                            found = p; 
+                            break; 
+                        } 
+                    }
+                    if (found) {
+                        applyEct(found);
+                        updateUI();
+                        renderDrugPanel();
+                    } else {
+                        statusMessage = '❌ Выберите пациента на поле';
+                        updateUI();
+                    }
+                    return;
+                }
+                
+                // Обычный выбор пациента
                 const rect = canvas.getBoundingClientRect();
                 const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
                 const mx = (e.clientX - rect.left) * scaleX, my = (e.clientY - rect.top) * scaleY;
                 let found = null;
                 for (let p of patients) { if (p.state === 'healed') continue; if (dist({ x: mx, y: my }, p) < p.size + 12) { found = p; break; } }
-                if (found) { selectedPatient = found; document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + found.disease.code + ' ' + found.disease.name; } else { selectedPatient = null; document.getElementById('diagnosisDisplay').innerHTML = '🔍 наведи на пациента'; }
+                if (found) { selectedPatient = found; document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + found.disease.code + ' ' + found.disease.name; } else { selectedPatient = null; if (isEctSelectMode) document.getElementById('diagnosisDisplay').innerHTML = '⚡ Выберите цель для ЭСТ'; else document.getElementById('diagnosisDisplay').innerHTML = '🔍 наведи на пациента'; }
                 updateUI();
             });
             canvas.addEventListener('dragover', function(e) { e.preventDefault(); });
@@ -4269,6 +4548,13 @@ psychopediaModal.classList.remove('active');
             document.getElementById('hireOrderlyBtn2').addEventListener('click', hireOrderly2);
             document.getElementById('hireNurseBtn').addEventListener('click', hireNurse);
             document.getElementById('hireOrderlyBtn').addEventListener('click', hireOrderly);
+            document.getElementById('hireEctBtn').addEventListener('click', function() {
+                if (ectCount >= maxEct && ectTimer === 0) {
+                    activateEct();
+                } else {
+                    hireEct();
+                }
+            });
 
             const bookModal = document.getElementById('bookModal');
             document.getElementById('bookBtnTop').addEventListener('click', function() { bookModal.classList.add('active'); });
