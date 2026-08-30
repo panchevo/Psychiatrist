@@ -4545,6 +4545,101 @@ document.getElementById('menuCloseBtn').addEventListener('click', function() {
 });
             document.getElementById('saveBtnTop').addEventListener('click', saveGame);
             document.getElementById('loadBtnTop').addEventListener('click', loadGame);
+
+
+
+
+
+document.getElementById('menuRestartBtn').addEventListener('click', function() {
+    showDialog('Новая игра', 'Вы уверены, что хотите начать новую игру? Весь прогресс будет потерян!', ['Да', 'Нет']).then(res => {
+        if (res === 0) {
+            // 1. Останавливаем музыку
+            stopMusic();
+            
+            // 2. Останавливаем игровой цикл
+            if (gameLoopId) {
+                cancelAnimationFrame(gameLoopId);
+                gameLoopId = null;
+            }
+            
+            // 3. Сбрасываем все игровые флаги
+            gameActive = false;
+            gameOver = false;
+            isPaused = false;
+            pendingLevelTransition = false;
+            
+            // 4. Скрываем игровое поле и показываем экран выбора
+            gameWrapper.classList.remove('active');
+            selectionScreen.classList.remove('hidden');
+            
+            // 5. Сбрасываем данные
+            completedLevels = {};
+            unlockedLevels = ['bechtereva'];
+            LEVELS.forEach(l => {
+                l.unlocked = l.id === 'bechtereva';
+            });
+            techPoints = 0;
+            researchedTechs = [];
+            techEffects = {};
+            score = 0;
+            levelScore = 0;
+            patients = [];
+            drugInventory = {};
+            curedCount = 0;
+            nurseCount = 0;
+            orderlyCount = 0;
+            orderly2Count = 0;
+            ectCount = 0;
+            ectTimer = 0;
+            ectTarget = null;
+            isEctSelectMode = false;
+            
+            // 6. Перерендериваем выбор психиатров и уровней
+            renderPsychSelection();
+            showStep('psych');
+            renderLevelSelection();
+            
+            // 7. Закрываем меню
+            toggleMenu(false);
+            
+            // 8. Обновляем статус
+            statusMessage = '🔄 Новая игра! Выберите психиатра и уровень.';
+            updateUI();
+            
+            // 9. Убеждаемся, что музыка точно остановлена
+            audio.pause();
+            audio.currentTime = 0;
+            isAudioPlaying = false;
+            isAudioPaused = false;
+        }
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+document.getElementById('menuSaveBtn').addEventListener('click', function() {
+    saveGame();
+    toggleMenu(false);
+});
+
+document.getElementById('menuLoadBtn').addEventListener('click', function() {
+    loadGame();
+    toggleMenu(false);
+});
+
+
             loadLevelBtn.addEventListener('click', loadLevelFromMenu);
 document.addEventListener('contextmenu', function(e) {
         e.preventDefault();
