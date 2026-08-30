@@ -4538,6 +4538,11 @@ if (e.key === ' ' || e.key === 'Space') {
 document.getElementById('menuBtnTop').addEventListener('click', function() {
     toggleMenu(true);
 });
+
+
+document.getElementById('menuCloseBtn').addEventListener('click', function() {
+    toggleMenu(false);
+});
             document.getElementById('saveBtnTop').addEventListener('click', saveGame);
             document.getElementById('loadBtnTop').addEventListener('click', loadGame);
             loadLevelBtn.addEventListener('click', loadLevelFromMenu);
