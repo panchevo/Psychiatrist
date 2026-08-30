@@ -1018,92 +1018,98 @@ border:5px solid rgb(148, 124, 92) !important;
                 { name: 'Личко', ability: '+25% к лечению психопатий', iq: 78, empathy: 72, speed: 0.85, bonus: { type: 'personality', value: 25 } },
                 { name: 'Лабори', ability: '+25% к эффективности аминазина', iq: 82, empathy: 70, speed: 0.8, bonus: { type: 'aminazine', value: 25 } }
             ];
-
-            const LEVELS = [
-                { 
-                    id: 'bechtereva', name: 'Бехтерева', desc: 'Неврозы', 
-                    fightChance: 0.003, spawnInterval: 12, drugPrice: 5, drugLimit: 35, 
-                    task: 'Вылечить 3 пациентов', taskTarget: 3, healthRange: [70, 95], 
-                    unlocked: true, requiredLevel: null, 
-                    availableDrugs: ['глицин'], diseaseCount: 5, 
-                    staffLimits: { orderlies2: 0, nurses: 0, orderlies: 0, ect: 0 },
-                    theme: 'bechtereva' 
-                },
-                { 
-                    id: 'alekseeva', name: 'Алексеева', desc: 'Расстройства пищевого поведения', 
-                    fightChance: 0.006, spawnInterval: 11, drugPrice: 7, drugLimit: 28, 
-                    task: 'Вылечить 4 пациентов', taskTarget: 4, healthRange: [55, 85], 
-                    unlocked: false, requiredLevel: 'bechtereva', 
-                    availableDrugs: ['глицин', 'флуоксетин', 'кветиапин'], diseaseCount: 10, 
-                    staffLimits: { orderlies2: 0, nurses: 0, orderlies: 0, ect: 0 },
-                    theme: 'alekseeva' 
-                },
-                { 
-                    id: 'korsakov', name: 'Корсаков', desc: 'Психозы и деменции', 
-                    fightChance: 0.008, spawnInterval: 11, drugPrice: 7, drugLimit: 28, 
-                    task: 'Вылечить 5 пациентов', taskTarget: 5, healthRange: [55, 85], 
-                    unlocked: false, requiredLevel: 'alekseeva', 
-                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин'], diseaseCount: 12, 
-                    staffLimits: { orderlies2: 2, nurses: 0, orderlies: 0, ect: 0 },
-                    theme: 'korsakov' 
-                },
-               
-                { 
-                    id: 'gannushkina', name: 'Ганнушкина', desc: 'Расстройства личности', 
-                    fightChance: 0.01, spawnInterval: 10, drugPrice: 8, drugLimit: 25, 
-                    task: 'Вылечить 7 пациентов', taskTarget: 7, healthRange: [50, 80], 
-                    unlocked: false, requiredLevel: 'korsakov', 
-                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин'], diseaseCount: 20, 
-                    staffLimits: { orderlies2: 3, nurses: 2, orderlies: 0, ect: 0 },
-                    theme: 'gannushkina' 
-                },
-                { 
-                    id: 'osipova', name: 'Осипова', desc: 'Шизофрения', 
-                    fightChance: 0.012, spawnInterval: 10, drugPrice: 10, drugLimit: 20, 
-                    task: 'Вылечить 8 пациентов', taskTarget: 8, healthRange: [45, 75], 
-                    unlocked: false, requiredLevel: 'gannushkina', 
-                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол'], diseaseCount: 25, 
-                    staffLimits: { orderlies2: 4, nurses: 3, orderlies: 2, ect: 0 },
-                    theme: 'osipova' 
-                },
-                { 
-                    id: 'kashchenko', name: 'Кащенко', desc: 'Смешанные расстройства', 
-                    fightChance: 0.018, spawnInterval: 9, drugPrice: 12, drugLimit: 18, 
-                    task: 'Вылечить 12 пациентов', taskTarget: 12, healthRange: [40, 70], 
-                    unlocked: false, requiredLevel: 'osipova', 
-                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит'], diseaseCount: 40, 
-                    staffLimits: { orderlies2: 5, nurses: 4, orderlies: 3, ect: 0 },
-                    theme: 'kashchenko' 
-                },
-                { 
-                    id: 'skvortsova-stepanova', name: 'Скворцова-Степанова', desc: 'Резистентные формы', 
-                    fightChance: 0.025, spawnInterval: 9, drugPrice: 15, drugLimit: 10, 
-                    task: 'Вылечить 15 пациентов', taskTarget: 15, healthRange: [30, 60], 
-                    unlocked: false, requiredLevel: 'kashchenko', 
-                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 50, 
-                    staffLimits: { orderlies2: 7, nurses: 6, orderlies: 4, ect: 1 },
-                    theme: 'skvortsova' 
-                },
-                { 
-                    id: 'kandinsky', name: 'Кандинский', desc: 'Бредовые расстройства', 
-                    fightChance: 0.045, spawnInterval: 8, drugPrice: 22, drugLimit: 5, 
-                    task: 'Вылечить 30 пациентов', taskTarget: 30, healthRange: [15, 45], 
-                    unlocked: false, requiredLevel: 'skvortsova-stepanova', 
-                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 65, 
-                    staffLimits: { orderlies2: 8, nurses: 7, orderlies: 5, ect: 1 },
-                    theme: 'kandinsky' 
-                },
-                { 
-                    id: 'arsenalnaya', name: 'Арсенальная', desc: 'Особо опасные расстройства', 
-                    fightChance: 0.08, spawnInterval: 6, drugPrice: 30, drugLimit: 100, 
-                    task: 'Вылечить 40 пациентов', taskTarget: 40, healthRange: [5, 30], 
-                    unlocked: false, requiredLevel: 'kandinsky', 
-                    availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 75, 
-                    staffLimits: { orderlies2: 10, nurses: 8, orderlies: 5, ect: 1 },
-                    theme: 'arsenalnaya' 
-                }
-            ];
-
+const LEVELS = [
+    { 
+        id: 'bechtereva', name: 'Бехтерева', desc: 'Неврозы', 
+        fightChance: 0.003, spawnInterval: 12, drugPrice: 5, drugLimit: 35, 
+        task: 'Вылечить 4 пациентов', taskTarget: 4, maxPatients: 4,  // ← изменено
+        healthRange: [70, 95], 
+        unlocked: true, requiredLevel: null, 
+        availableDrugs: ['глицин'], diseaseCount: 5, 
+        staffLimits: { orderlies2: 0, nurses: 0, orderlies: 0, ect: 0 },
+        theme: 'bechtereva' 
+    },
+    { 
+        id: 'alekseeva', name: 'Алексеева', desc: 'Расстройства пищевого поведения', 
+        fightChance: 0.006, spawnInterval: 11, drugPrice: 7, drugLimit: 28, 
+        task: 'Вылечить 4 пациентов', taskTarget: 4, maxPatients: 4,  // ← изменено
+        healthRange: [55, 85], 
+        unlocked: false, requiredLevel: 'bechtereva', 
+        availableDrugs: ['глицин', 'флуоксетин', 'кветиапин'], diseaseCount: 10, 
+        staffLimits: { orderlies2: 0, nurses: 0, orderlies: 0, ect: 0 },
+        theme: 'alekseeva' 
+    },
+    { 
+        id: 'korsakov', name: 'Корсаков', desc: 'Психозы и деменции', 
+        fightChance: 0.008, spawnInterval: 11, drugPrice: 7, drugLimit: 28, 
+        task: 'Вылечить 5 пациентов', taskTarget: 5, maxPatients: 5,  // ← изменено
+        healthRange: [55, 85], 
+        unlocked: false, requiredLevel: 'alekseeva', 
+        availableDrugs: ['глицин', 'флуоксетин', 'аминазин'], diseaseCount: 12, 
+        staffLimits: { orderlies2: 2, nurses: 0, orderlies: 0, ect: 0 },
+        theme: 'korsakov' 
+    },
+    { 
+        id: 'gannushkina', name: 'Ганнушкина', desc: 'Расстройства личности', 
+        fightChance: 0.01, spawnInterval: 10, drugPrice: 8, drugLimit: 25, 
+        task: 'Вылечить 6 пациентов', taskTarget: 6, maxPatients: 6,  // ← изменено
+        healthRange: [50, 80], 
+        unlocked: false, requiredLevel: 'korsakov', 
+        availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин'], diseaseCount: 20, 
+        staffLimits: { orderlies2: 3, nurses: 2, orderlies: 0, ect: 0 },
+        theme: 'gannushkina' 
+    },
+    { 
+        id: 'osipova', name: 'Осипова', desc: 'Шизофрения', 
+        fightChance: 0.012, spawnInterval: 10, drugPrice: 10, drugLimit: 20, 
+        task: 'Вылечить 7 пациентов', taskTarget: 7, maxPatients: 7,  // ← изменено
+        healthRange: [45, 75], 
+        unlocked: false, requiredLevel: 'gannushkina', 
+        availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол'], diseaseCount: 25, 
+        staffLimits: { orderlies2: 4, nurses: 3, orderlies: 2, ect: 0 },
+        theme: 'osipova' 
+    },
+    { 
+        id: 'kashchenko', name: 'Кащенко', desc: 'Смешанные расстройства', 
+        fightChance: 0.018, spawnInterval: 9, drugPrice: 12, drugLimit: 18, 
+        task: 'Вылечить 8 пациентов', taskTarget: 8, maxPatients: 8,  // ← изменено
+        healthRange: [40, 70], 
+        unlocked: false, requiredLevel: 'osipova', 
+        availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит'], diseaseCount: 40, 
+        staffLimits: { orderlies2: 5, nurses: 4, orderlies: 3, ect: 0 },
+        theme: 'kashchenko' 
+    },
+    { 
+        id: 'skvortsova-stepanova', name: 'Скворцова-Степанова', desc: 'Резистентные формы', 
+        fightChance: 0.025, spawnInterval: 9, drugPrice: 15, drugLimit: 10, 
+        task: 'Вылечить 9 пациентов', taskTarget: 9, maxPatients: 9,  // ← изменено
+        healthRange: [30, 60], 
+        unlocked: false, requiredLevel: 'kashchenko', 
+        availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 50, 
+        staffLimits: { orderlies2: 7, nurses: 6, orderlies: 4, ect: 1 },
+        theme: 'skvortsova' 
+    },
+    { 
+        id: 'kandinsky', name: 'Кандинский', desc: 'Бредовые расстройства', 
+        fightChance: 0.045, spawnInterval: 8, drugPrice: 22, drugLimit: 5, 
+        task: 'Вылечить 10 пациентов', taskTarget: 10, maxPatients: 10,  // ← изменено
+        healthRange: [15, 45], 
+        unlocked: false, requiredLevel: 'skvortsova-stepanova', 
+        availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 65, 
+        staffLimits: { orderlies2: 8, nurses: 7, orderlies: 5, ect: 1 },
+        theme: 'kandinsky' 
+    },
+    { 
+        id: 'arsenalnaya', name: 'Арсенальная', desc: 'Особо опасные расстройства', 
+        fightChance: 0.08, spawnInterval: 6, drugPrice: 30, drugLimit: 100, 
+        task: 'Вылечить 12 пациентов', taskTarget: 12, maxPatients: 12,  // ← изменено
+        healthRange: [5, 30], 
+        unlocked: false, requiredLevel: 'kandinsky', 
+        availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], diseaseCount: 75, 
+        staffLimits: { orderlies2: 10, nurses: 8, orderlies: 5, ect: 1 },
+        theme: 'arsenalnaya' 
+    }
+];
             // ТЕХНОЛОГИИ
             const TECH_TREE = [
                 { id: 'tech_psychopharmacology', name: 'Психофармакология', desc: '+15% эффективность всех препаратов', cost: 15, prereq: [], effect: 'drug_boost', value: 0.15 },
@@ -1566,112 +1572,102 @@ case "циклодол":return 15
                     gameLoopId = null; 
                 }
             }
-
-           function goToNextLevel() {
+function goToNextLevel() {
     const currentIdx = LEVELS.findIndex(l => l.id === currentLevel.id);
     if (currentIdx === -1 || currentIdx >= LEVELS.length - 1) {
         showGameWin();
         return;
     }
-               const nextLevel = LEVELS[currentIdx + 1];
+    
+    const nextLevel = LEVELS[currentIdx + 1];
     if (!nextLevel.unlocked && !checkLevelUnlock(nextLevel.id)) {
         statusMessage = '⚠️ Следующий уровень ещё не доступен!';
         updateUI();
         return;
     }
 
-                hideDrugTooltip();
+    hideDrugTooltip();
 
-                selectedLevel = nextLevel;
-                currentLevel = nextLevel;
-               
+    selectedLevel = nextLevel;
+    currentLevel = nextLevel;
 
-                availableDrugsList = getAvailableDrugsForLevel(nextLevel);
-                availableDiseases = getAvailableDiseasesForLevel(nextLevel);
-                drugInventory = initDrugInventory(nextLevel);
+    availableDrugsList = getAvailableDrugsForLevel(nextLevel);
+    availableDiseases = getAvailableDiseasesForLevel(nextLevel);
+    drugInventory = initDrugInventory(nextLevel);
 
-                fightChance = nextLevel.fightChance * (1 - getFightReduction());
-                spawnInterval = nextLevel.spawnInterval;
-                drugPrice = nextLevel.drugPrice;
-                drugLimit = nextLevel.drugLimit;
-                currentHealthRange = nextLevel.healthRange || [50, 80];
-                
-                currentTaskTarget = 3 + LEVELS.indexOf(nextLevel) - 2;
-                if (currentTaskTarget < 1) currentTaskTarget = 1;
-                currentMaxPatients = 6 + LEVELS.indexOf(nextLevel) - 2;
-                if (currentMaxPatients < 2) currentMaxPatients = 2;
-                
-                taskTarget = currentTaskTarget;
-                maxPatients = currentMaxPatients;
-                
-                score = 0;
-levelScore = 0;  // ← ДОБАВИТЬ
-                nurseCount = 0;
-                orderlyCount = 0;
-                orderly2Count = 0;
-                ectCount = 0;
-                ectTimer = 0;
-                ectTarget = null;
-                isEctSelectMode = false;
-                
-                const limits = getStaffLimits(nextLevel);
-                maxOrderlies2 = limits.orderlies2;
-                maxNurses = limits.nurses;
-                maxOrderlies = limits.orderlies;
-                maxEct = limits.ect || 0;
-                
-                curedCount = 0;
-                levelCompleted = false;
-                pendingLevelTransition = false;
+    fightChance = nextLevel.fightChance * (1 - getFightReduction());
+    spawnInterval = nextLevel.spawnInterval;
+    drugPrice = nextLevel.drugPrice;
+    drugLimit = nextLevel.drugLimit;
+    currentHealthRange = nextLevel.healthRange || [50, 80];
+    
+    // Используем значения из уровня
+    taskTarget = nextLevel.taskTarget || 4;
+    maxPatients = nextLevel.maxPatients || 4;
+    
+    score = 0;
+    levelScore = 0;
+    nurseCount = 0;
+    orderlyCount = 0;
+    orderly2Count = 0;
+    ectCount = 0;
+    ectTimer = 0;
+    ectTarget = null;
+    isEctSelectMode = false;
+    
+    const limits = getStaffLimits(nextLevel);
+    maxOrderlies2 = limits.orderlies2;
+    maxNurses = limits.nurses;
+    maxOrderlies = limits.orderlies;
+    maxEct = limits.ect || 0;
+    
+    curedCount = 0;
+    levelCompleted = false;
+    pendingLevelTransition = false;
 
-                timeOfDay = 600;
+    timeOfDay = 600;
 
-                patients = [];
-                zLetters = [];
-                zSpawnCounter = 0;
+    patients = [];
+    zLetters = [];
+    zSpawnCounter = 0;
 
-                namePool = shuffleArray([...ALL_NAMES]);
+    namePool = shuffleArray([...ALL_NAMES]);
 
-                const extraPatients = Math.floor(Math.random() * 3) + 1;
-                const totalInitial = Math.max(1, taskTarget + extraPatients - 2);
-                const initialCount = Math.min(totalInitial, maxPatients);
-                for (let i = 0; i < initialCount; i++) {
-                    patients.push(createPatient());
-                }
-                
-                if (totalInitial > maxPatients) {
-                    statusMessage = '⚠️ На уровне может быть максимум ' + maxPatients + ' пациентов. Создано ' + initialCount + '.';
-                } else {
-                    statusMessage = '🏥 Появилось ' + initialCount + ' пациентов (нужно вылечить ' + taskTarget + ')';
-                }
+    // Создаём начальное количество пациентов = taskTarget (не больше maxPatients)
+    const initialCount = Math.min(taskTarget, maxPatients);
+    for (let i = 0; i < initialCount; i++) {
+        patients.push(createPatient());
+    }
+    
+    statusMessage = '🏥 Появилось ' + initialCount + ' пациентов (нужно вылечить ' + taskTarget + ')';
 
-                document.getElementById('levelDisplay').textContent = '📍 ' + nextLevel.name + ' (' + nextLevel.desc + ')';
-                
-                updateStaffPanel();
-                
-                isPaused = false;
-                
-                if (isAudioPlaying && isAudioPaused) {
-                    audio.play().then(() => {
-                        isAudioPaused = false;
-                    }).catch(err => console.warn('Audio resume failed:', err));
-                }
-                if (!isAudioPlaying) {
-                    startMusic();
-                }
-                
-                updateUI();
-                renderDrugPanel();
-                renderBook();
-                renderTechTree();
+    document.getElementById('levelDisplay').textContent = '📍 ' + nextLevel.name + ' (' + nextLevel.desc + ')';
+    
+    updateStaffPanel();
+    
+    isPaused = false;
+    
+    if (isAudioPlaying && isAudioPaused) {
+        audio.play().then(() => {
+            isAudioPaused = false;
+        }).catch(err => console.warn('Audio resume failed:', err));
+    }
+    if (!isAudioPlaying) {
+        startMusic();
+    }
+    
+    updateUI();
+    renderDrugPanel();
+    renderBook();
+    renderTechTree();
 
-                document.getElementById('levelTransitionModal').classList.remove('active');
+    document.getElementById('levelTransitionModal').classList.remove('active');
 
-                gameActive = true;
-                if (!gameLoopId) {
-                    gameLoop();
-                }
-            }
+    gameActive = true;
+    if (!gameLoopId) {
+        gameLoop();
+    }
+}
 
             function showGameWin() {
                 gameActive = false;
@@ -2095,63 +2091,60 @@ levelScore = 0;  // ← ДОБАВИТЬ
                     psychGrid.appendChild(card);
                 });
             }
-
-            function renderLevelSelection() {
-                levelGrid.innerHTML = '';
-                LEVELS.forEach((level, idx) => {
-                    const el = document.createElement('div');
-                    const isUnlocked = level.unlocked || checkLevelUnlock(level.id);
-                    el.className = 'sel-level' + (idx === selectedLevelIndex ? ' selected' : '') + (!isUnlocked ? ' locked-level' : '');
+function renderLevelSelection() {
+    levelGrid.innerHTML = '';
+    LEVELS.forEach((level, idx) => {
+        const el = document.createElement('div');
+        const isUnlocked = level.unlocked || checkLevelUnlock(level.id);
+        el.className = 'sel-level' + (idx === selectedLevelIndex ? ' selected' : '') + (!isUnlocked ? ' locked-level' : '');
+        
+        let progressText = '';
+        if (isUnlocked && completedLevels[level.id]) {
+            progressText = '<span class="level-progress">✅ Пройден</span>';
+        } else if (isUnlocked) {
+            const drugCount = level.availableDrugs.length;
+            const limits = level.staffLimits || { orderlies2: 0, nurses: 0, orderlies: 0, ect: 0 };
+            // Показываем задачу и максимум пациентов
+            progressText = `<span class="level-progress">🔓 ${drugCount} препаратов · цель: ${level.taskTarget} пациентов · макс: ${level.maxPatients} · 🧹${limits.orderlies2} 👩‍⚕️${limits.nurses} 💊${limits.orderlies} ⚡${limits.ect}</span>`;
+        } else {
+            const required = LEVELS.find(l => l.id === level.requiredLevel);
+            progressText = `<span class="level-progress">🔒 Требуется: ${required ? required.name : ''}</span>`;
+        }
+        
+        el.innerHTML = `${level.name} <span class="desc">${level.desc}</span> ${progressText}`;
+        
+        if (isUnlocked) {
+            el.addEventListener('click', function() { 
+                if (isUnlocked) {
+                    stopMusic();
                     
-                    let progressText = '';
-                    if (isUnlocked && completedLevels[level.id]) {
-                        progressText = '<span class="level-progress">✅ Пройден</span>';
-                    } else if (isUnlocked) {
-                        const drugCount = level.availableDrugs.length;
-                        const limits = level.staffLimits || { orderlies2: 0, nurses: 0, orderlies: 0, ect: 0 };
-                        progressText = `<span class="level-progress">🔓 ${drugCount} препаратов · 🧹${limits.orderlies2} 👩‍⚕️${limits.nurses} 💊${limits.orderlies} ⚡${limits.ect}</span>`;
-                    } else {
-                        const required = LEVELS.find(l => l.id === level.requiredLevel);
-                        progressText = `<span class="level-progress">🔒 Требуется: ${required ? required.name : ''}</span>`;
-                    }
-                    
-                    const levelIndex = LEVELS.indexOf(level);
-                    const taskForLevel = Math.max(1, 3 + levelIndex - 2);
-                    const maxForLevel = Math.max(2, 6 + levelIndex - 2);
-                    el.innerHTML = `${level.name} <span class="desc">${level.desc} · задача: вылечить ${taskForLevel} пациентов (макс. ${maxForLevel})</span> ${progressText}`;
-                    
-                    if (isUnlocked) {
-                        el.addEventListener('click', function() { 
-                            if (isUnlocked) {
-                                stopMusic();
-                                
-                                selectedLevelIndex = idx;
-                                renderLevelSelection();
-                                const doc = PSYCHIATRISTS[selectedPsychIndex];
-                                const lvl = LEVELS[selectedLevelIndex];
-                                if (doc && lvl && (lvl.unlocked || checkLevelUnlock(lvl.id))) {
-                                    selectedDoc = doc;
-                                    selectedLevel = lvl;
-                                    selectionScreen.classList.add('hidden');
-                                    gameWrapper.classList.add('active');
-                                    initGameWithSettings(doc, lvl);
-                                }
-                            }
-                        });
-                    }
-                    
-                    levelGrid.appendChild(el);
-                });
-                
-                const selectedLevelData = LEVELS[selectedLevelIndex];
-                if (selectedLevelData && !selectedLevelData.unlocked && !checkLevelUnlock(selectedLevelData.id)) {
-                    const firstUnlocked = LEVELS.findIndex(l => l.unlocked || checkLevelUnlock(l.id));
-                    if (firstUnlocked !== -1) {
-                        selectedLevelIndex = firstUnlocked;
-                        renderLevelSelection();
+                    selectedLevelIndex = idx;
+                    renderLevelSelection();
+                    const doc = PSYCHIATRISTS[selectedPsychIndex];
+                    const lvl = LEVELS[selectedLevelIndex];
+                    if (doc && lvl && (lvl.unlocked || checkLevelUnlock(lvl.id))) {
+                        selectedDoc = doc;
+                        selectedLevel = lvl;
+                        selectionScreen.classList.add('hidden');
+                        gameWrapper.classList.add('active');
+                        initGameWithSettings(doc, lvl);
                     }
                 }
-            }
+            });
+        }
+        
+        levelGrid.appendChild(el);
+    });
+    
+    const selectedLevelData = LEVELS[selectedLevelIndex];
+    if (selectedLevelData && !selectedLevelData.unlocked && !checkLevelUnlock(selectedLevelData.id)) {
+        const firstUnlocked = LEVELS.findIndex(l => l.unlocked || checkLevelUnlock(l.id));
+        if (firstUnlocked !== -1) {
+            selectedLevelIndex = firstUnlocked;
+            renderLevelSelection();
+        }
+    }
+}
 
             function showStep(step) {
                 stepPsych.classList.toggle('active', step === 'psych');
@@ -2727,87 +2720,96 @@ let levelScore = 0;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
                     return false;
                 }
             }
+function initGameWithSettings(doc, level) {
+    hideDrugTooltip();
+    gameOver = false;
+    gameActive = true;
+    isPaused = false;
+    
+    selectedDoc = doc;
+    currentLevel = level;
+    selectedPatient = null;
+    document.getElementById('diagnosisDisplay').innerHTML = '🔍 наведи на пациента';
+    
+    fightChance = level.fightChance * (1 - getFightReduction());
+    spawnInterval = level.spawnInterval;
+    drugPrice = level.drugPrice;
+    drugLimit = level.drugLimit;
+    currentHealthRange = level.healthRange || [50, 80];
+    
+    // Используем значения из уровня
+    taskTarget = level.taskTarget || 4;
+    maxPatients = level.maxPatients || 4;
+    
+    availableDrugsList = getAvailableDrugsForLevel(level);
+    availableDiseases = getAvailableDiseasesForLevel(level);
+    drugInventory = initDrugInventory(level);
+    
+    score = 0;
+    levelScore = 0;
+    curedCount = 0;
+    levelCompleted = false;
+    
+    const limits = getStaffLimits(level);
+    maxOrderlies2 = limits.orderlies2;
+    maxNurses = limits.nurses;
+    maxOrderlies = limits.orderlies;
+    maxEct = limits.ect || 0;
+    if (researchedTechs.includes('tech_residency')) {
+        maxOrderlies = Math.floor(maxOrderlies * 2);
+    }
+    nurseCount = 0;
+    orderlyCount = 0;
+    orderly2Count = 0;
+    ectCount = 0;
+    ectTimer = 0;
+    ectTarget = null;
+    isEctSelectMode = false;
 
-            function initGameWithSettings(doc, level) {
-                hideDrugTooltip();
-                gameOver = false; gameActive = true;
-                
-                isPaused = false;
-                
-                selectedDoc = doc; currentLevel = level;
-                selectedPatient = null;
-                document.getElementById('diagnosisDisplay').innerHTML = '🔍 наведи на пациента';
-                
-                fightChance = level.fightChance * (1 - getFightReduction());
-                spawnInterval = level.spawnInterval;
-                drugPrice = level.drugPrice;
-                drugLimit = level.drugLimit;
-                currentHealthRange = level.healthRange || [50, 80];
-                
-                const levelIndex = LEVELS.indexOf(level);
-                currentTaskTarget = Math.max(1, 3 + levelIndex - 2);
-                currentMaxPatients = Math.max(2, 6 + levelIndex - 2);
-                taskTarget = currentTaskTarget;
-                maxPatients = currentMaxPatients;
-                
-                availableDrugsList = getAvailableDrugsForLevel(level);
-                availableDiseases = getAvailableDiseasesForLevel(level);
-                drugInventory = initDrugInventory(level);
-                
-                score = 0;
-                levelScore = 0;
-                curedCount = 0; 
-                levelCompleted = false;
-                
-                const limits = getStaffLimits(level);
-                maxOrderlies2 = limits.orderlies2;
-                maxNurses = limits.nurses;
-                maxOrderlies = limits.orderlies;
-                maxEct = limits.ect || 0;
-                if (researchedTechs.includes('tech_residency')) {
-                    maxOrderlies = Math.floor(maxOrderlies * 2);
-                }
-                nurseCount = 0; orderlyCount = 0; orderly2Count = 0; ectCount = 0; ectTimer = 0; ectTarget = null; isEctSelectMode = false;
+    namePool = shuffleArray([...ALL_NAMES]);
+    
+    patients = [];
+    // Создаём начальное количество пациентов = taskTarget (не больше maxPatients)
+    const initialCount = Math.min(taskTarget, maxPatients);
+    for (let i = 0; i < initialCount; i++) {
+        patients.push(createPatient());
+    }
+    
+    statusMessage = '🏥 Появилось ' + initialCount + ' пациентов (нужно вылечить ' + taskTarget + ')';
 
-                namePool = shuffleArray([...ALL_NAMES]);
-                
-                patients = [];
-                const extraPatients = Math.floor(Math.random() * 3) + 1;
-                const totalInitial = Math.max(1, taskTarget + extraPatients - 2);
-                const initialCount = Math.min(totalInitial, maxPatients);
-                for (let i = 0; i < initialCount; i++) patients.push(createPatient());
-                
-                if (totalInitial > maxPatients) statusMessage = '⚠️ На уровне может быть максимум ' + maxPatients + ' пациентов. Создано ' + initialCount + '.';
-                else statusMessage = '🏥 Появилось ' + initialCount + ' пациентов (нужно вылечить ' + taskTarget + ')';
-
-                spawnTimer = 0; frameCounter = 0;
-                timeOfDay = 600; zLetters = []; zSpawnCounter = 0;
-                autoRestockCounter = 0;
-                nextRestockTime = Math.floor(Math.random() * (AUTO_RESTOCK_MAX_INTERVAL - AUTO_RESTOCK_MIN_INTERVAL + 1)) + AUTO_RESTOCK_MIN_INTERVAL;
-                
-                updateTimeCircle();
-                
-                document.getElementById('levelDisplay').textContent = '📍 ' + level.name + ' (' + level.desc + ')';
-                
-                updateStaffPanel();
-                
-                document.getElementById('gameoverModal').classList.remove('active');
-                
-                if (isAudioPlaying && isAudioPaused) {
-                    audio.play().then(() => {
-                        isAudioPaused = false;
-                    }).catch(err => console.warn('Audio resume failed:', err));
-                }
-                if (!isAudioPlaying) {
-                    startMusic();
-                }
-                
-                updateUI(); renderDrugPanel(); renderBook(); renderTechTree();
-                
-                if (gameLoopId) cancelAnimationFrame(gameLoopId);
-                gameLoop();
-            }
-
+    spawnTimer = 0;
+    frameCounter = 0;
+    timeOfDay = 600;
+    zLetters = [];
+    zSpawnCounter = 0;
+    autoRestockCounter = 0;
+    nextRestockTime = Math.floor(Math.random() * (AUTO_RESTOCK_MAX_INTERVAL - AUTO_RESTOCK_MIN_INTERVAL + 1)) + AUTO_RESTOCK_MIN_INTERVAL;
+    
+    updateTimeCircle();
+    
+    document.getElementById('levelDisplay').textContent = '📍 ' + level.name + ' (' + level.desc + ')';
+    
+    updateStaffPanel();
+    
+    document.getElementById('gameoverModal').classList.remove('active');
+    
+    if (isAudioPlaying && isAudioPaused) {
+        audio.play().then(() => {
+            isAudioPaused = false;
+        }).catch(err => console.warn('Audio resume failed:', err));
+    }
+    if (!isAudioPlaying) {
+        startMusic();
+    }
+    
+    updateUI();
+    renderDrugPanel();
+    renderBook();
+    renderTechTree();
+    
+    if (gameLoopId) cancelAnimationFrame(gameLoopId);
+    gameLoop();
+}
             function updateUI() {
                 if (gameOver) return;
                 const doc = selectedDoc || PSYCHIATRISTS[0];
@@ -3510,7 +3512,8 @@ let levelScore = 0;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
                         spawnTimer++;
                         const activeCount = patients.filter(p => p.state !== 'healed').length;
                         const adjustedMaxPatients = Math.max(2, maxPatients - 2);
-                        if (spawnTimer >= spawnInterval / 2 && activeCount < adjustedMaxPatients && !levelCompleted && !gameOver) {
+ currentMaxPatients = currentLevel ? currentLevel.maxPatients || 4 : 4;
+                       if (spawnTimer >= spawnInterval / 2 && activeCount < currentMaxPatients && !levelCompleted && !gameOver) {
                             const newPatient = createPatient();
                             patients.push(newPatient);
                             spawnTimer = 0;
