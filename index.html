@@ -329,6 +329,7 @@ button:focus,
     .time-indicator-circle {
         width: 28px !important;
         height: 28px !important;
+
     }
     .time-indicator-circle .icon-overlay {
         font-size: 11px !important;
@@ -695,6 +696,11 @@ border:5px solid rgb(148, 124, 92) !important;
 
 
 
+    .time-indicator-circle {
+        width: 28px !important;
+        height: 28px !important;
+position:absolute !important;
+    }
 
 
 
@@ -906,6 +912,11 @@ border:5px solid rgb(148, 124, 92) !important;
             const dialogMessage = document.getElementById('dialogMessage');
             const dialogButtons = document.getElementById('dialogButtons');
             let dialogResolve = null;
+const AUTO_RESTOCK_MIN_INTERVAL = 5;
+const AUTO_RESTOCK_MAX_INTERVAL = 10;
+let autoRestockCounter = 0;
+let nextRestockTime = 0;
+
 
             function showDialog(title, message, buttons = ['OK']) {
                 return new Promise((resolve) => {
@@ -1390,6 +1401,62 @@ const LEVELS = [
                 { name: 'седалит', color: '#ff8a65', sideEffect: 'угнетение ЦНС, привыкание', price: 8, rarity: 3 },
                 { name: 'циклодол', color: '#aed581', sideEffect: 'запор, сухость во рту', price: 6, rarity: 3 }
             ];
+
+
+
+
+
+
+
+
+// === РАСЧЁТ ИНТЕРВАЛА ПОПОЛНЕНИЯ ДЛЯ КАЖДОГО ПРЕПАРАТА ===
+function getDrugRestockInterval(drugName, level) {
+    if (!level) return 10;
+    
+    const levelIndex = LEVELS.findIndex(l => l.id === level.id);
+    const totalLevels = LEVELS.length;
+    
+    // Базовый интервал: от 10 сек (Бехтерева) до 3 сек (Арсенальная)
+    let baseInterval = 20 - (levelIndex / (totalLevels - 1)) * 7;
+    baseInterval = Math.max(3, Math.min(20, baseInterval));
+    
+    // Учитываем редкость препарата
+    const drug = ALL_DRUGS.find(d => d.name === drugName);
+    let rarityMultiplier = 1;
+    if (drug) {
+        if (drug.rarity === 1) rarityMultiplier = 1.0;   // Обычные
+        if (drug.rarity === 2) rarityMultiplier = 1.8;   // Редкие
+        if (drug.rarity === 3) rarityMultiplier = 3.0;   // Очень редкие
+    }
+    
+    // Дополнительные модификаторы для конкретных уровней
+    if (level.id === 'bechtereva') return Math.floor(baseInterval * 1.5 * rarityMultiplier);
+    if (level.id === 'arsenalnaya') return Math.floor(baseInterval * 0.7 * rarityMultiplier);
+    if (level.id === 'kandinsky') return Math.floor(baseInterval * 0.8 * rarityMultiplier);
+    if (level.id === 'kashchenko') return Math.floor(baseInterval * 0.9 * rarityMultiplier);
+    
+    return Math.floor(baseInterval * rarityMultiplier);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function getTimeText() {
     if (timeOfDay >= 300 && timeOfDay < 600) return '🌅 Утро';
     if (timeOfDay >= 600 && timeOfDay < 1800) return '☀️ День';
@@ -1528,11 +1595,13 @@ case "циклодол":return 15
             let maxOrderlies = 0;
             let maxOrderlies2 = 0;
 
-            let autoRestockCounter = 0;
-            const AUTO_RESTOCK_MIN_INTERVAL = 10;
-            const AUTO_RESTOCK_MAX_INTERVAL = 15;
-            let nextRestockTime = 0;
-
+           // let autoRestockCounter = 0;
+           // const AUTO_RESTOCK_MIN_INTERVAL = 10;
+           // const AUTO_RESTOCK_MAX_INTERVAL = 15;
+           // let nextRestockTime = 0;
+// ДОБАВЬ ВМЕСТО НИХ:
+let drugRestockTimers = {}; // Хранит таймеры для каждого препарата
+let drugRestockInterval = 0; // Базовый интервал (будет пересчитываться)
             let isPaused = false;
 
             const MIN_PATIENT_DISTANCE = 40;
@@ -3041,7 +3110,15 @@ function initGameWithSettings(doc, level) {
     availableDrugsList = getAvailableDrugsForLevel(level);
     availableDiseases = getAvailableDiseasesForLevel(level);
     drugInventory = initDrugInventory(level);
-    
+    // Инициализация таймеров пополнения для каждого препарата
+drugRestockTimers = {};
+const availableDrugs = getAvailableDrugsForLevel(level);
+availableDrugs.forEach(drugName => {
+    const interval = getDrugRestockInterval(drugName, level);
+    // Случайный начальный сдвиг, чтобы не все препараты пополнялись одновременно
+    const randomOffset = Math.random() * interval;
+    drugRestockTimers[drugName] = randomOffset;
+});
     score = 0;
     levelScore = 0;
     curedCount = 0;
@@ -3080,8 +3157,18 @@ function initGameWithSettings(doc, level) {
     zLetters = [];
     zSpawnCounter = 0;
     autoRestockCounter = 0;
-    nextRestockTime = Math.floor(Math.random() * (AUTO_RESTOCK_MAX_INTERVAL - AUTO_RESTOCK_MIN_INTERVAL + 1)) + AUTO_RESTOCK_MIN_INTERVAL;
-    
+ autoRestockCounter = 0;
+ nextRestockTime = 0;
+// Убираем константы AUTO_RESTOCK_MIN_INTERVAL и AUTO_RESTOCK_MAX_INTERVAL
+
+// Вместо фиксированного диапазона — динамический
+const elapsedMinutes = Math.floor(timeOfDay / 60); // часы внутри дня
+const baseInterval = 15 - elapsedMinutes / 20; // к вечеру чаще
+const minInterval = Math.max(2, baseInterval - 5);
+const maxInterval = Math.max(4, baseInterval + 5);
+nextRestockTime = Math.floor(Math.random() * (maxInterval - minInterval + 1)) + minInterval;
+
+
     updateTimeCircle();
     
     document.getElementById('levelDisplay').textContent = '📍 ' + level.name + ' (' + level.desc + ')';
@@ -3797,7 +3884,38 @@ function initGameWithSettings(doc, level) {
             const DRUG_ADD_INTERVAL = 300;
 
             function gameLoop() {
-                if (gameOver) { draw(); gameLoopId = requestAnimationFrame(gameLoop); return; }
+          // === ИНДИВИДУАЛЬНОЕ ПОПОЛНЕНИЕ ПРЕПАРАТОВ ===
+if (!gameOver && gameActive && currentLevel && !isPaused) {
+    const availableDrugs = getAvailableDrugsForLevel(currentLevel);
+    
+    availableDrugs.forEach(drugName => {
+        // Инициализируем таймер, если его нет
+        if (drugRestockTimers[drugName] === undefined) {
+            drugRestockTimers[drugName] = Math.random() * 5;
+        }
+        
+        // Уменьшаем таймер
+        drugRestockTimers[drugName] -= 0.1; // 0.1 = ~6 раз в секунду при 60fps
+        
+        // Если таймер достиг 0 — пополняем
+        if (drugRestockTimers[drugName] <= 0) {
+            const interval = getDrugRestockInterval(drugName, currentLevel);
+            drugRestockTimers[drugName] = interval;
+            
+            // Проверяем лимит
+            const maxLimit = getDrugMaxLimit(drugName, currentLevel);
+            if (drugInventory[drugName] < maxLimit) {
+                drugInventory[drugName] = (drugInventory[drugName] || 0) + 1;
+                // Показываем статус реже, чтобы не спамить
+                if (Math.random() < 0.3) {
+                    statusMessage = '💊 +1 ' + drugName + ' (автопополнение)';
+                }
+                renderDrugPanel();
+                updateUI();
+            }
+        }
+    });
+}
                 if (!gameActive) { draw(); gameLoopId = requestAnimationFrame(gameLoop); return; }
                 
                 if (!isPaused) {
@@ -4209,7 +4327,13 @@ function initGameWithSettings(doc, level) {
                             
                             drugInventory = data.drugInventory || {};
                             techEffects = data.techEffects || {};
-                            
+                            // Пересоздаём таймеры для загруженной игры
+drugRestockTimers = {};
+const availDrugs = getAvailableDrugsForLevel(level);
+availDrugs.forEach(drugName => {
+    const interval = getDrugRestockInterval(drugName, level);
+    drugRestockTimers[drugName] = Math.random() * interval;
+});
                             if (data.isPaused !== undefined) {
                                 isPaused = data.isPaused;
                             } else {
