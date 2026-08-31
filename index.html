@@ -4808,32 +4808,42 @@ function renderPsychopediaFull() {
         </div>`;
     });
     html += `</div>`;
+// 3. Болезни (сортировка по весу) — ВСЕ В ОДНОЙ СТРОКЕ
+html += `<div class="encyclopedia-section"><h4>📋 Психические расстройства (МКБ-10)</h4>`;
+html += `<div style="font-size:0.78rem; color:#6a5040; margin-bottom:8px; font-style:italic;">Сортировка по частоте встречаемости (вес): чем меньше вес, тем реже встречается</div>`;
 
-    // 3. Болезни (сортировка по весу)
-    html += `<div class="encyclopedia-section"><h4>📋 Психические расстройства (МКБ-10)</h4>`;
-    html += `<div style="font-size:0.78rem; color:#6a5040; margin-bottom:8px; font-style:italic;">Сортировка по частоте встречаемости (вес): чем меньше вес, тем реже встречается</div>`;
+// Показываем болезни в табличном/строчном виде
+html += `<div style="display:flex; flex-direction:column; gap:4px; font-size:0.85rem;">`;
+
+const sortedDiseases = [...ALL_DISEASES].sort((a, b) => b.weight - a.weight);
+sortedDiseases.forEach(d => {
+    const sevLabel = getSeverityLabel(d.severity);
+    const sevClass = getSeverityClass(d.severity);
     
-    const sortedDiseases = [...ALL_DISEASES].sort((a, b) => b.weight - a.weight);
-    sortedDiseases.forEach(d => {
-        const sevLabel = getSeverityLabel(d.severity);
-        const sevClass = getSeverityClass(d.severity);
-        
-        const drugsWithColors = d.treat.map(drug => {
-            const drugInfo = ALL_DRUGS.find(d => d.name === drug);
-            const color = drugInfo ? drugInfo.color : '#888';
-            return `<span style="display:inline-flex; align-items:center; gap:4px; margin-right:6px; background:rgba(196,168,138,0.15); padding:1px 8px 1px 4px; border-radius:12px; border:1px solid rgba(196,168,138,0.3);">
-                <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:${color}; border:1px solid #5a3d2b;"></span>
-                ${drug}
-            </span>`;
-        }).join('');
-        
-        const categoryRu = categoryTranslations[d.category] || d.category;
-        html += `<div class="item">
-            <span class="label"><span class="disease-code">${d.code}</span></span>
-            <span class="value"><strong>${d.name}</strong> · <span style="color:#6a5040;font-size:0.85rem;">${categoryRu}</span> · вес: ${d.weight} · тяжесть: <span class="severity-indicator ${sevClass}">${sevLabel}</span><br><span style="font-size:0.85rem;">💊 ${drugsWithColors}</span></span>
-        </div>`;
-    });
-    html += `</div>`;
+    const drugsWithColors = d.treat.map(drug => {
+        const drugInfo = ALL_DRUGS.find(d => d.name === drug);
+        const color = drugInfo ? drugInfo.color : '#888';
+        return `<span style="display:inline-flex; align-items:center; gap:3px; margin:0 3px; background:rgba(196,168,138,0.15); padding:0 6px 0 3px; border-radius:10px; border:1px solid rgba(196,168,138,0.2); white-space:nowrap;">
+            <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:${color}; border:1px solid #5a3d2b;"></span>
+            ${drug}
+        </span>`;
+    }).join(' ');
+    
+    const categoryRu = categoryTranslations[d.category] || d.category;
+    
+    // ОДНА СТРОКА НА БОЛЕЗНЬ
+    html += `<div style="display:flex; align-items:center; gap:6px; padding:2px 0; border-bottom:1px solid rgba(196,168,138,0.15); flex-wrap:wrap;">
+        <span class="disease-code" style="font-weight:bold; color:#5a3d2b; min-width:55px; font-size:0.75rem;">${d.code}</span>
+        <span style="font-weight:bold; min-width:160px;">${d.name}</span>
+        <span style="color:#6a5040; font-size:0.75rem; background:rgba(196,168,138,0.2); padding:0 6px; border-radius:8px;">${categoryRu}</span>
+        <span style="color:#6a5040; font-size:0.7rem;">вес:${d.weight}</span>
+        <span class="severity-indicator ${sevClass}" style="font-size:0.65rem; padding:0 8px;">${sevLabel}</span>
+        <span style="font-size:0.75rem; display:flex; align-items:center; flex-wrap:wrap; gap:2px;">💊 ${drugsWithColors}</span>
+    </div>`;
+});
+
+html += `</div>`;
+
 
     // 4. Препараты
     html += `<div class="encyclopedia-section"><h4>💊 Фармакологический справочник</h4>`;
