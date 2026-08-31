@@ -4722,7 +4722,6 @@ availDrugs.forEach(drugName => {
             const psychopediaModal = document.getElementById('psychopediaModal');
             const psychopediaBody = document.getElementById('psychopediaBody');
 // === РЕНДЕР ПОЛНОЙ ПСИХОПЕДИИ - ВИНТАЖНЫЙ СПРАВОЧНИК ===
-// === РЕНДЕР ПОЛНОЙ ПСИХОПЕДИИ - ВИНТАЖНЫЙ СПРАВОЧНИК ===
 function renderPsychopediaFull() {
     const categoryTranslations = {
         'depression': 'Депрессивные расстройства',
@@ -4750,44 +4749,62 @@ function renderPsychopediaFull() {
     });
     html += `</div>`;
 
-    // 2. Больницы (уровни) — ИСПРАВЛЕННАЯ ВЕРСИЯ
+    // 2. Больницы (уровни) — ПОКАЗЫВАЕМ ВСЕ УРОВНИ
     html += `<div class="encyclopedia-section"><h4>🏥 Клинические отделения</h4>`;
+    html += `<div style="font-size:0.78rem; color:#6a5040; margin-bottom:8px; font-style:italic;">Все отделения клиники (открытые и закрытые)</div>`;
+    
     LEVELS.forEach((l, index) => {
-        // Функция проверки доступности уровня (аналогична checkLevelUnlock)
-        function isLevelUnlocked(level) {
-            if (level.unlocked) return true;
-            if (!level.requiredLevel) return false;
-            // Проверяем, пройден ли требуемый уровень
-            const requiredLevel = LEVELS.find(lv => lv.id === level.requiredLevel);
-            if (!requiredLevel) return false;
-            // Уровень доступен, если requiredLevel помечен как unlocked ИЛИ есть в completedLevels
-            return requiredLevel.unlocked || completedLevels[requiredLevel.id] === true;
-        }
+        const isUnlockedCheck = l.unlocked || (l.requiredLevel && completedLevels[l.requiredLevel] === true);
+        const isCompletedCheck = completedLevels[l.id] === true;
+        const staff = l.staffLimits || { orderlies2: 0, nurses: 0, orderlies: 0, ect: 0 };
         
-        const isUnlocked = isLevelUnlocked(l);
-        const isCompleted = completedLevels[l.id] === true;
-        const ectStr = l.staffLimits?.ect || 0;
-        const drugsStr = l.availableDrugs ? l.availableDrugs.join(', ') : 'нет';
+        // === ФОРМИРУЕМ СПИСОК ПРЕПАРАТОВ С ЦВЕТНЫМИ ТОЧКАМИ ===
+        let drugsHtml = '';
+        const availableDrugs = l.availableDrugs || ['глицин'];
+        availableDrugs.forEach(drug => {
+            const drugInfo = ALL_DRUGS.find(d => d.name === drug);
+            const color = drugInfo ? drugInfo.color : '#888';
+            drugsHtml += `<span style="display:inline-flex; align-items:center; gap:4px; margin-right:6px; background:rgba(196,168,138,0.15); padding:1px 8px 1px 4px; border-radius:12px; border:1px solid rgba(196,168,138,0.3);">
+                <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:${color}; border:1px solid #5a3d2b;"></span>
+                ${drug}
+            </span>`;
+        });
         
-        // Определяем иконку статуса
+        // === ФОРМИРУЕМ ИНФОРМАЦИЮ О ПЕРСОНАЛЕ ===
+        let staffParts = [];
+        if (staff.orderlies2 > 0) staffParts.push(`🧹 ${staff.orderlies2}`);
+        if (staff.nurses > 0) staffParts.push(`👩‍⚕️ ${staff.nurses}`);
+        if (staff.orderlies > 0) staffParts.push(`💊 ${staff.orderlies}`);
+        if (staff.ect > 0) staffParts.push(`⚡ ${staff.ect}`);
+        const staffHtml = staffParts.length > 0 ? staffParts.join(' · ') : 'нет персонала';
+        
+        // === СТАТУС УРОВНЯ ===
         let statusIcon = '🔒';
         let statusText = 'заблокирован';
-        if (isCompleted) {
+        if (isCompletedCheck) {
             statusIcon = '✅';
             statusText = 'пройден';
-        } else if (isUnlocked) {
+        } else if (isUnlockedCheck) {
             statusIcon = '🔓';
             statusText = 'доступен';
         } else {
-            // Находим, что требуется для разблокировки
             const required = LEVELS.find(lv => lv.id === l.requiredLevel);
             statusIcon = '🔒';
             statusText = `требуется: ${required ? required.name : '?'}`;
         }
         
+        // === ПОРЯДКОВЫЙ НОМЕР ===
+        const levelNumber = index + 1;
+        
+        // === ВЫВОД ===
         html += `<div class="item">
-            <span class="label">${l.name}</span>
-            <span class="value">${l.desc} · ${statusIcon} ${statusText} · цель: ${l.taskTarget} пациентов · препараты: ${drugsStr} · ЭСТ: ${ectStr}</span>
+            <span class="label">#${levelNumber} ${l.name}</span>
+            <span class="value">
+                <strong>${l.desc}</strong> · ${statusIcon} ${statusText}<br>
+                🎯 цель: ${l.taskTarget} пациентов · 🛏️ макс: ${l.maxPatients} пациентов<br>
+                💊 ${drugsHtml}<br>
+                👥 ${staffHtml}
+            </span>
         </div>`;
     });
     html += `</div>`;
