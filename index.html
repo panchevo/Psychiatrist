@@ -1502,7 +1502,61 @@ const LEVELS = [
         diseaseCount: 75, 
         staffLimits: { orderlies2: 10, nurses: 8, orderlies: 5, ect: 1 },
         theme: 'arsenalnaya' 
+    },
+
+
+
+
+
+
+ { 
+        id: 'kpbstin', 
+        name: 'КПБСТИН', 
+        desc: 'Самая сложная больница', 
+        diseaseCategory: null,
+        categoryWeights: {
+            'schizophrenia': 15,
+            'delusional': 15,
+            'personality': 12,
+            'depression': 8,
+            'psychosomatic': 5,
+            'anxiety': 4,
+            'neurosis': 2
+        },
+        fightChance: 0.10, 
+        spawnInterval: 6, 
+        drugPrice: 30, 
+        drugLimit: 100, 
+        taskTarget: 15, 
+        maxPatients: 8,
+        healthRange: [5, 30], 
+        unlocked: false, 
+        requiredLevel: 'arsenalnaya', 
+        availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], 
+        diseaseCount: 75, 
+        staffLimits: { orderlies2: 0, nurses: 0, orderlies: 10, ect: 1 },
+        theme: 'kpbstin' 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ];
             // ТЕХНОЛОГИИ
             const TECH_TREE = [
@@ -1856,8 +1910,23 @@ let drugRestockInterval = 0; // Базовый интервал (будет пе
                 'serbsky': { bg: ['#4a4a3a', '#3a3a2a'], border: '#6a5a4a', bedColor: '#4a3a3a', decor: 'forensic' },
                 'kandinsky': { bg: ['#3a2a4a', '#2a1a3a'], border: '#5a3a5a', bedColor: '#3a2a4a', decor: 'chaotic' },
                 'sukhanov': { bg: ['#e8e8e8', '#d0d0d0'], border: '#b0b0b0', bedColor: '#c8c8c8', decor: 'sterile_rare' },
-                'arsenalnaya': { bg: ['#1a1a1a', '#0a0a0a'], border: '#3a2a2a', bedColor: '#2a1a1a', decor: 'maximum_security' }
+                'arsenalnaya': { bg: ['#1a1a1f', '#0f0a0a'], border: '#3a2a2a', bedColor: '#2a1a1a', decor: 'maximum_security' },
+
+'kpbstin': { bg: ['#1a1a1a', '#0a0a0a'], border: '#3a2a2a', bedColor: '#2a1a1a', decor: 'maximum_security' },
+
+
+
+
+
+
+
+
+
+
+
+
             };
+ 
 
             function getStaffLimits(level) {
                 if (!level || !level.staffLimits) return { orderlies2: 0, nurses: 0, orderlies: 0, ect: 0 };
