@@ -703,7 +703,210 @@ position:absolute !important;
     }
 
 
+/* ===== СТИЛИ ДЛЯ ПСИХОПЕДИИ - СПРАВОЧНИК ПСИХИАТРА ===== */
+.psychopedia-content {
+    background: rgb(203, 185, 158) !important;
+    border: 8px solid #5a3d2b !important;
+    border-radius: 40px !important;
+    padding: 30px 40px !important;
+    max-width: 900px !important;
+    width: 95% !important;
+    max-height: 92vh !important;
+    overflow-y: auto !important;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.9), inset 0 0 0 3px #c4a88a, inset 0 0 30px rgba(90,61,43,0.1) !important;
+    font-family: 'Georgia', 'Times New Roman', serif !important;
+    color: #2d1f14 !important;
+    position: relative !important;
+}
 
+/* Винтажный эффект страницы */
+.psychopedia-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4c4b0' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+    border-radius: 4px;
+    z-index: 0;
+}
+
+.psychopedia-content > * {
+    position: relative;
+    z-index: 1;
+}
+
+.psychopedia-title {
+    font-size: 2.6rem !important;
+    text-align: center !important;
+    color: #3a2518 !important;
+    border-bottom: 4px double #8a7050 !important;
+    padding-bottom: 14px !important;
+    margin-bottom: 8px !important;
+    font-family: 'Georgia', serif !important;
+    letter-spacing: 4px !important;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.05) !important;
+    font-weight: bold !important;
+}
+
+.psychopedia-sub {
+    text-align: center !important;
+    color: #6a5040 !important;
+    font-size: 1.1rem !important;
+    font-style: italic !important;
+    margin-top: -4px !important;
+    margin-bottom: 20px !important;
+    border-bottom: 1px solid #d4c4b0 !important;
+    padding-bottom: 12px !important;
+}
+
+/* Заголовки разделов как в медицинской книге */
+.psychopedia-content .encyclopedia-section {
+    margin: 16px 0 14px !important;
+    padding: 10px 16px !important;
+    background: rgba(244, 235, 224, 0.6) !important;
+    border-left: 6px solid #8a7050 !important;
+    border-radius: 0 8px 8px 0 !important;
+    box-shadow: inset 0 0 20px rgba(138, 112, 80, 0.05) !important;
+}
+
+.psychopedia-content .encyclopedia-section h4 {
+    color: #3a2518 !important;
+    font-size: 1.2rem !important;
+    font-weight: bold !important;
+    margin: 0 0 8px 0 !important;
+    padding-bottom: 4px !important;
+    border-bottom: 2px dotted #c4a88a !important;
+    font-family: 'Georgia', serif !important;
+    letter-spacing: 1px !important;
+}
+
+/* Элементы списка */
+.psychopedia-content .encyclopedia-section .item {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    padding: 4px 0 !important;
+    border-bottom: 1px solid rgba(196, 168, 138, 0.3) !important;
+    font-size: 0.92rem !important;
+    line-height: 1.5 !important;
+}
+
+.psychopedia-content .encyclopedia-section .item:last-child {
+    border-bottom: none !important;
+}
+
+.psychopedia-content .encyclopedia-section .item .label {
+    font-weight: bold !important;
+    color: #3a2518 !important;
+    min-width: 100px !important;
+    flex-shrink: 0 !important;
+    font-size: 0.9rem !important;
+}
+
+.psychopedia-content .encyclopedia-section .item .value {
+    color: #4a3528 !important;
+    font-size: 0.9rem !important;
+}
+
+/* Препараты в виде цветных точек */
+.psychopedia-content .drug-entry .dot {
+    display: inline-block !important;
+    width: 14px !important;
+    height: 14px !important;
+    border-radius: 50% !important;
+    border: 2px solid #5a3d2b !important;
+    flex-shrink: 0 !important;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2) !important;
+}
+
+/* Индикатор тяжести */
+.psychopedia-content .severity-indicator {
+    display: inline-block !important;
+    padding: 1px 10px !important;
+    border-radius: 12px !important;
+    font-size: 0.7rem !important;
+    font-weight: bold !important;
+    margin: 0 2px !important;
+}
+
+/* Кнопка закрытия в стиле книги */
+.psychopedia-close-btn {
+    display: block !important;
+    margin: 20px auto 0 !important;
+    padding: 10px 50px !important;
+    background: #6a5040 !important;
+    border: none !important;
+    border-bottom: 4px solid #3a2518 !important;
+    color: #f5efe6 !important;
+    border-radius: 30px !important;
+    font-size: 1.1rem !important;
+    cursor: pointer !important;
+    font-weight: bold !important;
+    font-family: 'Georgia', serif !important;
+    letter-spacing: 2px !important;
+    transition: 0.1s !important;
+    box-shadow: 0 4px 0 #2a1a0e !important;
+}
+
+.psychopedia-close-btn:active {
+    transform: translateY(2px) !important;
+    border-bottom-width: 2px !important;
+}
+
+/* Адаптация под мобильные */
+@media (max-width: 700px) {
+    .psychopedia-content {
+        padding: 16px 18px !important;
+        max-width: 98% !important;
+        width: 98% !important;
+        max-height: 95vh !important;
+    }
+    .psychopedia-title {
+        font-size: 1.8rem !important;
+    }
+    .psychopedia-content .encyclopedia-section .item {
+        flex-direction: column !important;
+        gap: 2px !important;
+        padding: 6px 0 !important;
+    }
+    .psychopedia-content .encyclopedia-section .item .label {
+        min-width: auto !important;
+        font-size: 0.85rem !important;
+    }
+    .psychopedia-content .encyclopedia-section .item .value {
+        font-size: 0.82rem !important;
+        padding-left: 6px !important;
+    }
+    .psychopedia-close-btn {
+        padding: 12px 30px !important;
+        font-size: 1rem !important;
+        width: 100% !important;
+    }
+    .psychopedia-content .encyclopedia-section {
+        padding: 8px 10px !important;
+        margin: 8px 0 !important;
+    }
+}
+
+/* Дополнительный винтажный эффект для заголовков */
+.psychopedia-content .encyclopedia-section h4::before {
+    content: '◆ ';
+    color: #8a7050;
+    font-size: 0.8rem;
+}
+
+/* Стиль для кодов болезней */
+.psychopedia-content .disease-code {
+    font-family: 'Courier New', monospace !important;
+    font-weight: bold !important;
+    color: #5a3d2b !important;
+    background: rgba(196, 168, 138, 0.2) !important;
+    padding: 0 6px !important;
+    border-radius: 3px !important;
+}
     </style>
 </head>
 <body>
@@ -792,7 +995,31 @@ position:absolute !important;
             <div class="drug-tooltip" id="drugTooltip"><div class="tip-drug-name" id="tipDrugName">Препарат</div><div class="tip-side-effect" id="tipDrugSideEffect">⚠️ Побочный эффект: ...</div></div>
 
             <!-- BOOK MODAL -->
-            <div class="book-modal" id="bookModal"><div class="book-content" id="bookContent"><div class="book-title">📜 Справочник психиатра</div><div class="book-subtitle">Все психические расстройства МКБ-10</div><div class="book-stats-note">⚡ <strong>Вес</strong> — частота появления: чем меньше вес, тем реже болезнь.<br>📊 <strong>Тяжесть</strong> — сложность лечения: 1-5 (1 — лёгкое, 5 — крайне тяжёлое).<br>💊 Чем тяжелее расстройство, тем меньше % здоровья восстанавливается за один приём препарата.<br>🌙 Ночью пациенты с <strong>здоровьем > 50</strong> ложатся спать.<br>🏆 <strong>Очки (Ψ)</strong> +10 за вылеченного, -5 за смерть.<br>🧪 <strong>Очки исследований</strong> +2 за вылеченного + бонус от ординаторов.<br>👆 <strong>Наведи на пациента</strong> — увидишь, чем его лечить!</div><div id="bookEntries"></div><button class="book-close" id="bookCloseBtn">Закрыть</button></div></div>
+            <div class="book-modal" id="bookModal"><div class="book-content" id="bookContent"><div class="book-title">📜 Справочник психиатра</div><div class="book-subtitle">Все психические расстройства МКБ-10</div>
+
+
+<div class="book-stats-note">⚡ <strong>Вес</strong> — частота появления: чем меньше вес, тем реже болезнь.<br>📊 <strong>Тяжесть</strong> — сложность лечения: 1-5 (1 — лёгкое, 5 — крайне тяжёлое).<br>💊 Чем тяжелее расстройство, тем меньше % здоровья восстанавливается за один приём препарата.<br>🌙 Ночью пациенты с <strong>здоровьем > 50</strong> ложатся спать.<br>🏆 <strong>Очки (Ψ)</strong> базово +5-20 за вылеченного. Исследование "Клиническая диагностика" даёт +20% к очкам за лечение.<br>🧪 <strong>Очки исследований</strong> +2 за вылеченного + бонус от ординаторов.<br>👆 <strong>Наведи на пациента</strong> — увидишь, чем его лечить!</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="bookEntries"></div><button class="book-close" id="bookCloseBtn">Закрыть</button></div></div>
 
             <!-- TECH TREE MODAL -->
             <div class="tech-tree-modal" id="techTreeModal">
@@ -1280,7 +1507,7 @@ const LEVELS = [
             // ТЕХНОЛОГИИ
             const TECH_TREE = [
                 { id: 'tech_psychopharmacology', name: 'Психофармакология', desc: '+15% эффективность всех препаратов', cost: 15, prereq: [], effect: 'drug_boost', value: 0.15 },
-                { id: 'tech_clinical_diagnosis', name: 'Клиническая диагностика', desc: 'Ускоренная диагностика пациентов', cost: 20, prereq: [], effect: 'diagnosis_speed', value: 0.2 },
+               { id: 'tech_clinical_diagnosis', name: 'Клиническая диагностика', desc: '+20% к очкам (Ψ) за вылеченных пациентов', cost: 20, prereq: [], effect: 'diagnosis_speed', value: 0.2 },
                 { id: 'tech_psychotherapy', name: 'Психотерапия', desc: 'Пациенты восстанавливаются на 20% быстрее', cost: 25, prereq: [], effect: 'heal_speed', value: 0.2 },
                 { id: 'tech_neurobiology', name: 'Нейробиология', desc: 'Уменьшение побочных эффектов на 30%', cost: 20, prereq: [], effect: 'side_effect_reduction', value: 0.3 },
                 { id: 'tech_ethics', name: 'Медицинская этика', desc: 'Пациенты реже вступают в конфликты', cost: 20, prereq: [], effect: 'fight_reduction', value: 0.3 },
@@ -2095,67 +2322,69 @@ function goToNextLevel() {
                 const cost = getTechCost(techId);
                 return techPoints >= cost;
             }
-
-            function applyTechEffect(tech) {
-                if (!tech.effect) return;
-                switch (tech.effect) {
-                    case 'drug_boost': techEffects.drugBoost = (techEffects.drugBoost || 0) + tech.value; break;
-                    case 'diagnosis_speed': techEffects.diagnosisSpeed = (techEffects.diagnosisSpeed || 0) + tech.value; break;
-                    case 'heal_speed': techEffects.healSpeed = (techEffects.healSpeed || 0) + tech.value; break;
-                    case 'side_effect_reduction': techEffects.sideEffectReduction = (techEffects.sideEffectReduction || 0) + tech.value; break;
-                    case 'fight_reduction': techEffects.fightReduction = (techEffects.fightReduction || 0) + tech.value; break;
-                    case 'category_boost': if (!techEffects.categoryBoosts) techEffects.categoryBoosts = {};
-                        techEffects.categoryBoosts[tech.category] = (techEffects.categoryBoosts[tech.category] || 0) + tech.value; break;
-                    case 'global_boost': techEffects.globalBoost = (techEffects.globalBoost || 0) + tech.value; break;
-                    case 'social_boost': techEffects.socialBoost = (techEffects.socialBoost || 0) + tech.value; break;
-                    case 'psychoanalysis_boost': techEffects.psychoanalysisBoost = (techEffects.psychoanalysisBoost || 0) + tech.value; break;
-                    case 'mastery_boost': techEffects.masteryBoost = (techEffects.masteryBoost || 0) + tech.value; break;
-                    case 'staff_boost': techEffects.staffBoost = (techEffects.staffBoost || 0) + tech.value; break;
-                    case 'ssri_boost': 
-                        techEffects.ssriBoost = (techEffects.ssriBoost || 0) + tech.value; 
-                        techEffects.ssriRestockBoost = 0.3;
-                        break;
-                    case 'wechsler_boost': techEffects.wechslerBoost = (techEffects.wechslerBoost || 0) + tech.value; break;
-                    case 'dopamine_boost': techEffects.dopamineBoost = (techEffects.dopamineBoost || 0) + tech.value; break;
-                    case 'polypharmacy_boost': techEffects.polypharmacyBoost = (techEffects.polypharmacyBoost || 0) + tech.value; break;
-                    case 'placebo_effect': 
-                        if (drugInventory) {
-                            for (let drug in drugInventory) {
-                                if (availableDrugsList.includes(drug)) {
-                                    let current = drugInventory[drug] || 0;
-                                    let add = Math.floor(current * tech.value);
-                                    drugInventory[drug] = current + add;
-                                }
-                            }
-                        }
-                        break;
-                    case 'affinity_boost': techEffects.affinityBoost = (techEffects.affinityBoost || 0) + tech.value; break;
-                    case 'atypical_boost': techEffects.atypicalBoost = (techEffects.atypicalBoost || 0) + tech.value; break;
-                    case 'forensic_boost': techEffects.forensicBoost = (techEffects.forensicBoost || 0) + tech.value; break;
-                    case 'circadian_boost': techEffects.circadianBoost = (techEffects.circadianBoost || 0) + tech.value; break;
-                    case 'orderly_boost': techEffects.orderlyBoost = (techEffects.orderlyBoost || 0) + tech.value; break;
-                    case 'physical_therapy': techEffects.physicalTherapy = (techEffects.physicalTherapy || 0) + tech.value; break;
-                    case 'hypnotherapy_boost': techEffects.hypnotherapyBoost = (techEffects.hypnotherapyBoost || 0) + tech.value; break;
-                    case 'nursing_care': techEffects.nursingCare = true; break;
-                    case 'residency_boost': 
-                        if (currentLevel) {
-                            const baseLimits = getStaffLimits(currentLevel);
-                            maxOrderlies = Math.floor(baseLimits.orderlies * tech.value);
-                        }
-                        break;
-                    case 'polytherapy':
-                        if (drugInventory) {
-                            for (let drug in drugInventory) {
-                                if (availableDrugsList.includes(drug)) {
-                                    let current = drugInventory[drug] || 0;
-                                    let add = Math.floor(current * tech.value);
-                                    drugInventory[drug] = current + add;
-                                }
-                            }
-                        }
-                        break;
+function applyTechEffect(tech) {
+    if (!tech.effect) return;
+    switch (tech.effect) {
+        case 'drug_boost': techEffects.drugBoost = (techEffects.drugBoost || 0) + tech.value; break;
+        case 'diagnosis_speed': 
+            // ← ИЗМЕНЕНО: вместо ускорения диагностики даём бонус к очкам за лечение
+            techEffects.diagnosisScoreBonus = (techEffects.diagnosisScoreBonus || 0) + tech.value; 
+            break;
+        case 'heal_speed': techEffects.healSpeed = (techEffects.healSpeed || 0) + tech.value; break;
+        case 'side_effect_reduction': techEffects.sideEffectReduction = (techEffects.sideEffectReduction || 0) + tech.value; break;
+        case 'fight_reduction': techEffects.fightReduction = (techEffects.fightReduction || 0) + tech.value; break;
+        case 'category_boost': if (!techEffects.categoryBoosts) techEffects.categoryBoosts = {};
+            techEffects.categoryBoosts[tech.category] = (techEffects.categoryBoosts[tech.category] || 0) + tech.value; break;
+        case 'global_boost': techEffects.globalBoost = (techEffects.globalBoost || 0) + tech.value; break;
+        case 'social_boost': techEffects.socialBoost = (techEffects.socialBoost || 0) + tech.value; break;
+        case 'psychoanalysis_boost': techEffects.psychoanalysisBoost = (techEffects.psychoanalysisBoost || 0) + tech.value; break;
+        case 'mastery_boost': techEffects.masteryBoost = (techEffects.masteryBoost || 0) + tech.value; break;
+        case 'staff_boost': techEffects.staffBoost = (techEffects.staffBoost || 0) + tech.value; break;
+        case 'ssri_boost': 
+            techEffects.ssriBoost = (techEffects.ssriBoost || 0) + tech.value; 
+            techEffects.ssriRestockBoost = 0.3;
+            break;
+        case 'wechsler_boost': techEffects.wechslerBoost = (techEffects.wechslerBoost || 0) + tech.value; break;
+        case 'dopamine_boost': techEffects.dopamineBoost = (techEffects.dopamineBoost || 0) + tech.value; break;
+        case 'polypharmacy_boost': techEffects.polypharmacyBoost = (techEffects.polypharmacyBoost || 0) + tech.value; break;
+        case 'placebo_effect': 
+            if (drugInventory) {
+                for (let drug in drugInventory) {
+                    if (availableDrugsList.includes(drug)) {
+                        let current = drugInventory[drug] || 0;
+                        let add = Math.floor(current * tech.value);
+                        drugInventory[drug] = current + add;
+                    }
                 }
             }
+            break;
+        case 'affinity_boost': techEffects.affinityBoost = (techEffects.affinityBoost || 0) + tech.value; break;
+        case 'atypical_boost': techEffects.atypicalBoost = (techEffects.atypicalBoost || 0) + tech.value; break;
+        case 'forensic_boost': techEffects.forensicBoost = (techEffects.forensicBoost || 0) + tech.value; break;
+        case 'circadian_boost': techEffects.circadianBoost = (techEffects.circadianBoost || 0) + tech.value; break;
+        case 'orderly_boost': techEffects.orderlyBoost = (techEffects.orderlyBoost || 0) + tech.value; break;
+        case 'physical_therapy': techEffects.physicalTherapy = (techEffects.physicalTherapy || 0) + tech.value; break;
+        case 'hypnotherapy_boost': techEffects.hypnotherapyBoost = (techEffects.hypnotherapyBoost || 0) + tech.value; break;
+        case 'nursing_care': techEffects.nursingCare = true; break;
+        case 'residency_boost': 
+            if (currentLevel) {
+                const baseLimits = getStaffLimits(currentLevel);
+                maxOrderlies = Math.floor(baseLimits.orderlies * tech.value);
+            }
+            break;
+        case 'polytherapy':
+            if (drugInventory) {
+                for (let drug in drugInventory) {
+                    if (availableDrugsList.includes(drug)) {
+                        let current = drugInventory[drug] || 0;
+                        let add = Math.floor(current * tech.value);
+                        drugInventory[drug] = current + add;
+                    }
+                }
+            }
+            break;
+    }
+}
 
             function researchTech(techId) {
                 if (!canResearchTech(techId)) return false;
@@ -3061,10 +3290,13 @@ if (drugInfo && drugInfo.sideEffect) {
                     const severityLabel = getSeverityLabel(disease.severity);
                     if (patient.health >= 100) {
                         patient.state = 'healed';
-                        returnNameToPool(patient.name);
-                        const bonusPoints = 5 + Math.floor(Math.pow(disease.severity, 2) * 2);
-                        score += bonusPoints;
-                        levelScore += bonusPoints;
+    returnNameToPool(patient.name);
+    // ← ИЗМЕНЕНО: добавляем бонус от Клинической диагностики
+    const diagnosisBonus = techEffects.diagnosisScoreBonus || 0;
+    const basePoints = 5 + Math.floor(Math.pow(disease.severity, 2) * 2);
+    const bonusPoints = Math.floor(basePoints * (1 + diagnosisBonus));
+    score += bonusPoints;
+    levelScore += bonusPoints;
                         const orderlyBonus = getOrderlyBonus();
                         const techEarn = 5 + Math.floor(disease.severity * 1.0) + Math.floor(orderlyBonus*1.5);
                         techPoints += techEarn;
@@ -4489,12 +4721,9 @@ availDrugs.forEach(drugName => {
             // === ПСИХОПЕДИЯ ===
             const psychopediaModal = document.getElementById('psychopediaModal');
             const psychopediaBody = document.getElementById('psychopediaBody');
-
-            
-// === РЕНДЕР ПОЛНОЙ ПСИХОПЕДИИ ===
+// === РЕНДЕР ПОЛНОЙ ПСИХОПЕДИИ - ВИНТАЖНЫЙ СПРАВОЧНИК ===
 function renderPsychopediaFull() {
-
-   const categoryTranslations = {
+    const categoryTranslations = {
         'depression': 'Депрессивные расстройства',
         'neurosis': 'Невротические расстройства',
         'anxiety': 'Тревожные расстройства',
@@ -4509,68 +4738,77 @@ function renderPsychopediaFull() {
     };
 
     let html = `
-        <div style="text-align:center; margin-bottom:12px; font-size:1.2rem; font-weight:bold; color:#1a1612; border-bottom:2px solid #8a7a5a; padding-bottom:8px;">📖 ПСИХОПЕДИЯ — полная энциклопедия игры</div>
-        <div style="font-size:0.85rem; color:#4a3a2a; margin-bottom:12px; text-align:center;">Вся справочная информация по игре «Психиатр» в одном месте</div>
+      
     `;
 
     // 1. Психиатры
-    html += `<div class="encyclopedia-section"><h4>🧠 Психиатры (${PSYCHIATRISTS.length})</h4>`;
+    html += `<div class="encyclopedia-section"><h4>🧠 Врачи-психиатры</h4>`;
     PSYCHIATRISTS.forEach(d => {
-        html += `<div class="item"><span class="label">${d.name}</span><span class="value">${d.ability} · IQ ${d.iq} · эмпатия ${d.empathy} · скорость ${d.speed.toFixed(2)}</span></div>`;
+        html += `<div class="item">
+            <span class="label">${d.name}</span>
+            <span class="value">${d.ability} · IQ ${d.iq} · эмпатия ${d.empathy} · скорость ${d.speed.toFixed(2)}</span>
+        </div>`;
     });
     html += `</div>`;
-// 3. Болезни (расстройства) — СОРТИРОВКА ПО ВЕСУ (сначала самые частые)
-html += `<div class="encyclopedia-section"><h4>📋 Психические расстройства (${ALL_DISEASES.length})</h4>`;
 
-// СОРТИРУЕМ ПО ВЕСУ (от большего к меньшему — самые частые сверху)
-const sortedDiseases = [...ALL_DISEASES].sort((a, b) => b.weight - a.weight);
+    // 2. Больницы (уровни)
+    html += `<div class="encyclopedia-section"><h4>🏥 Клинические отделения</h4>`;
+    LEVELS.forEach(l => {
+        let isUnlocked = l.unlocked === true;
+        if (!isUnlocked && l.requiredLevel && completedLevels[l.requiredLevel] === true) {
+            isUnlocked = true;
+        }
+        const ectStr = l.staffLimits?.ect || 0;
+        const drugsStr = l.availableDrugs ? l.availableDrugs.join(', ') : 'нет';
+        const statusIcon = isUnlocked ? '🔓' : '🔒';
+        html += `<div class="item">
+            <span class="label">${l.name}</span>
+            <span class="value">${l.desc} · ${statusIcon} доступ · цель: ${l.taskTarget} пациентов · препараты: ${drugsStr} · ЭСТ: ${ectStr}</span>
+        </div>`;
+    });
+    html += `</div>`;
 
-sortedDiseases.forEach(d => {
-    const sevLabel = getSeverityLabel(d.severity);
-    const sevClass = getSeverityClass(d.severity);
+    // 3. Болезни (сортировка по весу)
+    html += `<div class="encyclopedia-section"><h4>📋 Психические расстройства (МКБ-10)</h4>`;
+    html += `<div style="font-size:0.78rem; color:#6a5040; margin-bottom:8px; font-style:italic;">Сортировка по частоте встречаемости (вес): чем меньше вес, тем реже встречается</div>`;
     
-    const drugsWithColors = d.treat.map(drug => {
-        const drugInfo = ALL_DRUGS.find(d => d.name === drug);
-        const color = drugInfo ? drugInfo.color : '#888';
-        return `<span style="display:inline-flex; align-items:center; gap:4px; margin-right:6px;">
-            <span style="display:inline-block; width:14px; height:14px; border-radius:50%; background:${color}; border:1px solid #5a4a32;"></span>
-            ${drug}
-        </span>`;
-    }).join('');
-    
-    const categoryRu = categoryTranslations[d.category] || d.category;
-    html += `<div class="item">
-        <span class="label">${d.code}</span>
-        <span class="value"><strong>${d.name}</strong> · категория: ${categoryRu} · вес: ${d.weight} · тяжесть: <span class="severity-indicator ${sevClass}">${sevLabel}</span> · лечится: ${drugsWithColors}</span>
-    </div>`;
-});
-html += `</div>`;
-    // 2. Уровни (больницы)
-  // 2. Уровни (больницы)
-html += `<div class="encyclopedia-section"><h4>🏥 Уровни (${LEVELS.length} больниц)</h4>`;
-LEVELS.forEach(l => {
-    // Вариант 2: показываем состояние с учётом пройденных уровней
-    let isUnlocked = l.unlocked === true;
-    // Если не разблокирован, но есть requiredLevel и он пройден — разблокируем
-    if (!isUnlocked && l.requiredLevel && completedLevels[l.requiredLevel] === true) {
-        isUnlocked = true;
-    }
-    const ectStr = l.staffLimits?.ect || 0;
-    const drugsStr = l.availableDrugs ? l.availableDrugs.join(', ') : 'нет';
-    html += `<div class="item"><span class="label">${l.name}</span><span class="value">${l.desc} · ${isUnlocked ? '🔓 доступен' : '🔒 заблокирован'} · задача: ${l.taskTarget} пациентов · препаратов: ${drugsStr} · ЭСТ: ${ectStr}</span></div>`;
-});
-html += `</div>`;
+    const sortedDiseases = [...ALL_DISEASES].sort((a, b) => b.weight - a.weight);
+    sortedDiseases.forEach(d => {
+        const sevLabel = getSeverityLabel(d.severity);
+        const sevClass = getSeverityClass(d.severity);
+        
+        const drugsWithColors = d.treat.map(drug => {
+            const drugInfo = ALL_DRUGS.find(d => d.name === drug);
+            const color = drugInfo ? drugInfo.color : '#888';
+            return `<span style="display:inline-flex; align-items:center; gap:4px; margin-right:6px; background:rgba(196,168,138,0.15); padding:1px 8px 1px 4px; border-radius:12px; border:1px solid rgba(196,168,138,0.3);">
+                <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:${color}; border:1px solid #5a3d2b;"></span>
+                ${drug}
+            </span>`;
+        }).join('');
+        
+        const categoryRu = categoryTranslations[d.category] || d.category;
+        html += `<div class="item">
+            <span class="label"><span class="disease-code">${d.code}</span></span>
+            <span class="value"><strong>${d.name}</strong> · <span style="color:#6a5040;font-size:0.85rem;">${categoryRu}</span> · вес: ${d.weight} · тяжесть: <span class="severity-indicator ${sevClass}">${sevLabel}</span><br><span style="font-size:0.85rem;">💊 ${drugsWithColors}</span></span>
+        </div>`;
+    });
+    html += `</div>`;
 
     // 4. Препараты
-    html += `<div class="encyclopedia-section"><h4>💊 Препараты (${ALL_DRUGS.length})</h4>`;
+    html += `<div class="encyclopedia-section"><h4>💊 Фармакологический справочник</h4>`;
     ALL_DRUGS.forEach(d => {
         const maxLimit = currentLevel ? getDrugMaxLimit(d.name, currentLevel) : '?';
-        html += `<div class="item drug-entry"><span class="dot" style="background:${d.color}; display:inline-block; width:12px; height:12px; border-radius:50%; border:1px solid #5a4a32;"></span><span class="label">${d.name}</span><span class="value">побочный эффект: ${d.sideEffect}, цена: ${d.price} Ψ, редкость: ${d.rarity}</span></div>`;
+        const rarityText = d.rarity === 1 ? 'обычный' : d.rarity === 2 ? 'редкий' : 'очень редкий';
+        html += `<div class="item drug-entry">
+            <span class="dot" style="background:${d.color}; display:inline-block; width:14px; height:14px; border-radius:50%; border:2px solid #5a3d2b;"></span>
+            <span class="label">${d.name}</span>
+            <span class="value">побочный эффект: ${d.sideEffect} · цена: ${d.price} Ψ · редкость: ${rarityText}</span>
+        </div>`;
     });
     html += `</div>`;
 
     // 5. Технологии
-    html += `<div class="encyclopedia-section"><h4>🔬 Исследования (${TECH_TREE.length} технологий)</h4>`;
+    html += `<div class="encyclopedia-section"><h4>🔬 Научные исследования</h4>`;
     TECH_TREE.forEach(t => {
         const status = getTechStatus(t.id);
         const statusText = status === 'researched' ? '✅ Изучено' : (status === 'available' ? '🔓 Доступно' : '🔒 Заблокировано');
@@ -4578,12 +4816,15 @@ html += `</div>`;
             const found = TECH_TREE.find(tech => tech.id === id);
             return found ? found.name : id;
         });
-        html += `<div class="item"><span class="label">${statusText} ${t.name}</span><span class="value">${t.desc} (стоимость ${t.cost}🧪, требует: ${prereqNames.length ? prereqNames.join(', ') : 'нет'})</span></div>`;
+        html += `<div class="item">
+            <span class="label">${statusText}</span>
+            <span class="value"><strong>${t.name}</strong> — ${t.desc} (стоимость ${t.cost}🧪, требует: ${prereqNames.length ? prereqNames.join(', ') : 'нет'})</span>
+        </div>`;
     });
     html += `</div>`;
 
     // 6. Персонал
-    html += `<div class="encyclopedia-section"><h4>🧑‍⚕️ Персонал</h4>`;
+    html += `<div class="encyclopedia-section"><h4>🧑‍⚕️ Штатное расписание</h4>`;
     html += `<div class="item"><span class="label">🧹 Санитар</span><span class="value">замедляет ухудшение здоровья пациентов на 5% за каждого. Стоимость: 5 Ψ.</span></div>`;
     html += `<div class="item"><span class="label">👩‍⚕️ Медсестра</span><span class="value">увеличивает силу препаратов на 5% за каждую. Стоимость: 10 Ψ.</span></div>`;
     html += `<div class="item"><span class="label">💊 Ординатор</span><span class="value">даёт +0.5🧪 за вылеченного пациента за каждого. Стоимость: 25 Ψ.</span></div>`;
@@ -4591,30 +4832,41 @@ html += `</div>`;
     html += `</div>`;
 
     // 7. Игровая механика
-    html += `<div class="encyclopedia-section"><h4>⚙️ Игровая механика</h4>`;
+    html += `<div class="encyclopedia-section"><h4>⚙️ Руководство по лечебному процессу</h4>`;
     html += `<div class="item"><span class="label">🔄 Цикл дня</span><span class="value">Утро (300-600), День (600-1800), Вечер (1800-2100), Ночь (2100-300).</span></div>`;
     html += `<div class="item"><span class="label">💤 Сон</span><span class="value">Ночью и вечером пациенты с здоровьем > 50 ложатся спать. Восстанавливают здоровье во сне.</span></div>`;
-    html += `<div class="item"><span class="label">⚔️ Драки</span><span class="value">Пациенты могут драться при близком контакте. Наносят урон друг другу.</span></div>`;
-    html += `<div class="item"><span class="label">💊 Лечение</span><span class="value">Препарат должен соответствовать болезни. Эффективность зависит от тяжести и бонусов.</span></div>`;
-    html += `<div class="item"><span class="label">🏆 Очки (Ψ)</span><span class="value">+10 за вылеченного, -5 за смерть. Трата на аптеку и персонал.</span></div>`;
+    html += `<div class="item"><span class="label">⚔️ Конфликты</span><span class="value">Пациенты могут вступать в конфликты при близком контакте. Наносят урон друг другу.</span></div>`;
+    html += `<div class="item"><span class="label">💊 Лечение</span><span class="value">Препарат должен соответствовать болезни. Эффективность зависит от тяжести и изученных технологий.</span></div>`;
+    html += `<div class="item"><span class="label">🏆 Очки (Ψ)</span><span class="value">базово +5-20 за вылеченного, -5 за смерть. Бонус от исследования "Клиническая диагностика" (+20%).</span></div>`;
     html += `<div class="item"><span class="label">🧪 Очки исследований</span><span class="value">+2 за вылеченного + бонус от ординаторов. Трата на технологии.</span></div>`;
     html += `<div class="item"><span class="label">📊 Вес болезни</span><span class="value">Чем меньше вес, тем реже болезнь появляется. Самые редкие имеют вес 1.</span></div>`;
+    html += `<div class="item"><span class="label">📈 Тяжесть (1-5)</span><span class="value">Влияет на эффективность лечения: чем выше тяжесть, тем меньше % здоровья восстанавливается за один приём препарата.</span></div>`;
     html += `</div>`;
 
-    // 8. Реальные факты
-    html += `<div class="encyclopedia-section"><h4>📖 Реальные факты</h4>`;
-    html += `<div class="item"><span class="label">Психиатрия</span><span class="value">раздел медицины, изучающий психические расстройства. МКБ-10 — международная классификация болезней 10-го пересмотра.</span></div>`;
-    html += `<div class="item"><span class="label">Зигмунд Фрейд</span><span class="value">основатель психоанализа, исследовал бессознательное.</span></div>`;
-    html += `<div class="item"><span class="label">Эмиль Крепелин</span><span class="value">создатель первой систематической классификации психических болезней, ввел понятие "dementia praecox".</span></div>`;
+    // 8. Реальные факты — в виде цитат из медицинской литературы
+    html += `<div class="encyclopedia-section"><h4>📖 Исторические заметки</h4>`;
+    html += `<div style="font-style:italic; color:#5a4030; padding:4px 8px; background:rgba(196,168,138,0.1); border-radius:4px; margin-bottom:6px; font-size:0.85rem;">Из истории психиатрии — от древности до современности</div>`;
+    html += `<div class="item"><span class="label">Зигмунд Фрейд</span><span class="value">основатель психоанализа, исследовал бессознательное. Разработал метод свободных ассоциаций.</span></div>`;
+    html += `<div class="item"><span class="label">Эмиль Крепелин</span><span class="value">создатель первой систематической классификации психических болезней, ввел понятие "dementia praecox" (раннее слабоумие).</span></div>`;
     html += `<div class="item"><span class="label">Карл Юнг</span><span class="value">основатель аналитической психологии, ввел понятия архетипов и коллективного бессознательного.</span></div>`;
     html += `<div class="item"><span class="label">Владимир Бехтерев</span><span class="value">русский психиатр, невропатолог, физиолог, психолог. Основоположник рефлексологии.</span></div>`;
     html += `<div class="item"><span class="label">Сергей Корсаков</span><span class="value">русский психиатр, описал корсаковский психоз (алкогольный полиневритический психоз).</span></div>`;
     html += `<div class="item"><span class="label">Пётр Ганнушкин</span><span class="value">русский психиатр, создатель учения о психопатиях (расстройствах личности).</span></div>`;
     html += `<div class="item"><span class="label">Аминазин</span><span class="value">первый антипсихотик, открыт в 1950-х, произвел революцию в психиатрии.</span></div>`;
-    html += `<div class="item"><span class="label">Флуоксетин (Прозак)</span><span class="value">первый СИОЗС, один из самых известных антидепрессантов.</span></div>`;
-    html += `<div class="item"><span class="label">Галоперидол</span><span class="value">мощный антипсихотик, используется при острых психозах.</span></div>`;
+    html += `<div class="item"><span class="label">Флуоксетин (Прозак)</span><span class="value">первый СИОЗС, один из самых известных антидепрессантов. Применяется с 1987 года.</span></div>`;
+    html += `<div class="item"><span class="label">Галоперидол</span><span class="value">мощный антипсихотик, используется при острых психозах с 1958 года.</span></div>`;
     html += `<div class="item"><span class="label">Клозапин</span><span class="value">атипичный антипсихотик, эффективен при резистентной шизофрении, требует контроля крови из-за риска агранулоцитоза.</span></div>`;
     html += `</div>`;
+
+    // 9. Легенда
+    html += `<div style="margin-top:14px; padding:10px 14px; background:rgba(196,168,138,0.15); border-radius:8px; border:1px solid #c4a88a; font-size:0.8rem; color:#5a4030;">
+        <strong>📌 Условные обозначения:</strong><br>
+        <span class="severity-indicator severity-mild">Лёгкое</span> (1) · 
+        <span class="severity-indicator severity-moderate">Средней тяжести</span> (2) · 
+        <span class="severity-indicator severity-severe">Тяжёлое</span> (3) · 
+        <span class="severity-indicator severity-profound">Очень тяжёлое</span> (4) · 
+        <span class="severity-indicator severity-extreme">Крайне тяжёлое</span> (5)
+    </div>`;
 
     psychopediaBody.innerHTML = html;
 }
