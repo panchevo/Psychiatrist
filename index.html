@@ -1375,7 +1375,9 @@ const LEVELS = [
                 { code: 'F60.6', name: 'Тревожное РЛ', treat: ['флуоксетин', 'кветиапин'], weight: 3, category: 'personality', severity: 3, gender: 'neutral' },
                 { code: 'F20.0', name: 'Параноидная шизофрения', treat: ['галоперидол', 'оланзапин', 'рисперидон'], weight: 5, category: 'schizophrenia', severity: 4, gender: 'male' },
                 { code: 'F20.1', name: 'Гебефреническая шизофрения', treat: ['клозапин', 'оланзапин', 'кветиапин'], weight: 3, category: 'schizophrenia', severity: 5, gender: 'male' },
+{ code: 'F20.2', name: 'Кататоническая шизофрения', treat: ['галоперидол', 'рисперидон', 'оланзапин', 'кветиапин'], weight: 3, category: 'schizophrenia', severity: 5, gender: 'neutral' },
                 { code: 'F20.3', name: 'Недифференцированная шизофрения', treat: ['клозапин', 'галоперидол', 'кветиапин'], weight: 3, category: 'schizophrenia', severity: 4, gender: 'neutral' },
+{ code: 'F20.6', name: 'Простая шизофрения', treat: ['галоперидол', 'рисперидон', 'кветиапин', 'оланзапин'], weight: 4, category: 'schizophrenia', severity: 3, gender: 'neutral' },
                 { code: 'F25.0', name: 'Шизоаффективное (маниакальный)', treat: ['клозапин', 'галоперидол', 'кветиапин'], weight: 3, category: 'schizophrenia', severity: 4, gender: 'neutral' },
                 { code: 'F22.0', name: 'Бредовое расстройство', treat: ['галоперидол', 'рисперидон', 'оланзапин'], weight: 4, category: 'delusional', severity: 3, gender: 'male' },
                 { code: 'F23.0', name: 'Острое полиморфное психотическое', treat: ['галоперидол', 'оланзапин', 'кветиапин'], weight: 2, category: 'delusional', severity: 4, gender: 'neutral' },
@@ -2313,15 +2315,14 @@ function goToNextLevel() {
     }
 
     // Применяем ЭСТ
-    ectTarget = patient;
-    ectTimer = 300; // 5 секунд при 60fps
-    patient.isEct = true;
-    patient.ectTimer = 300;
-    patient.ectHealBoost = 0.2; // +20% к восприимчивости
-    patient.ectOriginalHealBoost = getTotalHealBoost(patient.disease);
-    
-    // Обездвиживаем пациента (он не двигается, не теряет здоровье)
-    patient.isEctStunned = true;
+  ectTarget = patient;
+ectTimer = 300;
+patient.isEct = true;
+patient.ectTimer = 300;
+patient.ectHealBoost = 0.2;
+patient.ectOriginalHealBoost = getTotalHealBoost(patient.disease);
+patient.isEctStunned = true;
+patient.noSideEffects = true;  // ⬅️ ЭТУ СТРОЧКУ ДОБАВИТЬ
     
     // ⭐ НОВОЕ: автоматически выделяем пациента для лечения
     selectedPatient = patient;
@@ -2762,7 +2763,8 @@ let levelScore = 0;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
                     breathPhase: Math.random() * Math.PI * 2,
                     shakeX: 0, shakeY: 0, stuckCounter: 0,
                     isEct: false, ectTimer: 0, isEctStunned: false, ectHealBoost: 0,
-                    ectOriginalHealBoost: 0
+                    ectOriginalHealBoost: 0,
+  noSideEffects: false  // ⬅️ ЭТУ СТРОЧКУ ДОБАВИТЬ
                 };
             }
 
@@ -3021,27 +3023,36 @@ let levelScore = 0;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
                 healAmount = Math.min(35, healAmount);
 
                 drugInventory[drugName]--;
+let sideEffectMessage = '';
+const drugInfo = ALL_DRUGS.find(d => d.name === drugName);
 
-                let sideEffectMessage = '';
-                const drugInfo = ALL_DRUGS.find(d => d.name === drugName);
-                if (drugInfo && drugInfo.sideEffect) {
-                    const sideEffectChance = 0.25 * (1 - getSideEffectReduction());
-                    if (Math.random() < sideEffectChance) {
-                        const damage = Math.floor(random(8, 20) * (1 - getSideEffectReduction() * 0.5));
-                        patient.health = Math.max(0, patient.health - damage);
-                        sideEffectMessage = ` ⚠️ Побочный эффект: ${drugInfo.sideEffect} (-${damage}%)`;
-                        statusMessage = sideEffectMessage;
-                        if (patient.health <= 0) {
-                            patient.state = 'healed';
-                            returnNameToPool(patient.name);
-                            score = Math.max(0, score - 5);
-                            statusMessage = '💀 ' + patient.name + ' умер от побочного эффекта! -5 Ψ';
-                            updateUI();
-                            endGame();
-                            return false;
-                        }
-                    }
-                }
+// ⬇️ ВЕСЬ ЭТОТ БЛОК ЗАМЕНИТЬ
+if (drugInfo && drugInfo.sideEffect) {
+    // Проверяем, отключены ли побочные эффекты (ЭСТ)
+    let shouldApplySideEffect = !patient.noSideEffects;
+    
+    if (shouldApplySideEffect) {
+        const sideEffectChance = 0.25 * (1 - getSideEffectReduction());
+        if (Math.random() < sideEffectChance) {
+            const damage = Math.floor(random(8, 20) * (1 - getSideEffectReduction() * 0.5));
+            patient.health = Math.max(0, patient.health - damage);
+            sideEffectMessage = ` ⚠️ Побочный эффект: ${drugInfo.sideEffect} (-${damage}%)`;
+            statusMessage = sideEffectMessage;
+            if (patient.health <= 0) {
+                patient.state = 'healed';
+                returnNameToPool(patient.name);
+                score = Math.max(0, score - 5);
+                statusMessage = '💀 ' + patient.name + ' умер от побочного эффекта! -5 Ψ';
+                updateUI();
+                endGame();
+                return false;
+            }
+        }
+    } else {
+        // Если побочные эффекты отключены (ЭСТ) — показываем сообщение
+        sideEffectMessage = ' 🛡️ (побочные эффекты отключены ЭСТ)';
+    }
+}
 
                 if (isMatch) {
                     patient.health = Math.min(100, patient.health + healAmount);
@@ -3965,23 +3976,24 @@ if (!gameOver && gameActive && currentLevel && !isPaused) {
                     }
 
                     // Обработка ЭСТ
-                    if (ectTimer > 0) {
-                        ectTimer--;
-                        if (ectTarget && ectTarget.state !== 'healed') {
-                            ectTarget.ectTimer = ectTimer;
-                            if (ectTimer <= 0) {
-                                ectTarget.isEct = false;
-                                ectTarget.isEctStunned = false;
-                                ectTarget.ectHealBoost = 0;
-                                statusMessage = '⚡ ЭСТ завершена для ' + ectTarget.name;
-                                ectTarget = null;
-                                updateUI();
-                            }
-                        } else {
-                            ectTimer = 0;
-                            ectTarget = null;
-                        }
-                    }
+                   if (ectTimer > 0) {
+    ectTimer--;
+    if (ectTarget && ectTarget.state !== 'healed') {
+        ectTarget.ectTimer = ectTimer;
+        if (ectTimer <= 0) {
+            ectTarget.isEct = false;
+            ectTarget.isEctStunned = false;
+            ectTarget.ectHealBoost = 0;
+            ectTarget.noSideEffects = false;  // ⬅️ ЭТУ СТРОЧКУ ДОБАВИТЬ
+            statusMessage = '⚡ ЭСТ завершена для ' + ectTarget.name + ' (побочные эффекты снова активны)';
+            ectTarget = null;
+            updateUI();
+        }
+    } else {
+        ectTimer = 0;
+        ectTarget = null;
+    }
+}
 
                     zSpawnCounter++;
                     if (zSpawnCounter >= 300 && !gameOver && gameActive) {
