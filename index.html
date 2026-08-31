@@ -4519,13 +4519,16 @@ function renderPsychopediaFull() {
         html += `<div class="item"><span class="label">${d.name}</span><span class="value">${d.ability} · IQ ${d.iq} · эмпатия ${d.empathy} · скорость ${d.speed.toFixed(2)}</span></div>`;
     });
     html += `</div>`;
-// 3. Болезни (расстройства) — С ЦВЕТНЫМИ КРУЖКАМИ
+// 3. Болезни (расстройства) — СОРТИРОВКА ПО ВЕСУ (сначала самые частые)
 html += `<div class="encyclopedia-section"><h4>📋 Психические расстройства (${ALL_DISEASES.length})</h4>`;
-ALL_DISEASES.forEach(d => {
+
+// СОРТИРУЕМ ПО ВЕСУ (от большего к меньшему — самые частые сверху)
+const sortedDiseases = [...ALL_DISEASES].sort((a, b) => b.weight - a.weight);
+
+sortedDiseases.forEach(d => {
     const sevLabel = getSeverityLabel(d.severity);
     const sevClass = getSeverityClass(d.severity);
     
-    // Формируем список препаратов с цветными кружками
     const drugsWithColors = d.treat.map(drug => {
         const drugInfo = ALL_DRUGS.find(d => d.name === drug);
         const color = drugInfo ? drugInfo.color : '#888';
