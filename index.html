@@ -4490,83 +4490,99 @@ availDrugs.forEach(drugName => {
             const psychopediaModal = document.getElementById('psychopediaModal');
             const psychopediaBody = document.getElementById('psychopediaBody');
 
-            function renderPsychopediaFull() {
-                let html = `
-                    <div style="text-align:center; margin-bottom:12px; font-size:1.2rem; font-weight:bold; color:#1a1612; border-bottom:2px solid #8a7a5a; padding-bottom:8px;">📖 ПСИХОПЕДИЯ — полная энциклопедия игры</div>
-                    <div style="font-size:0.85rem; color:#4a3a2a; margin-bottom:12px; text-align:center;">Вся справочная информация по игре «Психиатр» в одном месте</div>
-                `;
+            
+// === РЕНДЕР ПОЛНОЙ ПСИХОПЕДИИ ===
+function renderPsychopediaFull() {
+    let html = `
+        <div style="text-align:center; margin-bottom:12px; font-size:1.2rem; font-weight:bold; color:#1a1612; border-bottom:2px solid #8a7a5a; padding-bottom:8px;">📖 ПСИХОПЕДИЯ — полная энциклопедия игры</div>
+        <div style="font-size:0.85rem; color:#4a3a2a; margin-bottom:12px; text-align:center;">Вся справочная информация по игре «Психиатр» в одном месте</div>
+    `;
 
-                html += `<div class="encyclopedia-section"><h4>🧠 Психиатры (12)</h4>`;
-                PSYCHIATRISTS.forEach(d => {
-                    html += `<div class="item"><span class="label">${d.name}</span><span class="value">${d.ability} · IQ ${d.iq} · эмпатия ${d.empathy} · скорость ${d.speed.toFixed(2)}</span></div>`;
-                });
-                html += `</div>`;
+    // 1. Психиатры
+    html += `<div class="encyclopedia-section"><h4>🧠 Психиатры (${PSYCHIATRISTS.length})</h4>`;
+    PSYCHIATRISTS.forEach(d => {
+        html += `<div class="item"><span class="label">${d.name}</span><span class="value">${d.ability} · IQ ${d.iq} · эмпатия ${d.empathy} · скорость ${d.speed.toFixed(2)}</span></div>`;
+    });
+    html += `</div>`;
 
-                html += `<div class="encyclopedia-section"><h4>🏥 Уровни (18 больниц)</h4>`;
-                LEVELS.forEach(l => {
-                    const unlocked = l.unlocked || checkLevelUnlock(l.id);
-                    const ectStr = l.staffLimits?.ect || 0;
-                    html += `<div class="item"><span class="label">${l.name}</span><span class="value">${l.desc} · ${unlocked ? '🔓 доступен' : '🔒 заблокирован'} · задача: ${l.taskTarget} пациентов · препаратов: ${l.availableDrugs.join(', ')} · ЭСТ: ${ectStr}</span></div>`;
-                });
-                html += `</div>`;
+    // 2. Уровни (больницы)
+    html += `<div class="encyclopedia-section"><h4>🏥 Уровни (${LEVELS.length} больниц)</h4>`;
+    LEVELS.forEach(l => {
+        const unlocked = l.unlocked || checkLevelUnlock(l.id);
+        const ectStr = l.staffLimits?.ect || 0;
+        const drugsStr = l.availableDrugs ? l.availableDrugs.join(', ') : 'нет';
+        html += `<div class="item"><span class="label">${l.name}</span><span class="value">${l.desc} · ${unlocked ? '🔓 доступен' : '🔒 заблокирован'} · задача: ${l.taskTarget} пациентов · препаратов: ${drugsStr} · ЭСТ: ${ectStr}</span></div>`;
+    });
+    html += `</div>`;
 
-                html += `<div class="encyclopedia-section"><h4>📋 Болезни (МКБ-10, ${ALL_DISEASES.length})</h4>`;
-                ALL_DISEASES.forEach(d => {
-                    const sevLabel = getSeverityLabel(d.severity);
-                    html += `<div class="item disease-entry"><span class="code">${d.code}</span><span class="name">${d.name}</span><span class="severity-badge">тяжесть ${d.severity} (${sevLabel})</span><span class="value">лечится: ${d.treat.join(', ')}</span></div>`;
-                });
-                html += `</div>`;
+    // 3. Болезни (МКБ-10)
+    html += `<div class="encyclopedia-section"><h4>📋 Болезни (МКБ-10, ${ALL_DISEASES.length})</h4>`;
+    // Сортируем по коду для удобства
+    const sortedDiseases = [...ALL_DISEASES].sort((a, b) => a.code.localeCompare(b.code));
+    sortedDiseases.forEach(d => {
+        const sevLabel = getSeverityLabel(d.severity);
+        const sevClass = getSeverityClass(d.severity);
+        html += `<div class="item disease-entry"><span class="code" style="font-weight:bold;min-width:70px;">${d.code}</span><span class="name" style="font-weight:bold;">${d.name}</span><span class="severity-badge" style="font-size:0.7rem;padding:1px 8px;border-radius:10px;background:#b09a7a;">тяжесть ${d.severity} (${sevLabel})</span><span class="value" style="font-size:0.85rem;">лечится: ${d.treat.join(', ')}</span></div>`;
+    });
+    html += `</div>`;
 
-                html += `<div class="encyclopedia-section"><h4>💊 Препараты (10)</h4>`;
-                ALL_DRUGS.forEach(d => {
-                    html += `<div class="item drug-entry"><span class="dot" style="background:${d.color}; display:inline-block; width:12px; height:12px; border-radius:50%; border:1px solid #5a4a32;"></span><span class="label">${d.name}</span><span class="value">побочный эффект: ${d.sideEffect}, цена: ${d.price} Ψ</span></div>`;
-                });
-                html += `</div>`;
+    // 4. Препараты
+    html += `<div class="encyclopedia-section"><h4>💊 Препараты (${ALL_DRUGS.length})</h4>`;
+    ALL_DRUGS.forEach(d => {
+        const maxLimit = currentLevel ? getDrugMaxLimit(d.name, currentLevel) : '?';
+        html += `<div class="item drug-entry"><span class="dot" style="background:${d.color}; display:inline-block; width:12px; height:12px; border-radius:50%; border:1px solid #5a4a32;"></span><span class="label">${d.name}</span><span class="value">побочный эффект: ${d.sideEffect}, цена: ${d.price} Ψ, редкость: ${d.rarity}</span></div>`;
+    });
+    html += `</div>`;
 
-                html += `<div class="encyclopedia-section"><h4>🔬 Исследования (${TECH_TREE.length} технологий)</h4>`;
-                TECH_TREE.forEach(t => {
-                    const status = getTechStatus(t.id);
-                    const statusText = status === 'researched' ? '✅' : (status === 'available' ? '🔓' : '🔒');
-                    
-                    let prereqNames = t.prereq.map(id => {
-                        const found = TECH_TREE.find(tech => tech.id === id);
-                        return found ? found.name : id;
-                    });
-                    
-                    html += `<div class="item"><span class="label">${statusText} ${t.name}</span><span class="value">${t.desc} (стоимость ${t.cost}🧪, требует: ${prereqNames.length ? prereqNames.join(', ') : 'нет'})</span></div>`;
-                });
-                html += `</div>`;
+    // 5. Технологии
+    html += `<div class="encyclopedia-section"><h4>🔬 Исследования (${TECH_TREE.length} технологий)</h4>`;
+    TECH_TREE.forEach(t => {
+        const status = getTechStatus(t.id);
+        const statusText = status === 'researched' ? '✅ Изучено' : (status === 'available' ? '🔓 Доступно' : '🔒 Заблокировано');
+        let prereqNames = t.prereq.map(id => {
+            const found = TECH_TREE.find(tech => tech.id === id);
+            return found ? found.name : id;
+        });
+        html += `<div class="item"><span class="label">${statusText} ${t.name}</span><span class="value">${t.desc} (стоимость ${t.cost}🧪, требует: ${prereqNames.length ? prereqNames.join(', ') : 'нет'})</span></div>`;
+    });
+    html += `</div>`;
 
-                html += `<div class="encyclopedia-section"><h4>🧑‍⚕️ Персонал</h4>`;
-                html += `<div class="item"><span class="label">🧹 Санитар</span><span class="value">замедляет ухудшение здоровья пациентов на 5% за каждого. Стоимость: 5 Ψ.</span></div>`;
-                html += `<div class="item"><span class="label">👩‍⚕️ Медсестра</span><span class="value">увеличивает силу препаратов на 5% за каждую. Стоимость: 10 Ψ.</span></div>`;
-                html += `<div class="item"><span class="label">💊 Ординатор</span><span class="value">даёт +0.5🧪 за вылеченного пациента за каждого. Стоимость: 25 Ψ.</span></div>`;
-                html += `<div class="item"><span class="label">⚡ Прибор ЭСТ</span><span class="value">доступен на уровнях Скворцова-Степанова, Кандинский, Арсенальная. Стоимость: 40 Ψ. Применяется к пациенту: обездвиживает на 5с, останавливает потерю здоровья, +20% к эффективности лечения.</span></div>`;
-                html += `</div>`;
+    // 6. Персонал
+    html += `<div class="encyclopedia-section"><h4>🧑‍⚕️ Персонал</h4>`;
+    html += `<div class="item"><span class="label">🧹 Санитар</span><span class="value">замедляет ухудшение здоровья пациентов на 5% за каждого. Стоимость: 5 Ψ.</span></div>`;
+    html += `<div class="item"><span class="label">👩‍⚕️ Медсестра</span><span class="value">увеличивает силу препаратов на 5% за каждую. Стоимость: 10 Ψ.</span></div>`;
+    html += `<div class="item"><span class="label">💊 Ординатор</span><span class="value">даёт +0.5🧪 за вылеченного пациента за каждого. Стоимость: 25 Ψ.</span></div>`;
+    html += `<div class="item"><span class="label">⚡ Прибор ЭСТ</span><span class="value">доступен на уровнях Скворцова-Степанова, Кандинский, Арсенальная. Стоимость: 40 Ψ. Применяется к пациенту: обездвиживает на 5с, останавливает потерю здоровья, +20% к эффективности лечения.</span></div>`;
+    html += `</div>`;
 
-                html += `<div class="encyclopedia-section"><h4>⚙️ Игровая механика</h4>`;
-                html += `<div class="item"><span class="label">🔄 Цикл дня</span><span class="value">Утро (300-600), День (600-1800), Вечер (1800-2100), Ночь (2100-300).</span></div>`;
-                html += `<div class="item"><span class="label">💤 Сон</span><span class="value">Ночью и вечером пациенты с здоровьем > 50 ложатся спать. Восстанавливают здоровье во сне.</span></div>`;
-                html += `<div class="item"><span class="label">⚔️ Драки</span><span class="value">Пациенты могут драться при близком контакте. Наносят урон друг другу.</span></div>`;
-                html += `<div class="item"><span class="label">💊 Лечение</span><span class="value">Препарат должен соответствовать болезни. Эффективность зависит от тяжести и бонусов.</span></div>`;
-                html += `<div class="item"><span class="label">🏆 Очки (Ψ)</span><span class="value">+10 за вылеченного, -5 за смерть. Трата на аптеку и персонал.</span></div>`;
-                html += `<div class="item"><span class="label">🧪 Очки исследований</span><span class="value">+2 за вылеченного + бонус от ординаторов. Трата на технологии.</span></div>`;
-                html += `</div>`;
+    // 7. Игровая механика
+    html += `<div class="encyclopedia-section"><h4>⚙️ Игровая механика</h4>`;
+    html += `<div class="item"><span class="label">🔄 Цикл дня</span><span class="value">Утро (300-600), День (600-1800), Вечер (1800-2100), Ночь (2100-300).</span></div>`;
+    html += `<div class="item"><span class="label">💤 Сон</span><span class="value">Ночью и вечером пациенты с здоровьем > 50 ложатся спать. Восстанавливают здоровье во сне.</span></div>`;
+    html += `<div class="item"><span class="label">⚔️ Драки</span><span class="value">Пациенты могут драться при близком контакте. Наносят урон друг другу.</span></div>`;
+    html += `<div class="item"><span class="label">💊 Лечение</span><span class="value">Препарат должен соответствовать болезни. Эффективность зависит от тяжести и бонусов.</span></div>`;
+    html += `<div class="item"><span class="label">🏆 Очки (Ψ)</span><span class="value">+10 за вылеченного, -5 за смерть. Трата на аптеку и персонал.</span></div>`;
+    html += `<div class="item"><span class="label">🧪 Очки исследований</span><span class="value">+2 за вылеченного + бонус от ординаторов. Трата на технологии.</span></div>`;
+    html += `<div class="item"><span class="label">📊 Вес болезни</span><span class="value">Чем меньше вес, тем реже болезнь появляется. Самые редкие имеют вес 1.</span></div>`;
+    html += `</div>`;
 
-                html += `<div class="encyclopedia-section"><h4>📖 Реальные факты</h4>`;
-                html += `<div class="item"><span class="label">Психиатрия</span><span class="value">раздел медицины, изучающий психические расстройства. МКБ-10 — международная классификация болезней 10-го пересмотра.</span></div>`;
-                html += `<div class="item"><span class="label">Зигмунд Фрейд</span><span class="value">основатель психоанализа, исследовал бессознательное.</span></div>`;
-                html += `<div class="item"><span class="label">Эмиль Крепелин</span><span class="value">создатель первой систематической классификации психических болезней, ввел понятие "dementia praecox".</span></div>`;
-                html += `<div class="item"><span class="label">Карл Юнг</span><span class="value">основатель аналитической психологии, ввел понятия архетипов и коллективного бессознательного.</span></div>`;
-                html += `<div class="item"><span class="label">Аминазин</span><span class="value">первый антипсихотик, открыт в 1950-х, произвел революцию в психиатрии.</span></div>`;
-                html += `<div class="item"><span class="label">Флуоксетин (Прозак)</span><span class="value">первый СИОЗС, один из самых известных антидепрессантов.</span></div>`;
-                html += `<div class="item"><span class="label">Галоперидол</span><span class="value">мощный антипсихотик, используется при острых психозах.</span></div>`;
-                html += `<div class="item"><span class="label">Клозапин</span><span class="value">атипичный антипсихотик, эффективен при резистентной шизофрении, требует контроля крови из-за риска агранулоцитоза.</span></div>`;
-                html += `</div>`;
+    // 8. Реальные факты
+    html += `<div class="encyclopedia-section"><h4>📖 Реальные факты</h4>`;
+    html += `<div class="item"><span class="label">Психиатрия</span><span class="value">раздел медицины, изучающий психические расстройства. МКБ-10 — международная классификация болезней 10-го пересмотра.</span></div>`;
+    html += `<div class="item"><span class="label">Зигмунд Фрейд</span><span class="value">основатель психоанализа, исследовал бессознательное.</span></div>`;
+    html += `<div class="item"><span class="label">Эмиль Крепелин</span><span class="value">создатель первой систематической классификации психических болезней, ввел понятие "dementia praecox".</span></div>`;
+    html += `<div class="item"><span class="label">Карл Юнг</span><span class="value">основатель аналитической психологии, ввел понятия архетипов и коллективного бессознательного.</span></div>`;
+    html += `<div class="item"><span class="label">Владимир Бехтерев</span><span class="value">русский психиатр, невропатолог, физиолог, психолог. Основоположник рефлексологии.</span></div>`;
+    html += `<div class="item"><span class="label">Сергей Корсаков</span><span class="value">русский психиатр, описал корсаковский психоз (алкогольный полиневритический психоз).</span></div>`;
+    html += `<div class="item"><span class="label">Пётр Ганнушкин</span><span class="value">русский психиатр, создатель учения о психопатиях (расстройствах личности).</span></div>`;
+    html += `<div class="item"><span class="label">Аминазин</span><span class="value">первый антипсихотик, открыт в 1950-х, произвел революцию в психиатрии.</span></div>`;
+    html += `<div class="item"><span class="label">Флуоксетин (Прозак)</span><span class="value">первый СИОЗС, один из самых известных антидепрессантов.</span></div>`;
+    html += `<div class="item"><span class="label">Галоперидол</span><span class="value">мощный антипсихотик, используется при острых психозах.</span></div>`;
+    html += `<div class="item"><span class="label">Клозапин</span><span class="value">атипичный антипсихотик, эффективен при резистентной шизофрении, требует контроля крови из-за риска агранулоцитоза.</span></div>`;
+    html += `</div>`;
 
-                psychopediaBody.innerHTML = html;
-            }
-
+    psychopediaBody.innerHTML = html;
+}
             function openPsychopedia() {
              stopMusic()
                 if (!selectionScreen.classList.contains('hidden')) {
