@@ -4493,6 +4493,21 @@ availDrugs.forEach(drugName => {
             
 // === РЕНДЕР ПОЛНОЙ ПСИХОПЕДИИ ===
 function renderPsychopediaFull() {
+
+   const categoryTranslations = {
+        'depression': 'Депрессивные расстройства',
+        'neurosis': 'Невротические расстройства',
+        'anxiety': 'Тревожные расстройства',
+        'psychosomatic': 'Психосоматические расстройства',
+        'personality': 'Расстройства личности',
+        'schizophrenia': 'Шизофрения',
+        'delusional': 'Бредовые расстройства',
+        'schizotypal': 'Шизотипические расстройства',
+        'developmental': 'Расстройства развития',
+        'sexual': 'Сексуальные расстройства',
+        'dementia': 'Деменции'
+    };
+
     let html = `
         <div style="text-align:center; margin-bottom:12px; font-size:1.2rem; font-weight:bold; color:#1a1612; border-bottom:2px solid #8a7a5a; padding-bottom:8px;">📖 ПСИХОПЕДИЯ — полная энциклопедия игры</div>
         <div style="font-size:0.85rem; color:#4a3a2a; margin-bottom:12px; text-align:center;">Вся справочная информация по игре «Психиатр» в одном месте</div>
@@ -4504,7 +4519,29 @@ function renderPsychopediaFull() {
         html += `<div class="item"><span class="label">${d.name}</span><span class="value">${d.ability} · IQ ${d.iq} · эмпатия ${d.empathy} · скорость ${d.speed.toFixed(2)}</span></div>`;
     });
     html += `</div>`;
-
+// 3. Болезни (расстройства) — С ЦВЕТНЫМИ КРУЖКАМИ
+html += `<div class="encyclopedia-section"><h4>📋 Психические расстройства (${ALL_DISEASES.length})</h4>`;
+ALL_DISEASES.forEach(d => {
+    const sevLabel = getSeverityLabel(d.severity);
+    const sevClass = getSeverityClass(d.severity);
+    
+    // Формируем список препаратов с цветными кружками
+    const drugsWithColors = d.treat.map(drug => {
+        const drugInfo = ALL_DRUGS.find(d => d.name === drug);
+        const color = drugInfo ? drugInfo.color : '#888';
+        return `<span style="display:inline-flex; align-items:center; gap:4px; margin-right:6px;">
+            <span style="display:inline-block; width:14px; height:14px; border-radius:50%; background:${color}; border:1px solid #5a4a32;"></span>
+            ${drug}
+        </span>`;
+    }).join('');
+    
+    const categoryRu = categoryTranslations[d.category] || d.category;
+    html += `<div class="item">
+        <span class="label">${d.code}</span>
+        <span class="value"><strong>${d.name}</strong> · категория: ${categoryRu} · вес: ${d.weight} · тяжесть: <span class="severity-indicator ${sevClass}">${sevLabel}</span> · лечится: ${drugsWithColors}</span>
+    </div>`;
+});
+html += `</div>`;
     // 2. Уровни (больницы)
   // 2. Уровни (больницы)
 html += `<div class="encyclopedia-section"><h4>🏥 Уровни (${LEVELS.length} больниц)</h4>`;
