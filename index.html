@@ -4722,6 +4722,7 @@ availDrugs.forEach(drugName => {
             const psychopediaModal = document.getElementById('psychopediaModal');
             const psychopediaBody = document.getElementById('psychopediaBody');
 // === РЕНДЕР ПОЛНОЙ ПСИХОПЕДИИ - ВИНТАЖНЫЙ СПРАВОЧНИК ===
+// === РЕНДЕР ПОЛНОЙ ПСИХОПЕДИИ - ВИНТАЖНЫЙ СПРАВОЧНИК ===
 function renderPsychopediaFull() {
     const categoryTranslations = {
         'depression': 'Депрессивные расстройства',
@@ -4737,9 +4738,7 @@ function renderPsychopediaFull() {
         'dementia': 'Деменции'
     };
 
-    let html = `
-      
-    `;
+    let html = ``;
 
     // 1. Психиатры
     html += `<div class="encyclopedia-section"><h4>🧠 Врачи-психиатры</h4>`;
@@ -4751,19 +4750,44 @@ function renderPsychopediaFull() {
     });
     html += `</div>`;
 
-    // 2. Больницы (уровни)
+    // 2. Больницы (уровни) — ИСПРАВЛЕННАЯ ВЕРСИЯ
     html += `<div class="encyclopedia-section"><h4>🏥 Клинические отделения</h4>`;
-    LEVELS.forEach(l => {
-        let isUnlocked = l.unlocked === true;
-        if (!isUnlocked && l.requiredLevel && completedLevels[l.requiredLevel] === true) {
-            isUnlocked = true;
+    LEVELS.forEach((l, index) => {
+        // Функция проверки доступности уровня (аналогична checkLevelUnlock)
+        function isLevelUnlocked(level) {
+            if (level.unlocked) return true;
+            if (!level.requiredLevel) return false;
+            // Проверяем, пройден ли требуемый уровень
+            const requiredLevel = LEVELS.find(lv => lv.id === level.requiredLevel);
+            if (!requiredLevel) return false;
+            // Уровень доступен, если requiredLevel помечен как unlocked ИЛИ есть в completedLevels
+            return requiredLevel.unlocked || completedLevels[requiredLevel.id] === true;
         }
+        
+        const isUnlocked = isLevelUnlocked(l);
+        const isCompleted = completedLevels[l.id] === true;
         const ectStr = l.staffLimits?.ect || 0;
         const drugsStr = l.availableDrugs ? l.availableDrugs.join(', ') : 'нет';
-        const statusIcon = isUnlocked ? '🔓' : '🔒';
+        
+        // Определяем иконку статуса
+        let statusIcon = '🔒';
+        let statusText = 'заблокирован';
+        if (isCompleted) {
+            statusIcon = '✅';
+            statusText = 'пройден';
+        } else if (isUnlocked) {
+            statusIcon = '🔓';
+            statusText = 'доступен';
+        } else {
+            // Находим, что требуется для разблокировки
+            const required = LEVELS.find(lv => lv.id === l.requiredLevel);
+            statusIcon = '🔒';
+            statusText = `требуется: ${required ? required.name : '?'}`;
+        }
+        
         html += `<div class="item">
             <span class="label">${l.name}</span>
-            <span class="value">${l.desc} · ${statusIcon} доступ · цель: ${l.taskTarget} пациентов · препараты: ${drugsStr} · ЭСТ: ${ectStr}</span>
+            <span class="value">${l.desc} · ${statusIcon} ${statusText} · цель: ${l.taskTarget} пациентов · препараты: ${drugsStr} · ЭСТ: ${ectStr}</span>
         </div>`;
     });
     html += `</div>`;
@@ -4843,7 +4867,7 @@ function renderPsychopediaFull() {
     html += `<div class="item"><span class="label">📈 Тяжесть (1-5)</span><span class="value">Влияет на эффективность лечения: чем выше тяжесть, тем меньше % здоровья восстанавливается за один приём препарата.</span></div>`;
     html += `</div>`;
 
-    // 8. Реальные факты — в виде цитат из медицинской литературы
+    // 8. Реальные факты
     html += `<div class="encyclopedia-section"><h4>📖 Исторические заметки</h4>`;
     html += `<div style="font-style:italic; color:#5a4030; padding:4px 8px; background:rgba(196,168,138,0.1); border-radius:4px; margin-bottom:6px; font-size:0.85rem;">Из истории психиатрии — от древности до современности</div>`;
     html += `<div class="item"><span class="label">Зигмунд Фрейд</span><span class="value">основатель психоанализа, исследовал бессознательное. Разработал метод свободных ассоциаций.</span></div>`;
