@@ -4506,25 +4506,20 @@ function renderPsychopediaFull() {
     html += `</div>`;
 
     // 2. Уровни (больницы)
-    html += `<div class="encyclopedia-section"><h4>🏥 Уровни (${LEVELS.length} больниц)</h4>`;
-    LEVELS.forEach(l => {
-        const unlocked = l.unlocked || checkLevelUnlock(l.id);
-        const ectStr = l.staffLimits?.ect || 0;
-        const drugsStr = l.availableDrugs ? l.availableDrugs.join(', ') : 'нет';
-        html += `<div class="item"><span class="label">${l.name}</span><span class="value">${l.desc} · ${unlocked ? '🔓 доступен' : '🔒 заблокирован'} · задача: ${l.taskTarget} пациентов · препаратов: ${drugsStr} · ЭСТ: ${ectStr}</span></div>`;
-    });
-    html += `</div>`;
-
-    // 3. Болезни (МКБ-10)
-    html += `<div class="encyclopedia-section"><h4>📋 Болезни (МКБ-10, ${ALL_DISEASES.length})</h4>`;
-    // Сортируем по коду для удобства
-    const sortedDiseases = [...ALL_DISEASES].sort((a, b) => a.code.localeCompare(b.code));
-    sortedDiseases.forEach(d => {
-        const sevLabel = getSeverityLabel(d.severity);
-        const sevClass = getSeverityClass(d.severity);
-        html += `<div class="item disease-entry"><span class="code" style="font-weight:bold;min-width:70px;">${d.code}</span><span class="name" style="font-weight:bold;">${d.name}</span><span class="severity-badge" style="font-size:0.7rem;padding:1px 8px;border-radius:10px;background:#b09a7a;">тяжесть ${d.severity} (${sevLabel})</span><span class="value" style="font-size:0.85rem;">лечится: ${d.treat.join(', ')}</span></div>`;
-    });
-    html += `</div>`;
+  // 2. Уровни (больницы)
+html += `<div class="encyclopedia-section"><h4>🏥 Уровни (${LEVELS.length} больниц)</h4>`;
+LEVELS.forEach(l => {
+    // Вариант 2: показываем состояние с учётом пройденных уровней
+    let isUnlocked = l.unlocked === true;
+    // Если не разблокирован, но есть requiredLevel и он пройден — разблокируем
+    if (!isUnlocked && l.requiredLevel && completedLevels[l.requiredLevel] === true) {
+        isUnlocked = true;
+    }
+    const ectStr = l.staffLimits?.ect || 0;
+    const drugsStr = l.availableDrugs ? l.availableDrugs.join(', ') : 'нет';
+    html += `<div class="item"><span class="label">${l.name}</span><span class="value">${l.desc} · ${isUnlocked ? '🔓 доступен' : '🔒 заблокирован'} · задача: ${l.taskTarget} пациентов · препаратов: ${drugsStr} · ЭСТ: ${ectStr}</span></div>`;
+});
+html += `</div>`;
 
     // 4. Препараты
     html += `<div class="encyclopedia-section"><h4>💊 Препараты (${ALL_DRUGS.length})</h4>`;
