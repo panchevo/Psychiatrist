@@ -105,7 +105,7 @@ button:focus,
         }
         .game-dialog-box .dialog-btn:disabled {
             opacity: 0.5;
-            cursor: not-allowed;
+            cursor:  url('cur.png') 10 12, auto !important;;
             transform: translateY(2px);
             border-bottom-width: 2px;
         }
@@ -349,10 +349,10 @@ button:focus,
         .left-panel::-webkit-scrollbar { width: 5px; }
         .left-panel::-webkit-scrollbar-track { background: #cbb99e; }
         .left-panel::-webkit-scrollbar-thumb { background: #a28d70; border-radius: 4px; }
-        .left-panel .drug-pill { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #e1cfb6; padding: 8px 4px; border-radius: 8px; border-bottom: 3px solid #8a7a5a; font-size: 0.8rem; color: #2d2417; cursor: grab; transition: 0.1s ease; box-shadow: inset 0 -2px 0 #b09a7a; width: 100%; text-align: center; line-height: 1.3; min-height: 65px; position: relative; font-family: 'Georgia', serif; }
-        .left-panel .drug-pill:active { cursor: grabbing; opacity: 0.6; }
+        .left-panel .drug-pill { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #e1cfb6; padding: 8px 4px; border-radius: 8px; border-bottom: 3px solid #8a7a5a; font-size: 0.8rem; color: #2d2417; cursor:  url('cur.png') 10 12, auto !important; transition: 0.1s ease; box-shadow: inset 0 -2px 0 #b09a7a; width: 100%; text-align: center; line-height: 1.3; min-height: 65px; position: relative; font-family: 'Georgia', serif; }
+        .left-panel .drug-pill:active { cursor: url('cur.png') 10 12, auto !important; opacity: 0.6; }
         .left-panel .drug-pill.dragging { opacity: 0.3; transform: scale(0.95); }
-        .left-panel .drug-pill.locked-drug { opacity: 0.4; cursor: not-allowed; filter: grayscale(0.8); }
+        .left-panel .drug-pill.locked-drug { opacity: 0.4; cursor:  url('cur.png') 10 12, auto !important; filter: grayscale(0.8); }
         .left-panel .drug-pill.locked-drug:hover::after { content: '🔒 Требуется уровень выше'; position: absolute; bottom: 0px; left: 50%; transform: translateX(-50%); background: #1a1612; color: #dac9b0; padding: 2px 8px; border-radius: 4px; font-size: 0.6rem; white-space: nowrap; z-index: 10; }
         .left-panel .color-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #5a4a32; flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(255,215,140,0.5); margin-bottom: 2px; }
         .left-panel .drug-label { font-size: 0.8rem; word-break: break-word; text-align: center; line-height: 1.2; max-width: 120px; font-weight: bold; color: #2d2417; }
@@ -365,7 +365,7 @@ button:focus,
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; gap: 8px; padding: 0 4px; flex-wrap: wrap; background: #cbb99e; border-radius: 8px; padding: 6px 12px; box-shadow: inset 0 0 0 2px #a28d70; }
         .top-bar .book-btn-top, .top-bar .tech-btn-top, .top-bar .info-btn-top, .top-bar .save-btn-top, .top-bar .load-btn-top { background: #b09a7a; border: none; border-bottom: 4px solid #6a5a42; color: #1a1612; font-weight: bold; padding: 6px 18px; border-radius: 30px; cursor: url('cur.png') 10 12, auto; font-size: 0.95rem; transition: 0.07s; text-shadow: 0 1px 0 #dac9b0; box-shadow: 0 4px 0 #4a3a2a; font-family: 'Georgia', serif; }
         .top-bar .book-btn-top:active, .top-bar .tech-btn-top:active, .top-bar .info-btn-top:active, .top-bar .save-btn-top:active, .top-bar .load-btn-top:active { transform: translateY(2px); border-bottom-width: 2px; }
-        .top-bar .tech-btn-top:disabled, .top-bar .load-btn-top:disabled { opacity: 0.4; cursor: not-allowed; transform: translateY(2px); border-bottom-width: 2px; }
+        .top-bar .tech-btn-top:disabled, .top-bar .load-btn-top:disabled { opacity: 0.4; cursor:  url('cur.png') 10 12, auto !important; transform: translateY(2px); border-bottom-width: 2px; }
         .top-score-bar { display: flex; align-items: center; gap: 6px; background: #dac9b0; padding: 4px 16px 4px 12px; border-radius: 30px; border-bottom: 3px solid #8a7a5a; }
         .top-score-bar .psi-icon { font-size: 1.5rem; color: #4a3a2a; }
         .top-score-bar .score-value { color: #2d2417; font-weight: bold; font-size: 1.3rem; min-width: 30px; text-align: center; }
@@ -386,7 +386,7 @@ button:focus,
         .staff-panel .staff-item .count { color: #2d2417; font-weight: bold; font-size: 0.9rem; }
         .staff-panel .staff-item .action-btn { background: #b09a7a; border: none; border-bottom: 2px solid #6a5a42; color: #1a1612; padding: 0 10px; border-radius: 16px; cursor: url('cur.png') 10 12, auto; font-size: 0.7rem; margin-left: 2px; font-family: 'Georgia', serif; font-weight: bold; }
         .staff-panel .staff-item .action-btn:active { transform: translateY(1px); border-bottom-width: 1px; }
-        .staff-panel .staff-item .action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .staff-panel .staff-item .action-btn:disabled { opacity: 0.4; cursor: url('cur.png') 10 12, auto !important;}
         .bottom-panel { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-top: 0px; padding: 20px 25px; background: rgb(189, 172, 149); border-radius: 30px; box-shadow: inset 0 4px 0 #b09a7a, 0 4px 0 #6a5a42; color: #2d2417; font-weight: bold; gap: 6px 10px; font-size: 0.95rem; font-family: 'Georgia', serif; }
         .bottom-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .bottom-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap;  }
@@ -396,7 +396,7 @@ button:focus,
         .status-msg { background: #dac9b0; padding: 4px 16px; border-radius: 30px; color: #2d2417; font-size: 0.85rem; min-width: 140px; text-align: center; white-space: nowrap; border-bottom: 2px solid #8a7a5a; font-weight: normal; }
         button { background: #b09a7a; border: none; border-bottom: 4px solid #6a5a42; color: #1a1612; font-weight: bold; padding: 6px 18px; border-radius: 30px; cursor: url('cur.png') 10 12, auto; font-size: 0.9rem; transition: 0.07s; text-shadow: 0 1px 0 #dac9b0; font-family: 'Georgia', serif; box-shadow: 0 4px 0 #4a3a2a; }
         button:active { transform: translateY(2px); border-bottom-width: 2px; }
-        button:disabled { opacity: 0.4; cursor: not-allowed; transform: translateY(2px); border-bottom-width: 2px; }
+        button:disabled { opacity: 0.4; cursor:  url('cur.png') 10 12, auto !important; transform: translateY(2px); border-bottom-width: 2px; }
         
         /* === TWO-STEP SELECTION SCREENS === */
 #selectionScreen{border:5px solid rgb(101, 92, 79);background-color:rgb(101, 92, 79) !important;}
@@ -416,13 +416,13 @@ button:focus,
         .sel-level { background: #e1cfb6; padding: 12px 16px; border-radius: 12px; border-bottom: 4px solid #8a7a5a; cursor: url('cur.png') 10 12, auto; transition: 0.15s; font-weight: bold; color: #2d2417; font-size: 1rem; text-align: center; font-family: 'Georgia', serif; position: relative; }
         .sel-level:hover:not(.locked-level):not(.selected) { background: #f0dfc8; border-bottom-color: #4a3a2a; }
         .sel-level.selected { border-bottom-color: #4a3a2a; background: #dac9b0; box-shadow: 0 0 20px rgba(74,58,42,0.2); cursor: url('cur.png') 10 12, auto; }
-        .sel-level.locked-level { opacity: 0.5; cursor: not-allowed; filter: grayscale(0.6); }
+        .sel-level.locked-level { opacity: 0.5; cursor:  url('cur.png') 10 12, auto !important;; filter: grayscale(0.6); }
         .sel-level.locked-level::after { content: '🔒'; margin-left: 8px; }
         .sel-level .desc { font-weight: normal; font-size: 0.8rem; color: #5a4a32; display: block; margin-top: 2px; }
         .sel-level .level-progress { font-size: 0.7rem; color: #4a7a3a; display: block; margin-top: 2px; }
         .sel-btn { display: block; width: 100%; padding: 16px; font-size: 1.4rem; background: #b09a7a; border: none; border-bottom: 6px solid #6a5a42; color: #1a1612; font-weight: bold; border-radius: 40px; cursor: url('cur.png') 10 12, auto; transition: 0.1s; text-shadow: 0 2px 0 #dac9b0; letter-spacing: 2px; margin-top: 6px; font-family: 'Georgia', serif; }
         .sel-btn:active { transform: translateY(3px); border-bottom-width: 3px; }
-        .sel-btn:disabled { opacity: 0.4; transform: translateY(2px); border-bottom-width: 4px; cursor: not-allowed; }
+        .sel-btn:disabled { opacity: 0.4; transform: translateY(2px); border-bottom-width: 4px; cursor:  url('cur.png') 10 12, auto !important; }
         .sel-step { display: none; }
         .sel-step.active { display: block; }
         .sel-back { background: #8a7a6a; border-bottom-color: #5a4a3a; font-size: 1rem; padding: 8px 24px; margin-bottom: 12px; display: inline-block; width: auto; }
@@ -453,7 +453,7 @@ button:focus,
         .tech-card:hover:not(.researched):not(.locked) { border-color: #4a3a2a; transform: scale(1.03); background: #f0dfc8; }
         .tech-card.researched { border-color: #4a7a4a; background: #d0e0c0; }
         .tech-card.researched .tech-name { color: #1a3a1a; }
-        .tech-card.locked { opacity: 0.6; cursor: not-allowed; border-color: #b09a7a; }
+        .tech-card.locked { opacity: 0.6; cursor:  url('cur.png') 10 12, auto !important;; border-color: #b09a7a; }
         .tech-card.available { border-color: #4a3a2a; box-shadow: 0 0 15px rgba(74,58,42,0.2); }
         .tech-card .tech-name { font-weight: bold; font-size: 1rem; color: #1a1612; }
         .tech-card .tech-desc { font-size: 0.75rem; color: #4a3a2a; margin-top: 4px; line-height: 1.3; }
@@ -910,6 +910,7 @@ position:absolute !important;
 
 div{  cursor: url('cur.png') 10 12, auto !important;}
 
+body{  cursor: url('cur.png') 10 12, auto !important;}
 
     </style>
 </head>
@@ -1512,11 +1513,39 @@ const LEVELS = [
 
 
 
+ { 
+        id: 'berezowa_roca', 
+        name: 'Березовая Роща', 
+        desc: 'Мистические расстройства', 
+        diseaseCategory: null,
+        categoryWeights: {
+                  'delusional': 100,  // Только бредовые расстройства
+          
+            
+      
+        },
+        fightChance: 0.10, 
+        spawnInterval: 9, 
+        drugPrice: 30, 
+        drugLimit: 100, 
+        taskTarget: 13, 
+        maxPatients: 7,
+        healthRange: [5, 30], 
+        unlocked: false, 
+        requiredLevel: 'arsenalnaya', 
+        availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], 
+        diseaseCount: 75, 
+        staffLimits: { orderlies2: 13, nurses: 0, orderlies: 0, ect: 0 },
+        theme: 'berezowa_roca' 
+    },
+
+
+
 
  { 
         id: 'kpbstin', 
         name: 'КПБСТИН', 
-        desc: 'Самая сложная больница', 
+        desc: 'Тюремная психиатрия', 
         diseaseCategory: null,
         categoryWeights: {
             'schizophrenia': 15,
@@ -1540,9 +1569,7 @@ const LEVELS = [
         diseaseCount: 75, 
         staffLimits: { orderlies2: 15, nurses: 0, orderlies: 0, ect: 1 },
         theme: 'kpbstin' 
-    }
-
-
+    },
 
 
 
@@ -1916,10 +1943,19 @@ let drugRestockInterval = 0; // Базовый интервал (будет пе
                 'sukhanov': { bg: ['#e8e8e8', '#d0d0d0'], border: '#b0b0b0', bedColor: '#c8c8c8', decor: 'sterile_rare' },
                 'arsenalnaya': { bg: ['#1a1a1f', '#0f0a0a'], border: '#3a2a2a', bedColor: '#2a1a1a', decor: 'maximum_security' },
 
-'kpbstin': { bg: ['#1a1a1a', '#0a0a0a'], border: '#3a2a2a', bedColor: '#2a1a1a', decor: 'maximum_security' },
+    'berezowa_roca': { 
+        bg: ['#2d4a2d', '#1a331a'], 
+        border: '#3a5a3a', 
+        bedColor: '#4a6a3a', 
+        decor: 'forest' 
+    },
 
-
-
+'kpbstin': { 
+        bg: ['#3a3a3a', '#2a2a2a'], 
+        border: '#5a4a3a', 
+        bedColor: '#4a3a2a', 
+        decor: 'prison' 
+    },
 
 
 
@@ -1997,6 +2033,16 @@ function getDiseasesForAvailableDrugs(availableDrugs, count, categoryFilter) {
 
 
 function getDiseasesWithWeights(availableDrugs, count, categoryFilter, categoryWeights) {
+  const levelName = currentLevel ? currentLevel.id : '';
+    
+    if (levelName === 'berezowa_roca') {
+        // Возвращаем только три указанные болезни
+        const specificDiseases = ALL_DISEASES.filter(d => 
+            ['F22.89', 'F22.8', 'F22.0'].includes(d.code) &&
+            availableDrugs.some(drug => d.treat.includes(drug))
+        );
+        return shuffleArray(specificDiseases.slice(0, count));
+    }
     // 1. Собираем все подходящие болезни
     let candidates = ALL_DISEASES.filter(function(disease) {
         var hasDrug = disease.treat.some(function(drug) {
@@ -3966,6 +4012,297 @@ nextRestockTime = Math.floor(Math.random() * (maxInterval - minInterval + 1)) + 
                 ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
                 
                 switch(decorType) {
+
+ 
+        case 'prison':
+            // 1. Тюремные решётки на стенах
+            ctx.strokeStyle = '#4a4a4a';
+            ctx.lineWidth = 3;
+            
+            // Вертикальные прутья решётки
+            for (let i = 0; i < 12; i++) {
+                const x = 20 + i * 75;
+                ctx.beginPath();
+                ctx.moveTo(x, 20);
+                ctx.lineTo(x, 530);
+                ctx.stroke();
+            }
+            
+            // Горизонтальные перекладины
+            for (let row = 0; row < 4; row++) {
+                const y = 60 + row * 120;
+                ctx.lineWidth = 4;
+                ctx.strokeStyle = '#5a4a3a';
+                ctx.beginPath();
+                ctx.moveTo(20, y);
+                ctx.lineTo(880, y);
+                ctx.stroke();
+            }
+            
+            // 2. Камеры/кровати с тюремной атрибутикой
+            for (let i = 0; i < 6; i++) {
+                const x = 60 + i * 140;
+                const y = 450;
+                
+                // Тюремная койка
+                ctx.fillStyle = '#3a3a3a';
+                ctx.fillRect(x - 15, y - 5, 30, 12);
+                ctx.strokeStyle = '#5a4a3a';
+                ctx.lineWidth = 1.5;
+                ctx.strokeRect(x - 15, y - 5, 30, 12);
+                
+                // Матрас
+                ctx.fillStyle = '#4a4a3a';
+                ctx.fillRect(x - 10, y - 3, 20, 4);
+                
+                // Подушка
+                ctx.fillStyle = '#5a5a4a';
+                ctx.beginPath();
+                ctx.ellipse(x - 8, y - 4, 6, 4, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Номер камеры
+                ctx.fillStyle = '#6a5a4a';
+                ctx.font = '10px "Courier New", monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText('КАМЕРА #' + (i + 1), x, y - 14);
+                
+                // Решётка на окне камеры
+                ctx.strokeStyle = '#4a4a4a';
+                ctx.lineWidth = 1.5;
+                const wx = x - 5;
+                const wy = y - 28;
+                ctx.strokeRect(wx, wy, 10, 10);
+                ctx.beginPath();
+                ctx.moveTo(wx + 5, wy);
+                ctx.lineTo(wx + 5, wy + 10);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(wx, wy + 5);
+                ctx.lineTo(wx + 10, wy + 5);
+                ctx.stroke();
+            }
+            
+            // 3. Колючая проволока вверху
+            ctx.strokeStyle = '#5a5a5a';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < 15; i++) {
+                const x = 30 + i * 60;
+                const y = 30 + Math.sin(i * 0.8) * 5;
+                // Спираль проволоки
+                ctx.beginPath();
+                ctx.arc(x, y, 6, 0, Math.PI * 1.5);
+                ctx.stroke();
+                // Шипы
+                ctx.fillStyle = '#6a6a6a';
+                for (let j = 0; j < 3; j++) {
+                    const angle = j * 1.2 + i * 0.3;
+                    const sx = x + Math.cos(angle) * 7;
+                    const sy = y + Math.sin(angle) * 7;
+                    ctx.beginPath();
+                    ctx.moveTo(sx, sy);
+                    ctx.lineTo(sx + Math.cos(angle - 0.3) * 3, sy + Math.sin(angle - 0.3) * 3);
+                    ctx.stroke();
+                }
+            }
+            
+            // 4. Охранные вышки по углам
+            for (let corner of [{x: 30, y: 30}, {x: 870, y: 30}]) {
+                // Столб вышки
+                ctx.fillStyle = '#4a4a4a';
+                ctx.fillRect(corner.x - 3, corner.y + 10, 6, 40);
+                
+                // Кабинка
+                ctx.fillStyle = '#3a3a3a';
+                ctx.fillRect(corner.x - 10, corner.y - 5, 20, 15);
+                ctx.strokeStyle = '#5a4a3a';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(corner.x - 10, corner.y - 5, 20, 15);
+                
+                // Крыша
+                ctx.fillStyle = '#5a4a3a';
+                ctx.beginPath();
+                ctx.moveTo(corner.x - 12, corner.y - 5);
+                ctx.lineTo(corner.x, corner.y - 12);
+                ctx.lineTo(corner.x + 12, corner.y - 5);
+                ctx.fill();
+                
+                // Прожектор
+                ctx.fillStyle = '#ffd700';
+                ctx.shadowColor = '#ffd700';
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.arc(corner.x, corner.y - 8, 3, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                
+                // Световой луч (полупрозрачный)
+                const gradient = ctx.createRadialGradient(
+                    corner.x, corner.y - 8, 2,
+                    corner.x + (corner.x > 400 ? -80 : 80), corner.y + 40, 100
+                );
+                gradient.addColorStop(0, 'rgba(255, 215, 0, 0.1)');
+                gradient.addColorStop(1, 'rgba(255, 215, 0, 0)');
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.moveTo(corner.x, corner.y - 8);
+                ctx.lineTo(corner.x + (corner.x > 400 ? -120 : 120), corner.y + 50);
+                ctx.lineTo(corner.x + (corner.x > 400 ? -80 : 80), corner.y + 50);
+                ctx.fill();
+            }
+            
+            // 5. Тюремные надписи
+            ctx.fillStyle = 'rgba(90, 74, 58, 0.3)';
+            ctx.font = 'bold 180px "Courier New", monospace';
+            ctx.textAlign = 'center';
+           // ctx.fillText('КПБСТИН', 450, 310);
+            
+            // 6. Колючая проволока на полу (декоративная)
+            ctx.strokeStyle = 'rgba(90, 90, 90, 0.2)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 10; i++) {
+                const x = 30 + i * 90;
+                ctx.beginPath();
+                ctx.moveTo(x, 520);
+                ctx.quadraticCurveTo(x + 20, 515, x + 40, 520);
+                ctx.stroke();
+            }
+            
+            // 7. Табличка "Строгий режим"
+            ctx.fillStyle = 'rgba(40, 40, 40, 0.7)';
+            ctx.fillRect(340, 520, 220, 25);
+            ctx.strokeStyle = '#6a5a4a';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(340, 520, 220, 25);
+            ctx.fillStyle = '#8a7a5a';
+            ctx.font = '12px "Courier New", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText('⚡ СТРОГИЙ РЕЖИМ СОДЕРЖАНИЯ ⚡', 450, 538);
+            break;
+    
+    
+
+
+
+
+
+
+ case 'forest':
+    // Рисуем деревья (фиксированные позиции)
+    const treePositions = [
+        { x: 30, y: 420 }, { x: 120, y: 435 }, { x: 200, y: 425 },
+        { x: 280, y: 440 }, { x: 360, y: 430 }, { x: 440, y: 420 },
+        { x: 520, y: 435 }, { x: 600, y: 425 }, { x: 680, y: 440 },
+        { x: 760, y: 430 }, { x: 840, y: 420 }
+    ];
+    
+    treePositions.forEach(function(pos, i) {
+        const x = pos.x;
+        const y = pos.y;
+        
+        // Ствол
+        ctx.fillStyle = '#3a2a1a';
+        ctx.fillRect(x - 3, y - 10, 6, 25);
+        
+        // Крона
+        ctx.fillStyle = i % 2 === 0 ? '#2d5a2d' : '#3a6a3a';
+        ctx.beginPath();
+        ctx.arc(x, y - 20, 18 + Math.sin(i * 1.2) * 5, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Светлые пятна на кроне
+        ctx.fillStyle = 'rgba(100,180,100,0.15)';
+        ctx.beginPath();
+        ctx.arc(x - 8, y - 25, 6, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Трава у подножия
+        ctx.fillStyle = '#3a6a2a';
+        for (let j = 0; j < 5; j++) {
+            const gx = x - 12 + j * 6 + Math.sin(j * 0.8) * 3;
+            ctx.fillRect(gx, y + 12, 2, 6 + Math.sin(j * 0.5 + i) * 2 + 4);
+        }
+    });
+    
+    // Рисуем кусты (фиксированные позиции)
+    const bushPositions = [
+        { x: 80, y: 440 }, { x: 220, y: 445 }, { x: 350, y: 438 },
+        { x: 480, y: 442 }, { x: 610, y: 436 }, { x: 740, y: 445 },
+        { x: 870, y: 440 }
+    ];
+    
+    bushPositions.forEach(function(pos, i) {
+        const x = pos.x;
+        const y = pos.y;
+        ctx.fillStyle = i % 2 === 0 ? '#3a6a3a' : '#4a7a4a';
+        ctx.beginPath();
+        ctx.arc(x, y, 12 + Math.sin(i) * 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#4a8a4a';
+        ctx.beginPath();
+        ctx.arc(x + 8, y - 4, 8 + Math.cos(i * 0.7) * 3, 0, Math.PI * 2);
+        ctx.fill();
+    });
+    
+    // Рисуем грибы с ФИКСИРОВАННЫМИ позициями
+    // Используем массив с заранее определёнными координатами
+    const mushroomPositions = [
+        { x: 100, y: 448 },
+        { x: 250, y: 452 },
+        { x: 400, y: 446 },
+        { x: 550, y: 450 },
+        { x: 700, y: 447 },
+        { x: 820, y: 452 }
+    ];
+    
+    mushroomPositions.forEach(function(pos) {
+        const x = pos.x;
+        const y = pos.y;
+        
+        // Ножка
+        ctx.fillStyle = '#c4a882';
+        ctx.fillRect(x - 1, y, 2, 8);
+        
+        // Шляпка
+        ctx.fillStyle = '#8a3a2a';
+        ctx.beginPath();
+        ctx.ellipse(x, y - 2, 6, 4, 0, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Точки на шляпке
+        ctx.fillStyle = '#ffd700';
+        // Фиксированные точки вместо случайных
+        const dotPositions = [
+            { dx: -3, dy: -4 },
+            { dx: 0, dy: -5 },
+            { dx: 3, dy: -4 }
+        ];
+        dotPositions.forEach(function(dot) {
+            ctx.beginPath();
+            ctx.arc(x + dot.dx, y + dot.dy, 1.5, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    });
+    break;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                     case 'flowers':
                         for (let i = 0; i < 3; i++) { 
                             const x = 150 + i * 200, y = 420;
@@ -5529,5 +5866,9 @@ document.addEventListener('contextmenu', function(e) {
 
 
     </script>
+
+<script>
+   
+</script>
 </body>
 </html>
