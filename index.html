@@ -1550,29 +1550,7 @@ let nextRestockTime = 0;
         staffLimits: { orderlies2: 8, nurses: 7, orderlies: 5, ect: 1 },
         theme: 'kandinsky' 
     },
- { 
-        id: 'marata', 
-        name: 'Амурская', 
-        desc: 'Сексуальные растройства', 
-        diseaseCategory: 'sexual',
-        categoryWeights: {
-  
-            'sexual':100
-        },
-        fightChance: 0.015, 
-        spawnInterval: 8, 
-        drugPrice: 22, 
-        drugLimit: 5, 
-        taskTarget: 14, 
-        maxPatients: 7,
-        healthRange: [15, 45], 
-        unlocked: false, 
-        requiredLevel: 'kandinsky', 
-        availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], 
-        diseaseCount: 30, 
-        staffLimits: { orderlies2: 5, nurses: 5, orderlies: 5, ect: 1 },
-        theme: 'marata' 
-    },
+
     { 
         id: 'arsenalnaya', 
         name: 'Арсенальная', 
@@ -1593,7 +1571,7 @@ let nextRestockTime = 0;
         drugLimit: 100, 
         taskTarget: 12, 
         maxPatients: 7,
-        healthRange: [5, 30], 
+        healthRange: [15, 30], 
         unlocked: false, 
         requiredLevel: 'kandinsky', 
         availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], 
@@ -1621,7 +1599,7 @@ let nextRestockTime = 0;
         drugLimit: 100, 
         taskTarget: 13, 
         maxPatients: 7,
-        healthRange: [5, 30], 
+        healthRange: [13, 30], 
         unlocked: false, 
         requiredLevel: 'arsenalnaya', 
         availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], 
@@ -1634,7 +1612,29 @@ let nextRestockTime = 0;
 
 
 
-
+ { 
+        id: 'amur', 
+        name: 'Амурская', 
+        desc: 'Сексуальные растройства', 
+        diseaseCategory: 'sexual',
+        categoryWeights: {
+  
+            'sexual':100
+        },
+        fightChance: 0.015, 
+        spawnInterval: 8, 
+        drugPrice: 22, 
+        drugLimit: 5, 
+        taskTarget: 14, 
+        maxPatients: 7,
+        healthRange: [15, 45], 
+        unlocked: false, 
+        requiredLevel: 'sosnovy_bor', 
+        availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], 
+        diseaseCount: 30, 
+        staffLimits: { orderlies2: 5, nurses: 5, orderlies: 5, ect: 1 },
+        theme: 'amur' 
+    },
 
  { 
         id: 'kpbstin', 
@@ -1656,7 +1656,7 @@ let nextRestockTime = 0;
         drugLimit: 100, 
         taskTarget: 15, 
         maxPatients: 7,
-        healthRange: [5, 30], 
+        healthRange: [10, 30], 
         unlocked: false, 
         requiredLevel: 'arsenalnaya', 
         availableDrugs: ['глицин', 'флуоксетин', 'аминазин', 'кветиапин', 'оланзапин', 'галоперидол', 'рисперидон', 'клозапин', 'седалит', 'циклодол'], 
@@ -2021,11 +2021,11 @@ let drugRestockInterval = 0; // Базовый интервал (будет пе
                 'sukhanov': { bg: ['#e8e8e8', '#d0d0d0'], border: '#b0b0b0', bedColor: '#c8c8c8', decor: 'sterile_rare' },
                 'arsenalnaya': { bg: ['#1a1a1f', '#0f0a0a'], border: '#3a2a2a', bedColor: '#2a1a1a', decor: 'maximum_security' },
  
-    'marata': { 
+    'amur': { 
         bg: ['#fce4ec', '#f8bbd0'],  // Нежно-розовый
         border: '#ad1457',  // Тёмно-розовый
         bedColor: '#e91e63',  // Ярко-розовые кровати
-        decor: 'marata'  // ← Указываем новый тип декора
+        decor: 'amur'  // ← Указываем новый тип декора
     },
 
     'sosnovy_bor': { 
@@ -4267,7 +4267,7 @@ nextRestockTime = Math.floor(Math.random() * (maxInterval - minInterval + 1)) + 
                 ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
                 
                 switch(decorType) {
-  case 'marata':
+  case 'amur':
             // === 1. Розовый пол с намёками ===
             for (let i = 0; i < 12; i++) {
                 for (let j = 0; j < 6; j++) {
