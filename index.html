@@ -1012,18 +1012,6 @@ body{  cursor: url('cur.png') 10 12, auto !important;}
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 <div id="bookEntries"></div><button class="book-close" id="bookCloseBtn">Закрыть</button></div></div>
 
             <!-- TECH TREE MODAL -->
@@ -1247,21 +1235,103 @@ let nextRestockTime = 0;
             resizeGame();
 
             // === DATA ===
+            // ПСИХИАТРЫ С ВСЕМИ СПОСОБНОСТЯМИ (ПОЛНАЯ ВЕРСИЯ)
             const PSYCHIATRISTS = [
-                { name: 'Фрейд', ability: '+10% к лечению неврозов', iq: 85, empathy: 80, speed: 1.0, bonus: { type: 'neurosis', value: 10 } },
-                { name: 'Крепелин', ability: '+20% к лечению всех видов шизофрении', iq: 89, empathy: 65, speed: 0.75, bonus: { type: 'schizophrenia', value: 20 } },
-                { name: 'Юнг', ability: '+15% к лечению психосоматических расстройств', iq: 88, empathy: 78, speed: 0.95, bonus: { type: 'psychosomatic', value: 15 } },
-                { name: 'Блейлер', ability: '+10% к лечению шизотипических расстройств', iq: 79, empathy: 70, speed: 0.85, bonus: { type: 'schizotypal', value: 10 } },
-                { name: 'Абрахам', ability: '+20% к лечению депрессивных эпизодов', iq: 76, empathy: 88, speed: 0.8, bonus: { type: 'depression', value: 20 } },
-                { name: 'Салливан', ability: '+15% к лечению тревожных расстройств', iq: 81, empathy: 75, speed: 0.9, bonus: { type: 'anxiety', value: 15 } },
-                { name: 'Майер', ability: '+20% к лечению расстройств личности', iq: 70, empathy: 82, speed: 0.75, bonus: { type: 'personality', value: 20 } },
-                { name: 'Шнайдер', ability: '+15% к лечению бредовых расстройств', iq: 89, empathy: 60, speed: 0.85, bonus: { type: 'delusional', value: 15 } },
-                { name: 'Райх', ability: '+20% к лечению психосексуальных расстройств', iq: 73, empathy: 79, speed: 0.8, bonus: { type: 'sexual', value: 20 } },
-                { name: 'Линч', ability: '+15% к лечению детских расстройств развития', iq: 68, empathy: 90, speed: 0.7, bonus: { type: 'developmental', value: 15 } },
-                { name: 'Личко', ability: '+25% к лечению психопатий', iq: 78, empathy: 72, speed: 0.85, bonus: { type: 'personality', value: 25 } },
-                { name: 'Лабори', ability: '+25% к эффективности аминазина', iq: 82, empathy: 70, speed: 0.8, bonus: { type: 'aminazine', value: 25 } }
+                { 
+                    name: 'Фрейд', 
+                    ability: 'Толкование сновидений - пациенты спят лучше на 30%', 
+                    iq: 85, empathy: 80, speed: 0.9, 
+                    bonus: { type: 'sleep_boost', value: 0.3 } 
+                },
+                { 
+                    name: 'Крепелин', 
+                    ability: 'Дихотомия Крепелина - лечение биполярников и деменции эффективнее на 30%', 
+                    iq: 89, empathy: 65, speed: 0.75, 
+                    bonus: { type: 'category_boost', category: 'dementia', value: 0.3 } 
+                },
+                { 
+                    name: 'Юнг', 
+                    ability: 'Коллективное бессознательное - уменьшает драки среди пациентов на 30%', 
+                    iq: 88, empathy: 78, speed: 0.95, 
+                    bonus: { type: 'fight_reduction', value: 0.3 } 
+                },
+                { 
+                    name: 'Блейлер', 
+                    ability: 'Амбивалентность - пациенты с шизофренией не дерутся', 
+                    iq: 79, empathy: 70, speed: 0.85, 
+                    bonus: { type: 'schizophrenia_no_fight', value: 1 } 
+                },
+                { 
+                    name: 'Абрахам', 
+                    ability: 'Нарциссизм - пациенты с сексуальными расстройствами теряют здоровье медленнее на 30%', 
+                    iq: 76, empathy: 88, speed: 0.8, 
+                    bonus: { type: 'health_decay_reduction', category: 'sexual', value: 0.3 } 
+                },
+                { 
+                    name: 'Салливан', 
+                    ability: 'Значимый другой - каждый ординатор приносит дополнительное очко психиатрии', 
+                    iq: 81, empathy: 75, speed: 0.9, 
+                    bonus: { type: 'orderly_extra_score', value: 1 } 
+                },
+                { 
+                    name: 'Мейер', 
+                    ability: 'Петля Майера - увеличивает количество получаемых очков исследований на 30%', 
+                    iq: 70, empathy: 82, speed: 0.75, 
+                    bonus: { type: 'tech_points_boost', value: 0.3 } 
+                },
+                { 
+                    name: 'Шнайдер', 
+                    ability: 'Соматическая пассивность - уменьшает силу побочных эффектов на 30%', 
+                    iq: 89, empathy: 60, speed: 0.85, 
+                    bonus: { type: 'side_effect_reduction', value: 0.3 } 
+                },
+                { 
+                    name: 'Райх', 
+                    ability: 'Мышечный панцирь - уменьшает потерю здоровья от драк на 30%', 
+                    iq: 73, empathy: 79, speed: 0.8, 
+                    bonus: { type: 'fight_damage_reduction', value: 0.3 } 
+                },
+                { 
+                    name: 'Фримен', 
+                    ability: 'Лоботомия - вместо ЭСТ позволяет делать лоботомию — тот же эффект, но навсегда. Перезаряжается 30 секунд.', 
+                    iq: 70, empathy: 50, speed: 0.9, 
+                    bonus: { type: 'lobotomy', value: 1 } 
+                },
+                { 
+                    name: 'Личко', 
+                    ability: 'Акцентуации - увеличивает эффективность ординаторов на 30%', 
+                    iq: 78, empathy: 72, speed: 0.85, 
+                    bonus: { type: 'orderly_efficiency', value: 0.3 } 
+                },
+                { 
+                    name: 'Лабори', 
+                    ability: 'Средство от шока - уменьшает стоимость ЭСТ на 30%', 
+                    iq: 82, empathy: 70, speed: 0.8, 
+                    bonus: { type: 'ect_cost_reduction', value: 0.3 } 
+                }
             ];
-const LEVELS = [
+            
+            // ===== ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ДЛЯ ПРИМЕНЕНИЯ БОНУСОВ ВРАЧА =====
+            function applyDoctorBonus(bonusType, context, value) {
+                if (!selectedDoc || !selectedDoc.bonus) return value;
+                const bonus = selectedDoc.bonus;
+                
+                // Проверяем, что бонус соответствует типу
+                if (bonus.type !== bonusType) return value;
+                
+                // Для категорийных бонусов проверяем категорию
+                if (bonusType === 'category_boost' && bonus.category) {
+                    if (context.category !== bonus.category) return value;
+                }
+                if (bonusType === 'health_decay_reduction' && bonus.category) {
+                    if (context.category !== bonus.category) return value;
+                }
+                
+                // Применяем бонус
+                return value * (1 + bonus.value);
+            }
+
+            const LEVELS = [
   { 
     id: 'bechtereva', 
     name: 'Бехтерева', 
@@ -1565,6 +1635,7 @@ const LEVELS = [
 
 
 
+
  { 
         id: 'kpbstin', 
         name: 'КПБСТИН', 
@@ -1594,28 +1665,7 @@ const LEVELS = [
         theme: 'kpbstin' 
     },
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ];
-
-
-
-
 
 
 // 1. СНАЧАЛА ALL_DRUGS
@@ -1631,25 +1681,6 @@ const ALL_DRUGS = [
     { name: 'седалит', color: '#ff8a65', sideEffect: 'угнетение ЦНС, привыкание', price: 8, rarity: 3 },
     { name: 'циклодол', color: '#aed581', sideEffect: 'запор, сухость во рту', price: 6, rarity: 3 }
 ];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
             // ТЕХНОЛОГИИ
@@ -1798,77 +1829,50 @@ const ALL_DRUGS = [
     { code: 'F64.9', name: 'Гендерное расстройство неуточнённое', treat: ['флуоксетин', 'кветиапин', 'глицин'], weight: 2, category: 'sexual', severity: 2, gender: 'neutral' }
 ];
 
-           
 
+            // === РАСЧЁТ ИНТЕРВАЛА ПОПОЛНЕНИЯ ДЛЯ КАЖДОГО ПРЕПАРАТА ===
+            function getDrugRestockInterval(drugName, level) {
+                if (!level) return 10;
+                
+                const levelIndex = LEVELS.findIndex(l => l.id === level.id);
+                const totalLevels = LEVELS.length;
+                
+                // Базовый интервал: от 10 сек (Бехтерева) до 3 сек (Арсенальная)
+                let baseInterval = 20 - (levelIndex / (totalLevels - 1)) * 7;
+                baseInterval = Math.max(3, Math.min(20, baseInterval));
+                
+                // Учитываем редкость препарата
+                const drug = ALL_DRUGS.find(d => d.name === drugName);
+                let rarityMultiplier = 1;
+                if (drug) {
+                    if (drug.rarity === 1) rarityMultiplier = 1.0;   // Обычные
+                    if (drug.rarity === 2) rarityMultiplier = 1.8;   // Редкие
+                    if (drug.rarity === 3) rarityMultiplier = 3.0;   // Очень редкие
+                }
+                
+                // Дополнительные модификаторы для конкретных уровней
+                if (level.id === 'bechtereva') return Math.floor(baseInterval * 1.5 * rarityMultiplier);
+                if (level.id === 'arsenalnaya') return Math.floor(baseInterval * 0.7 * rarityMultiplier);
+                if (level.id === 'kandinsky') return Math.floor(baseInterval * 0.8 * rarityMultiplier);
+                if (level.id === 'kashchenko') return Math.floor(baseInterval * 0.9 * rarityMultiplier);
+                
+                return Math.floor(baseInterval * rarityMultiplier);
+            }
 
-
-
-
-
-
-
-// === РАСЧЁТ ИНТЕРВАЛА ПОПОЛНЕНИЯ ДЛЯ КАЖДОГО ПРЕПАРАТА ===
-function getDrugRestockInterval(drugName, level) {
-    if (!level) return 10;
-    
-    const levelIndex = LEVELS.findIndex(l => l.id === level.id);
-    const totalLevels = LEVELS.length;
-    
-    // Базовый интервал: от 10 сек (Бехтерева) до 3 сек (Арсенальная)
-    let baseInterval = 20 - (levelIndex / (totalLevels - 1)) * 7;
-    baseInterval = Math.max(3, Math.min(20, baseInterval));
-    
-    // Учитываем редкость препарата
-    const drug = ALL_DRUGS.find(d => d.name === drugName);
-    let rarityMultiplier = 1;
-    if (drug) {
-        if (drug.rarity === 1) rarityMultiplier = 1.0;   // Обычные
-        if (drug.rarity === 2) rarityMultiplier = 1.8;   // Редкие
-        if (drug.rarity === 3) rarityMultiplier = 3.0;   // Очень редкие
-    }
-    
-    // Дополнительные модификаторы для конкретных уровней
-    if (level.id === 'bechtereva') return Math.floor(baseInterval * 1.5 * rarityMultiplier);
-    if (level.id === 'arsenalnaya') return Math.floor(baseInterval * 0.7 * rarityMultiplier);
-    if (level.id === 'kandinsky') return Math.floor(baseInterval * 0.8 * rarityMultiplier);
-    if (level.id === 'kashchenko') return Math.floor(baseInterval * 0.9 * rarityMultiplier);
-    
-    return Math.floor(baseInterval * rarityMultiplier);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function getTimeText() {
-    if (timeOfDay >= 300 && timeOfDay < 600) return '🌅 Утро';
-    if (timeOfDay >= 600 && timeOfDay < 1800) return '☀️ День';
-    if (timeOfDay >= 1800 && timeOfDay < 2100) return '🌅 Вечер';
-    return '🌙 Ночь';
-}
-function getDrugMaxLimit(drugName, level) {
-    if (!level) return 50;
-    
-    const drug = ALL_DRUGS.find(d => d.name === drugName);
-    if (!drug) return 20;
-    
-    const rarity = drug.rarity || 1;
-    
+            function getTimeText() {
+                if (timeOfDay >= 300 && timeOfDay < 600) return '🌅 Утро';
+                if (timeOfDay >= 600 && timeOfDay < 1800) return '☀️ День';
+                if (timeOfDay >= 1800 && timeOfDay < 2100) return '🌅 Вечер';
+                return '🌙 Ночь';
+            }
+            function getDrugMaxLimit(drugName, level) {
+                if (!level) return 50;
+                
+                const drug = ALL_DRUGS.find(d => d.name === drugName);
+                if (!drug) return 20;
+                
+                const rarity = drug.rarity || 1;
+                
 
 
 
@@ -1896,16 +1900,8 @@ case "циклодол":return 15
 
 
 
-
-
-
-
     // === ДЛЯ АРСЕНАЛЬНОЙ — фиксированные большие лимиты ===
     if (level.id === 'bechtereva') {
-
-
-
-
 
 
 
@@ -2046,14 +2042,6 @@ let drugRestockInterval = 0; // Базовый интервал (будет пе
         decor: 'prison' 
     },
 
-
-
-
-
-
-
-
-
             };
  
 
@@ -2116,12 +2104,7 @@ function getDiseasesForAvailableDrugs(availableDrugs, count, categoryFilter) {
 }
 
 
-
-
-
-
-
-function getDiseasesWithWeights(availableDrugs, count, categoryFilter, categoryWeights) {
+            function getDiseasesWithWeights(availableDrugs, count, categoryFilter, categoryWeights) {
   const levelName = currentLevel ? currentLevel.id : '';
     
     if (levelName === 'sosnovy_bor') {
@@ -2199,8 +2182,6 @@ function getDiseasesWithWeights(availableDrugs, count, categoryFilter, categoryW
     candidates = shuffleArray(candidates.slice());
     return candidates.slice(0, Math.min(count, candidates.length));
 }
-
-
 
 
             function getAvailableDrugsForLevel(level) {
@@ -2635,6 +2616,13 @@ function applyTechEffect(tech) {
                         total += techEffects.atypicalBoost;
                     }
                 }
+                
+                // === БОНУС ОТ ВРАЧА (Крепелин) ===
+                if (selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'category_boost' && 
+                    selectedDoc.bonus.category === 'dementia' && disease && disease.category === 'dementia') {
+                    total += selectedDoc.bonus.value;
+                }
+                
                 return total;
             }
 
@@ -2642,15 +2630,36 @@ function applyTechEffect(tech) {
             function getFightReduction() { 
                 let reduction = techEffects.fightReduction || 0;
                 if (techEffects.forensicBoost) reduction += techEffects.forensicBoost;
+                
+                // === БОНУС ОТ ВРАЧА (Юнг) ===
+                if (selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'fight_reduction') {
+                    reduction += selectedDoc.bonus.value;
+                }
+                
                 return reduction;
             }
             function getSideEffectReduction() { 
                 let reduction = techEffects.sideEffectReduction || 0;
                 if (techEffects.affinityBoost) reduction = 1;
-                return reduction;
+                
+                // === БОНУС ОТ ВРАЧА (Шнайдер) ===
+                if (selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'side_effect_reduction') {
+                    reduction += selectedDoc.bonus.value;
+                }
+                
+                return Math.min(1, reduction);
             }
             function getCircadianBoost() { return techEffects.circadianBoost || 0; }
-            function getOrderlyBoost() { return (techEffects.orderlyBoost || 0) + (techEffects.staffBoost || 0); }
+            function getOrderlyBoost() { 
+                let boost = (techEffects.orderlyBoost || 0) + (techEffects.staffBoost || 0);
+                
+                // === БОНУС ОТ ВРАЧА (Личко) ===
+                if (selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'orderly_efficiency') {
+                    boost += selectedDoc.bonus.value;
+                }
+                
+                return boost;
+            }
             function getNurseBonus() { 
                 let bonus = nurseCount * 0.05;
                 if (techEffects.staffBoost) bonus += bonus * techEffects.staffBoost;
@@ -2659,6 +2668,17 @@ function applyTechEffect(tech) {
             function getOrderlyBonus() { 
                 let bonus = orderlyCount * 0.5;
                 if (techEffects.staffBoost) bonus += bonus * techEffects.staffBoost;
+                
+                // === БОНУС ОТ ВРАЧА (Салливан) ===
+                if (selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'orderly_extra_score') {
+                    bonus += orderlyCount * selectedDoc.bonus.value;
+                }
+                
+                // === БОНУС ОТ ВРАЧА (Личко) ===
+                if (selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'orderly_efficiency') {
+                    bonus = bonus * (1 + selectedDoc.bonus.value);
+                }
+                
                 return bonus;
             }
             function getOrderly2Bonus() { 
@@ -2666,6 +2686,40 @@ function applyTechEffect(tech) {
                 if (techEffects.staffBoost) bonus += bonus * techEffects.staffBoost;
                 if (techEffects.orderlyBoost) bonus += bonus * techEffects.orderlyBoost;
                 return bonus;
+            }
+            
+            // === БОНУС ОТ ВРАЧА (Абрахам) ===
+            function getHealthDecayReduction(category) {
+                if (selectedDoc && selectedDoc.bonus && 
+                    selectedDoc.bonus.type === 'health_decay_reduction' && 
+                    selectedDoc.bonus.category === category) {
+                    return selectedDoc.bonus.value;
+                }
+                return 0;
+            }
+            
+            // === БОНУС ОТ ВРАЧА (Фрейд) ===
+            function getSleepBoost() {
+                if (selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'sleep_boost') {
+                    return selectedDoc.bonus.value;
+                }
+                return 0;
+            }
+            
+            // === БОНУС ОТ ВРАЧА (Райх) ===
+            function getFightDamageReduction() {
+                if (selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'fight_damage_reduction') {
+                    return selectedDoc.bonus.value;
+                }
+                return 0;
+            }
+            
+            // === БОНУС ОТ ВРАЧА (Мейер) ===
+            function getTechPointsBoost() {
+                if (selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'tech_points_boost') {
+                    return selectedDoc.bonus.value;
+                }
+                return 0;
             }
 
             function hireOrderly2() {
@@ -2705,8 +2759,20 @@ function applyTechEffect(tech) {
                 if (gameOver || isPaused) return;
                 if (maxEct === 0) { statusMessage = '❌ Прибор ЭСТ не доступен на этом уровне'; updateUI(); return; }
                 if (ectCount >= maxEct) { statusMessage = '❌ У вас уже есть прибор ЭСТ'; updateUI(); return; }
-                if (score < 40) { statusMessage = '❌ Недостаточно очков! Нужно 40 Ψ'; updateUI(); return; }
-                score -= 40;
+                
+                // === БОНУС ОТ ВРАЧА (Лабори) ===
+                let ectCost = 40;
+                if (selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'ect_cost_reduction') {
+                    ectCost = Math.floor(ectCost * (1 - selectedDoc.bonus.value));
+                    if (ectCost < 1) ectCost = 1;
+                }
+                
+                if (score < ectCost) { 
+                    statusMessage = '❌ Недостаточно очков! Нужно ' + ectCost + ' Ψ (скидка от Лабори)'; 
+                    updateUI(); 
+                    return; 
+                }
+                score -= ectCost;
                 ectCount++;
                 statusMessage = '⚡ Прибор ЭСТ готов к использованию! Нажмите кнопку в панели персонала.';
                 updateUI();
@@ -2719,10 +2785,15 @@ function applyTechEffect(tech) {
                 if (ectTimer > 0) { statusMessage = '⏳ ЭСТ уже применяется к пациенту!'; updateUI(); return; }
                 if (isEctSelectMode) { statusMessage = '⚡ Уже в режиме выбора пациента для ЭСТ.'; updateUI(); return; }
                 
-                // Входим в режим выбора пациента
+                // === БОНУС ОТ ВРАЧА (Фримен) ===
+                if (selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'lobotomy') {
+                    statusMessage = '⚡ Режим лоботомии (Фримен): выберите пациента для лоботомии!';
+                } else {
+                    statusMessage = '⚡ Выберите пациента для ЭСТ (кликните по нему)';
+                }
+                
                 isEctSelectMode = true;
-                statusMessage = '⚡ Выберите пациента для ЭСТ (кликните по нему)';
-                document.getElementById('diagnosisDisplay').innerHTML = '⚡ Выберите цель для ЭСТ';
+                document.getElementById('diagnosisDisplay').innerHTML = '⚡ Выберите цель для ' + (selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'lobotomy' ? 'ЛОБОТОМИИ' : 'ЭСТ');
                 updateUI();
             }
 
@@ -2753,17 +2824,55 @@ function applyTechEffect(tech) {
         return;
     }
 
-    // Применяем ЭСТ
-  ectTarget = patient;
-ectTimer = 300;
-patient.isEct = true;
-patient.ectTimer = 300;
-patient.ectHealBoost = 0.2;
-patient.ectOriginalHealBoost = getTotalHealBoost(patient.disease);
-patient.isEctStunned = true;
-patient.noSideEffects = true;  // ⬅️ ЭТУ СТРОЧКУ ДОБАВИТЬ
+    // === БОНУС ОТ ВРАЧА (Фримен) — ЛОБОТОМИЯ ===
+    const isLobotomy = selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'lobotomy';
     
-    // ⭐ НОВОЕ: автоматически выделяем пациента для лечения
+    if (isLobotomy) {
+        // Лоботомия: пациент становится безнадёжным навсегда
+        patient.isLobotomized = true;
+        patient.isEct = true;
+        patient.isEctStunned = true;
+        patient.ectTimer = 999999; // Навсегда
+        patient.ectHealBoost = 0;
+        patient.noSideEffects = true;
+        patient.isLobotomy = true;
+        patient.state = 'lobotomized'; // Новое состояние
+        patient.health = Math.min(patient.health, 30); // Почти овощ
+        
+        // Обездвиживаем
+        patient.targetX = patient.x;
+        patient.targetY = patient.y;
+        
+        statusMessage = '🧠 ' + patient.name + ' лоботомирован (Фримен)! Пациент потерян навсегда. -10 Ψ!';
+        score = Math.max(0, score - 10);
+        ectTimer = 1800; // 30 секунд перезарядки
+        
+        isEctSelectMode = false;
+        updateUI();
+        renderDrugPanel();
+        
+        // Проверяем, не конец ли игры
+        if (curedCount >= taskTarget && !levelCompleted && !gameOver) {
+            levelCompleted = true;
+            statusMessage = '🎉 УРОВЕНЬ ПРОЙДЕН! +50 бонусных очков!';
+            score += 50;
+            techPoints += 10;
+            completeLevel(currentLevel.id);
+            updateUI();
+        }
+        return;
+    }
+
+    // Обычная ЭСТ
+    ectTarget = patient;
+    ectTimer = 300;
+    patient.isEct = true;
+    patient.ectTimer = 300;
+    patient.ectHealBoost = 0.2;
+    patient.ectOriginalHealBoost = getTotalHealBoost(patient.disease);
+    patient.isEctStunned = true;
+    patient.noSideEffects = true;
+    
     selectedPatient = patient;
     document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + patient.disease.code + ' ' + patient.disease.name;
     
@@ -2818,15 +2927,22 @@ patient.noSideEffects = true;  // ⬅️ ЭТУ СТРОЧКУ ДОБАВИТЬ
                 } else {
                     if (ectCount >= maxEct) {
                         if (ectTimer > 0) {
-                            ectBtn.textContent = '⏳ ' + Math.ceil(ectTimer/60) + 'с';
+                            const timeLeft = Math.ceil(ectTimer/60);
+                            ectBtn.textContent = '⏳ ' + timeLeft + 'с';
                             ectBtn.disabled = true;
                         } else {
-                            ectBtn.textContent = '⚡ Применить ЭСТ';
+                            const isLobotomy = selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'lobotomy';
+                            ectBtn.textContent = isLobotomy ? '🧠 Лоботомия' : '⚡ Применить ЭСТ';
                             ectBtn.disabled = false;
                         }
                     } else {
-                        ectBtn.textContent = '40Ψ';
-                        ectBtn.disabled = score < 40 || gameOver || isPaused;
+                        let ectCost = 40;
+                        if (selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'ect_cost_reduction') {
+                            ectCost = Math.floor(ectCost * (1 - selectedDoc.bonus.value));
+                            if (ectCost < 1) ectCost = 1;
+                        }
+                        ectBtn.textContent = ectCost + 'Ψ';
+                        ectBtn.disabled = score < ectCost || gameOver || isPaused;
                     }
                 }
             }
@@ -3203,7 +3319,9 @@ let levelScore = 0;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
                     shakeX: 0, shakeY: 0, stuckCounter: 0,
                     isEct: false, ectTimer: 0, isEctStunned: false, ectHealBoost: 0,
                     ectOriginalHealBoost: 0,
-  noSideEffects: false  // ⬅️ ЭТУ СТРОЧКУ ДОБАВИТЬ
+                    noSideEffects: false,
+                    isLobotomized: false,
+                    isLobotomy: false
                 };
             }
 
@@ -3214,7 +3332,7 @@ let levelScore = 0;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
             }
 
             function movePatient(p) {
-                if (p.isSleeping || p.isFighting || p.state === 'healed' || p.isEctStunned) return;
+                if (p.isSleeping || p.isFighting || p.state === 'healed' || p.isEctStunned || p.isLobotomized) return;
                 const dx = p.targetX - p.x, dy = p.targetY - p.y;
                 const distance = Math.hypot(dx, dy);
                 if (distance < 2) {
@@ -3230,7 +3348,7 @@ let levelScore = 0;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
                 let blocked = false;
                 for (let other of patients) {
                     if (other === p || other.state === 'healed') continue;
-                    if (other.isSleeping || other.isFighting || other.isEctStunned) continue;
+                    if (other.isSleeping || other.isFighting || other.isEctStunned || other.isLobotomized) continue;
                     if (Math.hypot(newX - other.x, newY - other.y) < MIN_PATIENT_DISTANCE - 5) {
                         blocked = true; break;
                     }
@@ -3247,7 +3365,7 @@ let levelScore = 0;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
             }
 
             function resolveCollisions() {
-                const active = patients.filter(p => p.state !== 'healed' && !p.isSleeping && !p.isFighting && !p.isEctStunned);
+                const active = patients.filter(p => p.state !== 'healed' && !p.isSleeping && !p.isFighting && !p.isEctStunned && !p.isLobotomized);
                 for (let iter = 0; iter < MAX_SEPARATION_ITERATIONS; iter++) {
                     let moved = false;
                     for (let i = 0; i < active.length; i++) {
@@ -3272,7 +3390,7 @@ let levelScore = 0;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
 
             // === ФУНКЦИИ ОТОБРАЖЕНИЯ ===
             function showTooltip(patient, x, y) {
-                if (isPaused || gameOver || !patient || patient.state === 'healed') {
+                if (isPaused || gameOver || !patient || patient.state === 'healed' || patient.isLobotomized) {
                     tooltip.style.display = 'none';
                     return;
                 }
@@ -3284,7 +3402,8 @@ let levelScore = 0;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
                 tipDrugs.textContent = '💊 Лечить: ' + (availableTreat.length > 0 ? availableTreat.join(', ') : '❌ Нет доступных препаратов!');
                 
                 let status = '🟢 Ожидает';
-                if (patient.isSleeping) status = '💤 Спит';
+                if (patient.isLobotomized) status = '🧠 Лоботомирован (безнадёжен)';
+                else if (patient.isSleeping) status = '💤 Спит';
                 else if (patient.isFighting) status = '⚔️ Дерётся';
                 else if (patient.isInjectedSleep) status = '💉 Усыплён';
                 else if (patient.isEct) status = '⚡ ЭСТ (' + Math.ceil(patient.ectTimer/60) + 'с)';
@@ -3347,9 +3466,18 @@ let levelScore = 0;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
 
             function startFight(p1, p2) {
                 if (gameOver) return;
+                
+                // === БОНУС ОТ ВРАЧА (Блейлер) ===
+                if (selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'schizophrenia_no_fight') {
+                    if (p1.disease.category === 'schizophrenia' || p2.disease.category === 'schizophrenia') {
+                        statusMessage = '🕊️ Шизофреники не дерутся (Блейлер)!';
+                        return;
+                    }
+                }
+                
                 const fightReduction = getFightReduction();
                 if (Math.random() < fightReduction) {
-                    statusMessage = '🕊️ Конфликт между ' + p1.name + ' и ' + p2.name + ' предотвращён (судебная психиатрия)!';
+                    statusMessage = '🕊️ Конфликт между ' + p1.name + ' и ' + p2.name + ' предотвращён!';
                     return;
                 }
                 if (p1.isFighting || p2.isFighting) return;
@@ -3361,12 +3489,22 @@ let levelScore = 0;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
 
             function processFight(p1, p2) {
                 if (gameOver) return;
-                if (p1.state === 'healed' || p2.state === 'healed') { p1.isFighting = false; p2.isFighting = false; p1.fightTarget = null; p2.fightTarget = null; return }
+                if (p1.state === 'healed' || p2.state === 'healed' || p1.isLobotomized || p2.isLobotomized) { 
+                    p1.isFighting = false; p2.isFighting = false; p1.fightTarget = null; p2.fightTarget = null; 
+                    return; 
+                }
                 p1.fightTimer--; p2.fightTimer--;
                 if (p1.fightTimer % 10 === 0) {
                     let damage = 1 + Math.floor(Math.random() * 2);
                     if (currentLevel && currentLevel.id === 'bechtereva') {
                         damage = Math.floor(damage * 0.4);
+                        if (damage < 1) damage = 1;
+                    }
+                    
+                    // === БОНУС ОТ ВРАЧА (Райх) ===
+                    const fightDamageReduction = getFightDamageReduction();
+                    if (fightDamageReduction > 0) {
+                        damage = Math.floor(damage * (1 - fightDamageReduction));
                         if (damage < 1) damage = 1;
                     }
 
@@ -3412,7 +3550,7 @@ let levelScore = 0;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
             }
 
             function applyDrug(patient, drugName) {
-                if (gameOver || !patient || patient.state === 'healed') return false;
+                if (gameOver || !patient || patient.state === 'healed' || patient.isLobotomized) return false;
                 if (patient.isSleeping) { 
                     if (techEffects.nursingCare && nurseCount > 0) {
                         patient.isSleeping = false;
@@ -3447,66 +3585,63 @@ let levelScore = 0;  // ← ДОБАВИТЬ ЭТУ СТРОКУ
                 const nurseBonus = 1 + getNurseBonus();
                 healAmount = healAmount * nurseBonus;
 
-                if (selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'aminazine' && drugName === 'аминазин') {
-                    healAmount = healAmount * (1 + selectedDoc.bonus.value / 100);
-                }
-
-                if (selectedDoc && selectedDoc.bonus) {
-                    const bonus = selectedDoc.bonus;
-                    if (disease.category === bonus.type) {
-                        healAmount += bonus.value / 100 * 10;
-                    }
+                if (selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'category_boost' && 
+                    selectedDoc.bonus.category === 'dementia' && disease.category === 'dementia') {
+                    healAmount = healAmount * (1 + selectedDoc.bonus.value);
                 }
 
                 healAmount = Math.max(1, healAmount);
                 healAmount = Math.min(35, healAmount);
 
                 drugInventory[drugName]--;
-let sideEffectMessage = '';
-const drugInfo = ALL_DRUGS.find(d => d.name === drugName);
+                let sideEffectMessage = '';
+                const drugInfo = ALL_DRUGS.find(d => d.name === drugName);
 
-// ⬇️ ВЕСЬ ЭТОТ БЛОК ЗАМЕНИТЬ
-if (drugInfo && drugInfo.sideEffect) {
-    // Проверяем, отключены ли побочные эффекты (ЭСТ)
-    let shouldApplySideEffect = !patient.noSideEffects;
-    
-    if (shouldApplySideEffect) {
-        const sideEffectChance = 0.25 * (1 - getSideEffectReduction());
-        if (Math.random() < sideEffectChance) {
-            const damage = Math.floor(random(8, 20) * (1 - getSideEffectReduction() * 0.5));
-            patient.health = Math.max(0, patient.health - damage);
-            sideEffectMessage = ` ⚠️ Побочный эффект: ${drugInfo.sideEffect} (-${damage}%)`;
-            statusMessage = sideEffectMessage;
-            if (patient.health <= 0) {
-                patient.state = 'healed';
-                returnNameToPool(patient.name);
-                score = Math.max(0, score - 5);
-                statusMessage = '💀 ' + patient.name + ' умер от побочного эффекта! -5 Ψ';
-                updateUI();
-                endGame();
-                return false;
-            }
-        }
-    } else {
-        // Если побочные эффекты отключены (ЭСТ) — показываем сообщение
-        sideEffectMessage = ' 🛡️ (побочные эффекты отключены ЭСТ)';
-    }
-}
+                if (drugInfo && drugInfo.sideEffect) {
+                    let shouldApplySideEffect = !patient.noSideEffects;
+                    
+                    if (shouldApplySideEffect) {
+                        const sideEffectChance = 0.25 * (1 - getSideEffectReduction());
+                        if (Math.random() < sideEffectChance) {
+                            const damage = Math.floor(random(8, 20) * (1 - getSideEffectReduction() * 0.5));
+                            patient.health = Math.max(0, patient.health - damage);
+                            sideEffectMessage = ` ⚠️ Побочный эффект: ${drugInfo.sideEffect} (-${damage}%)`;
+                            statusMessage = sideEffectMessage;
+                            if (patient.health <= 0) {
+                                patient.state = 'healed';
+                                returnNameToPool(patient.name);
+                                score = Math.max(0, score - 5);
+                                statusMessage = '💀 ' + patient.name + ' умер от побочного эффекта! -5 Ψ';
+                                updateUI();
+                                endGame();
+                                return false;
+                            }
+                        }
+                    } else {
+                        sideEffectMessage = ' 🛡️ (побочные эффекты отключены)';
+                    }
+                }
 
                 if (isMatch) {
                     patient.health = Math.min(100, patient.health + healAmount);
                     const severityLabel = getSeverityLabel(disease.severity);
                     if (patient.health >= 100) {
                         patient.state = 'healed';
-    returnNameToPool(patient.name);
-    // ← ИЗМЕНЕНО: добавляем бонус от Клинической диагностики
-    const diagnosisBonus = techEffects.diagnosisScoreBonus || 0;
-    const basePoints = 5 + Math.floor(Math.pow(disease.severity, 2) * 2);
-    const bonusPoints = Math.floor(basePoints * (1 + diagnosisBonus));
-    score += bonusPoints;
-    levelScore += bonusPoints;
+                        returnNameToPool(patient.name);
+                        const diagnosisBonus = techEffects.diagnosisScoreBonus || 0;
+                        const basePoints = 5 + Math.floor(Math.pow(disease.severity, 2) * 2);
+                        const bonusPoints = Math.floor(basePoints * (1 + diagnosisBonus));
+                        score += bonusPoints;
+                        levelScore += bonusPoints;
                         const orderlyBonus = getOrderlyBonus();
-                        const techEarn = 5 + Math.floor(disease.severity * 1.0) + Math.floor(orderlyBonus*1.5);
+                        let techEarn = 5 + Math.floor(disease.severity * 1.0) + Math.floor(orderlyBonus*1.5);
+                        
+                        // === БОНУС ОТ ВРАЧА (Мейер) ===
+                        const techPointsBoost = getTechPointsBoost();
+                        if (techPointsBoost > 0) {
+                            techEarn = Math.floor(techEarn * (1 + techPointsBoost));
+                        }
+                        
                         techPoints += techEarn;
                         curedCount++;
                         statusMessage = '✅ ' + patient.name + ' вылечен! +' + bonusPoints + 'Ψ, +' + techEarn + '🧪 (' + curedCount + '/' + taskTarget + ')' + sideEffectMessage;
@@ -3651,7 +3786,7 @@ nextRestockTime = Math.floor(Math.random() * (maxInterval - minInterval + 1)) + 
                 if (gameOver) return;
                 const doc = selectedDoc || PSYCHIATRISTS[0];
                 document.getElementById('docDisplay').innerHTML = '🧠 ' + doc.name;
-                const active = patients.filter(p => p.state !== 'healed').length;
+                const active = patients.filter(p => p.state !== 'healed' && !p.isLobotomized).length;
                 document.getElementById('patientCount').innerText = '👥 ' + active;
                 document.getElementById('orderly2Count').textContent = orderly2Count + '/' + maxOrderlies2;
                 document.getElementById('nurseCount').textContent = nurseCount + '/' + maxNurses;
@@ -3677,15 +3812,22 @@ nextRestockTime = Math.floor(Math.random() * (maxInterval - minInterval + 1)) + 
                 } else {
                     if (ectCount >= maxEct) {
                         if (ectTimer > 0) {
-                            ectBtn.textContent = '⏳ ' + Math.ceil(ectTimer/60) + 'с';
+                            const timeLeft = Math.ceil(ectTimer/60);
+                            ectBtn.textContent = '⏳ ' + timeLeft + 'с';
                             ectBtn.disabled = true;
                         } else {
-                            ectBtn.textContent = '⚡ Применить ЭСТ';
+                            const isLobotomy = selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'lobotomy';
+                            ectBtn.textContent = isLobotomy ? '🧠 Лоботомия' : '⚡ Применить ЭСТ';
                             ectBtn.disabled = false;
                         }
                     } else {
-                        ectBtn.textContent = '40Ψ';
-                        ectBtn.disabled = score < 40 || gameOver || isPaused;
+                        let ectCost = 40;
+                        if (selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'ect_cost_reduction') {
+                            ectCost = Math.floor(ectCost * (1 - selectedDoc.bonus.value));
+                            if (ectCost < 1) ectCost = 1;
+                        }
+                        ectBtn.textContent = ectCost + 'Ψ';
+                        ectBtn.disabled = score < ectCost || gameOver || isPaused;
                     }
                 }
                 
@@ -3694,11 +3836,17 @@ nextRestockTime = Math.floor(Math.random() * (maxInterval - minInterval + 1)) + 
                 document.getElementById('techPointsDisplay').textContent = '🧪 ' + techPoints;
                 if (hoveredPatient && hoveredPatient.state !== 'healed' && !gameOver) document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + hoveredPatient.disease.code + ' ' + hoveredPatient.disease.name;
                 else if (selectedPatient && selectedPatient.state !== 'healed' && !gameOver) document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + selectedPatient.disease.code + ' ' + selectedPatient.disease.name;
-                else if (isEctSelectMode) document.getElementById('diagnosisDisplay').innerHTML = '⚡ Выберите цель для ЭСТ';
+                else if (isEctSelectMode) {
+                    const isLobotomy = selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'lobotomy';
+                    document.getElementById('diagnosisDisplay').innerHTML = isLobotomy ? '🧠 Выберите цель для ЛОБОТОМИИ' : '⚡ Выберите цель для ЭСТ';
+                }
                 else document.getElementById('diagnosisDisplay').innerHTML = '🔍 наведи на пациента';
                 
                 let statusMsgText = statusMessage + ' | Вылечено: ' + curedCount + '/' + taskTarget + (isPaused ? ' ⏸️ ПАУЗА' : '');
-                if (isEctSelectMode) statusMsgText = '⚡ Кликните на пациента для ЭСТ (Esc для отмены)';
+                if (isEctSelectMode) {
+                    const isLobotomy = selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'lobotomy';
+                    statusMsgText = isLobotomy ? '🧠 Кликните на пациента для ЛОБОТОМИИ (Esc для отмены)' : '⚡ Кликните на пациента для ЭСТ (Esc для отмены)';
+                }
                 document.getElementById('statusMsg').innerText = statusMsgText;
                 
                 updateTimeCircle();
@@ -3933,7 +4081,11 @@ nextRestockTime = Math.floor(Math.random() * (maxInterval - minInterval + 1)) + 
                 const breathe = Math.sin(time * 1.5 + p.breathPhase) * 0.04;
                 const scale = 1 + breathe;
                 let alpha = 1;
-                if (p.health < 30 && !p.isSleeping && !p.isFighting && !p.isEct) {
+                if (p.isLobotomized) {
+                    alpha = 0.4 + Math.sin(time * 0.5) * 0.1;
+                    p.shakeX = 0;
+                    p.shakeY = 0;
+                } else if (p.health < 30 && !p.isSleeping && !p.isFighting && !p.isEct) {
                     alpha = 0.05 + (p.health / 30) * 0.65;
                     alpha = Math.max(0.05, Math.min(0.7, alpha));
                 } else if (p.isFighting) {
@@ -3947,7 +4099,7 @@ nextRestockTime = Math.floor(Math.random() * (maxInterval - minInterval + 1)) + 
                 } else { p.shakeX *= 0.9; p.shakeY *= 0.9; alpha = 1; }
                 const x = p.x + p.shakeX, y = p.y + p.shakeY, r = p.size * scale;
                 ctx.globalAlpha = alpha;
-                if (hoveredPatient === p || (isEctSelectMode && p.state !== 'healed')) {
+                if (hoveredPatient === p || (isEctSelectMode && p.state !== 'healed' && !p.isLobotomized)) {
                     ctx.shadowColor = isEctSelectMode ? '#4a7a3a' : '#4a3a2a';
                     ctx.shadowBlur = 25;
                     ctx.beginPath(); ctx.arc(x, y, r + 12, 0, Math.PI * 2);
@@ -3988,11 +4140,22 @@ nextRestockTime = Math.floor(Math.random() * (maxInterval - minInterval + 1)) + 
                     ctx.fillStyle = '#ffffff'; ctx.font = 'bold 12px "Georgia"';
                     ctx.fillText(Math.ceil(p.ectTimer/60) + 'с', x + 20, y - 10);
                 }
+                if (p.isLobotomized) {
+                    ctx.shadowColor = '#6a3a2a'; ctx.shadowBlur = 20;
+                    ctx.strokeStyle = '#6a3a2a'; ctx.lineWidth = 2;
+                    ctx.setLineDash([4, 8]);
+                    ctx.beginPath(); ctx.arc(x, y, r + 12, 0, Math.PI * 2); ctx.stroke();
+                    ctx.setLineDash([]);
+                    ctx.shadowBlur = 0;
+                    ctx.fillStyle = '#6a3a2a'; ctx.font = 'bold 18px "Georgia"';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('🧠', x + 15, y - 28);
+                }
                 ctx.textAlign = 'center'; ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 8;
                 ctx.font = 'bold 13px "Georgia"'; ctx.fillStyle = '#ffffff';
                 ctx.fillText(p.name, x, y - 48);
                 ctx.font = 'bold 12px "Georgia"';
-                ctx.fillText(p.disease.code + ' ' + p.disease.name, x, y - 33);
+                ctx.fillText(p.isLobotomized ? '🧠 ЛОБОТОМИРОВАН' : p.disease.code + ' ' + p.disease.name, x, y - 33);
                 ctx.shadowBlur = 0;
                 let healthColor = p.health > 50 ? '#4a7a3a' : (p.health > 25 ? '#c9b84a' : '#b05a3a');
                 ctx.fillStyle = 'rgba(218, 201, 176, ' + (0.6 * alpha) + ')';
@@ -4003,7 +4166,8 @@ nextRestockTime = Math.floor(Math.random() * (maxInterval - minInterval + 1)) + 
                 ctx.shadowColor = 'rgba(0,0,0,0.3)'; ctx.shadowBlur = 10;
                 ctx.beginPath(); ctx.arc(x, y - 6, r * 0.5, 0, Math.PI * 2);
                 const skinColor = p.isSleeping ? '#b0b8a0' : (p.health > 70 ? '#f5d6b8' : (p.health > 40 ? '#e8c8a0' : '#d4a080'));
-                ctx.fillStyle = skinColor; ctx.fill();
+                ctx.fillStyle = p.isLobotomized ? '#8a7a7a' : skinColor;
+                ctx.fill();
                 ctx.strokeStyle = '#2d2417'; ctx.lineWidth = 2; ctx.stroke();
 
                 const isMale = p.gender === 'male';
@@ -4016,18 +4180,18 @@ nextRestockTime = Math.floor(Math.random() * (maxInterval - minInterval + 1)) + 
                 if (diseaseCategory === 'depression') { bodyHeight = isMale ? 20 : 18; }
 
                 ctx.shadowBlur = 8;
-                ctx.fillStyle = isMale ? '#4a6a8a' : '#6a4a7a';
+                ctx.fillStyle = p.isLobotomized ? '#5a4a4a' : (isMale ? '#4a6a8a' : '#6a4a7a');
                 ctx.beginPath();
                 ctx.roundRect(x - bodyWidth/2, y + 2, bodyWidth, bodyHeight, 4);
                 ctx.fill();
                 ctx.strokeStyle = '#2d2417'; ctx.lineWidth = 1.5; ctx.stroke();
 
-                ctx.fillStyle = skinColor;
+                ctx.fillStyle = p.isLobotomized ? '#7a6a6a' : skinColor;
                 ctx.beginPath(); ctx.roundRect(x - 3, y - 2, 6, 6, 3); ctx.fill();
                 if (drawTie) { ctx.fillStyle = '#8a2a2a'; ctx.beginPath(); ctx.roundRect(x - 2, y + 4, 4, 14, 2); ctx.fill(); }
                 if (drawScarf) { ctx.fillStyle = '#4a7a4a'; ctx.beginPath(); ctx.roundRect(x - 6, y + 2, 12, 6, 3); ctx.fill(); }
 
-                ctx.fillStyle = skinColor; ctx.strokeStyle = '#2d2417'; ctx.lineWidth = 1.5;
+                ctx.fillStyle = p.isLobotomized ? '#7a6a6a' : skinColor; ctx.strokeStyle = '#2d2417'; ctx.lineWidth = 1.5;
                 ctx.beginPath(); ctx.roundRect(x - bodyWidth/2 - 4, y + 4, 4, 12, 2); ctx.fill(); ctx.stroke();
                 ctx.beginPath(); ctx.roundRect(x + bodyWidth/2, y + 4, 4, 12, 2); ctx.fill(); ctx.stroke();
 
@@ -4050,7 +4214,9 @@ nextRestockTime = Math.floor(Math.random() * (maxInterval - minInterval + 1)) + 
                     ctx.beginPath(); ctx.arc(x + 3, y - 8, 1.5, 0, Math.PI * 2); ctx.fill();
                 }
                 ctx.strokeStyle = '#2d2417'; ctx.lineWidth = 1.5;
-                if (p.health > 50 && !p.isSleeping) { ctx.beginPath(); ctx.arc(x, y - 3, 5, 0.1, Math.PI - 0.1); ctx.stroke(); } 
+                if (p.isLobotomized) {
+                    ctx.beginPath(); ctx.arc(x, y - 2, 5, 0, Math.PI * 2); ctx.stroke();
+                } else if (p.health > 50 && !p.isSleeping) { ctx.beginPath(); ctx.arc(x, y - 3, 5, 0.1, Math.PI - 0.1); ctx.stroke(); } 
                 else if (p.health < 30 && !p.isSleeping) { ctx.beginPath(); ctx.arc(x, y + 2, 4, Math.PI + 0.2, -0.2); ctx.stroke(); } 
                 else { ctx.beginPath(); ctx.arc(x, y - 2, 4, 0.2, Math.PI - 0.2); ctx.stroke(); }
                 if (drawBeard && isMale) { ctx.fillStyle = '#4a3a2a'; ctx.beginPath(); ctx.ellipse(x, y + 4, 6, 5, 0, 0, Math.PI * 2); ctx.fill(); }
@@ -4443,8 +4609,6 @@ nextRestockTime = Math.floor(Math.random() * (maxInterval - minInterval + 1)) + 
             ctx.fillText('⚡ СТРОГИЙ РЕЖИМ СОДЕРЖАНИЯ ⚡', 450, 538);
             break;
     
-    
-
 
 
 
@@ -4547,24 +4711,6 @@ nextRestockTime = Math.floor(Math.random() * (maxInterval - minInterval + 1)) + 
         });
     });
     break;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
                     case 'flowers':
                         for (let i = 0; i < 3; i++) { 
@@ -4754,9 +4900,11 @@ nextRestockTime = Math.floor(Math.random() * (maxInterval - minInterval + 1)) + 
                 }
                 if (isEctSelectMode) {
                     ctx.fillStyle = 'rgba(74,122,58,0.1)'; ctx.fillRect(0, 0, W, H);
-                    ctx.fillStyle = '#4a7a3a'; ctx.font = 'bold 24px "Georgia"'; ctx.textAlign = 'center';
-                    ctx.fillText('⚡ Выберите пациента для ЭСТ', W / 2, 40);
-                    ctx.font = '16px "Georgia"'; ctx.fillStyle = '#6a8a5a';
+                    const isLobotomy = selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'lobotomy';
+                    ctx.fillStyle = isLobotomy ? '#6a3a2a' : '#4a7a3a';
+                    ctx.font = 'bold 24px "Georgia"'; ctx.textAlign = 'center';
+                    ctx.fillText(isLobotomy ? '🧠 Выберите пациента для ЛОБОТОМИИ' : '⚡ Выберите пациента для ЭСТ', W / 2, 40);
+                    ctx.font = '16px "Georgia"'; ctx.fillStyle = isLobotomy ? '#8a5a4a' : '#6a8a5a';
                     ctx.fillText('Нажмите Esc для отмены', W / 2, 70);
                 }
                 const isNightTime = isNight();
@@ -4782,7 +4930,7 @@ nextRestockTime = Math.floor(Math.random() * (maxInterval - minInterval + 1)) + 
                 drawBeds();
                 patients.forEach(p => drawPatient(p));
                 
-                if (selectedPatient && selectedPatient.state !== 'healed' && !gameOver) {
+                if (selectedPatient && selectedPatient.state !== 'healed' && !gameOver && !selectedPatient.isLobotomized) {
                     ctx.strokeStyle = '#4a3a2a'; ctx.lineWidth = 3;
                     ctx.beginPath(); ctx.arc(selectedPatient.x, selectedPatient.y, selectedPatient.size + 10, 0, Math.PI * 2); ctx.stroke();
                     ctx.strokeStyle = '#4a3a2a'; ctx.lineWidth = 1; ctx.setLineDash([5, 8]);
@@ -4792,7 +4940,7 @@ nextRestockTime = Math.floor(Math.random() * (maxInterval - minInterval + 1)) + 
                 
                 ctx.fillStyle = '#dac9b0'; ctx.globalAlpha = 0.6; ctx.fillRect(0, H - 40, W, 40); ctx.globalAlpha = 1;
                 ctx.fillStyle = '#1a1612'; ctx.font = 'bold 15px "Georgia"'; ctx.textAlign = 'left';
-                const activeCount = patients.filter(p => p.state !== 'healed').length;
+                const activeCount = patients.filter(p => p.state !== 'healed' && !p.isLobotomized).length;
                 ctx.fillText('🏥 ' + (selectedDoc ? selectedDoc.name : '') + '   |   пациентов: ' + activeCount + '   |   ' + getTimeText() + '   |   Ψ ' + score + '   |   🧪 ' + techPoints + '   |   ' + (currentLevel ? currentLevel.name : '') + '   |   цель: ' + curedCount + '/' + taskTarget, 20, H - 14);
             }
 
@@ -4843,7 +4991,7 @@ if (!gameOver && gameActive && currentLevel && !isPaused) {
                     if (frameCounter >= 60) {
                         frameCounter = 0;
                         spawnTimer++;
-                        const activeCount = patients.filter(p => p.state !== 'healed').length;
+                        const activeCount = patients.filter(p => p.state !== 'healed' && !p.isLobotomized).length;
                         const adjustedMaxPatients = Math.max(2, maxPatients - 2);
  currentMaxPatients = currentLevel ? currentLevel.maxPatients || 4 : 4;
                        if (spawnTimer >= spawnInterval / 2 && activeCount < currentMaxPatients && !levelCompleted && !gameOver) {
@@ -4882,16 +5030,16 @@ if (!gameOver && gameActive && currentLevel && !isPaused) {
                         }
                     }
 
-                    // Обработка ЭСТ
+                    // Обработка ЭСТ / ЛОБОТОМИИ
                    if (ectTimer > 0) {
     ectTimer--;
-    if (ectTarget && ectTarget.state !== 'healed') {
+    if (ectTarget && ectTarget.state !== 'healed' && !ectTarget.isLobotomized) {
         ectTarget.ectTimer = ectTimer;
         if (ectTimer <= 0) {
             ectTarget.isEct = false;
             ectTarget.isEctStunned = false;
             ectTarget.ectHealBoost = 0;
-            ectTarget.noSideEffects = false;  // ⬅️ ЭТУ СТРОЧКУ ДОБАВИТЬ
+            ectTarget.noSideEffects = false;
             statusMessage = '⚡ ЭСТ завершена для ' + ectTarget.name + ' (побочные эффекты снова активны)';
             ectTarget = null;
             updateUI();
@@ -4905,7 +5053,7 @@ if (!gameOver && gameActive && currentLevel && !isPaused) {
                     zSpawnCounter++;
                     if (zSpawnCounter >= 300 && !gameOver && gameActive) {
                         zSpawnCounter = 0;
-                        const sleepingPatients = patients.filter(p => p.state !== 'healed' && p.isSleeping);
+                        const sleepingPatients = patients.filter(p => p.state !== 'healed' && p.isSleeping && !p.isLobotomized);
                         for (let p of sleepingPatients) {
                             for (let i = 0; i < 2; i++) {
                                 zLetters.push({ x: p.x + random(-25, 25), y: p.y - 35 - random(0, 20), size: 14 + random(0, 10), life: 80 + random(0, 40), maxLife: 80 + random(0, 40), dx: random(-0.3, 0.3), dy: -0.4 - random(0, 0.3) });
@@ -4913,7 +5061,7 @@ if (!gameOver && gameActive && currentLevel && !isPaused) {
                         }
                     }
 
-                    const activePatients = patients.filter(p => p.state !== 'healed');
+                    const activePatients = patients.filter(p => p.state !== 'healed' && !p.isLobotomized);
                     if (!gameOver && gameActive && !isPaused) {
                         const levelIndex = LEVELS.findIndex(l => l.id === currentLevel?.id);
                         
@@ -4926,7 +5074,7 @@ if (!gameOver && gameActive && currentLevel && !isPaused) {
                             baseSpeed = minSpeed + (levelIndex / maxIndex) * (maxSpeed - minSpeed);
                         }
                         
-                        const sleepingPatients = patients.filter(p => p.state !== 'healed' && p.isSleeping);
+                        const sleepingPatients = patients.filter(p => p.state !== 'healed' && p.isSleeping && !p.isLobotomized);
                         
                         sleepingPatients.forEach(function(p) {
                             let healSpeed = 0.03;
@@ -4936,6 +5084,13 @@ if (!gameOver && gameActive && currentLevel && !isPaused) {
                             if (isDay()) {
                                 healSpeed *= 0.5;
                             }
+                            
+                            // === БОНУС ОТ ВРАЧА (Фрейд) ===
+                            const sleepBoost = getSleepBoost();
+                            if (sleepBoost > 0) {
+                                healSpeed *= (1 + sleepBoost);
+                            }
+                            
                             if (techEffects.physicalTherapy) {
                                 healSpeed *= (1 + techEffects.physicalTherapy);
                             }
@@ -4955,6 +5110,12 @@ if (!gameOver && gameActive && currentLevel && !isPaused) {
                                 
                                 const orderly2Bonus = getOrderly2Bonus();
                                 dropSpeed = dropSpeed * (1 - orderly2Bonus * 0.3);
+                                
+                                // === БОНУС ОТ ВРАЧА (Абрахам) ===
+                                const healthDecayReduction = getHealthDecayReduction(p.disease.category);
+                                if (healthDecayReduction > 0) {
+                                    dropSpeed = dropSpeed * (1 - healthDecayReduction);
+                                }
                                 
                                 if (techEffects.dopamineBoost && 
                                     (p.disease.category === 'schizophrenia' || p.disease.category === 'schizotypal')) {
@@ -5015,7 +5176,7 @@ if (!gameOver && gameActive && currentLevel && !isPaused) {
                             }
                         });
 
-                        const fighters = activePatients.filter(p => !p.isFighting && !p.isSleeping && !p.isEctStunned);
+                        const fighters = activePatients.filter(p => !p.isFighting && !p.isSleeping && !p.isEctStunned && !p.isLobotomized);
 
                         const levelIndex = LEVELS.findIndex(l => l.id === currentLevel?.id);
                         const totalLevels = LEVELS.length;
@@ -5045,7 +5206,7 @@ if (!gameOver && gameActive && currentLevel && !isPaused) {
                         for (let p of activePatients) {
                             if (p.isFighting && p.fightTarget) {
                                 const target = p.fightTarget;
-                                if (target.state === 'healed' || !activePatients.includes(target)) { p.isFighting = false; p.fightTarget = null; continue }
+                                if (target.state === 'healed' || !activePatients.includes(target) || target.isLobotomized) { p.isFighting = false; p.fightTarget = null; continue }
                                 processFight(p, target);
                             }
                         }
@@ -5107,7 +5268,10 @@ if (!gameOver && gameActive && currentLevel && !isPaused) {
                         isEct: p.isEct,
                         ectTimer: p.ectTimer,
                         isEctStunned: p.isEctStunned,
-                        ectHealBoost: p.ectHealBoost
+                        ectHealBoost: p.ectHealBoost,
+                        isLobotomized: p.isLobotomized || false,
+                        isLobotomy: p.isLobotomy || false,
+                        noSideEffects: p.noSideEffects || false
                     })),
                     drugInventory: drugInventory,
                     completedLevels: completedLevels,
@@ -5276,7 +5440,10 @@ availDrugs.forEach(drugName => {
                                 bedTarget: null,
                                 shakeX: 0,
                                 shakeY: 0,
-                                size: p.size || 18
+                                size: p.size || 18,
+                                isLobotomized: p.isLobotomized || false,
+                                isLobotomy: p.isLobotomy || false,
+                                noSideEffects: p.noSideEffects || false
                             }));
                             
                             (data.patients || []).forEach((p, idx) => {
@@ -5516,7 +5683,6 @@ sortedDiseases.forEach(d => {
 });
 
 html += `</div>`;
-
 
     // 4. Препараты
     html += `<div class="encyclopedia-section"><h4>💊 Фармакологический справочник</h4>`;
@@ -5881,15 +6047,18 @@ if (e.key === ' ' || e.key === 'Space') {
                 const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
                 const mx = (e.clientX - rect.left) * scaleX, my = (e.clientY - rect.top) * scaleY;
                 let found = null;
-                for (let p of patients) { if (p.state === 'healed') continue; if (dist({ x: mx, y: my }, p) < p.size + 12) { found = p; break; } }
+                for (let p of patients) { if (p.state === 'healed' || p.isLobotomized) continue; if (dist({ x: mx, y: my }, p) < p.size + 12) { found = p; break; } }
                 if (found) { hoveredPatient = found; showTooltip(found, e.clientX, e.clientY); document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + found.disease.code + ' ' + found.disease.name; } 
-                else { if (hoveredPatient) { hideTooltip(); if (selectedPatient && selectedPatient.state !== 'healed') document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + selectedPatient.disease.code + ' ' + selectedPatient.disease.name; else if (isEctSelectMode) document.getElementById('diagnosisDisplay').innerHTML = '⚡ Выберите цель для ЭСТ'; else document.getElementById('diagnosisDisplay').innerHTML = '🔍 наведи на пациента' } }
+                else { if (hoveredPatient) { hideTooltip(); if (selectedPatient && selectedPatient.state !== 'healed') document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + selectedPatient.disease.code + ' ' + selectedPatient.disease.name; else if (isEctSelectMode) { const isLobotomy = selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'lobotomy'; document.getElementById('diagnosisDisplay').innerHTML = isLobotomy ? '🧠 Выберите цель для ЛОБОТОМИИ' : '⚡ Выберите цель для ЭСТ'; } else document.getElementById('diagnosisDisplay').innerHTML = '🔍 наведи на пациента' } }
             });
             canvas.addEventListener('mouseleave', function() {
                 if (gameOver) return;
                 hideTooltip();
                 if (selectedPatient && selectedPatient.state !== 'healed') document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + selectedPatient.disease.code + ' ' + selectedPatient.disease.name;
-                else if (isEctSelectMode) document.getElementById('diagnosisDisplay').innerHTML = '⚡ Выберите цель для ЭСТ';
+                else if (isEctSelectMode) {
+                    const isLobotomy = selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'lobotomy';
+                    document.getElementById('diagnosisDisplay').innerHTML = isLobotomy ? '🧠 Выберите цель для ЛОБОТОМИИ' : '⚡ Выберите цель для ЭСТ';
+                }
                 else document.getElementById('diagnosisDisplay').innerHTML = '🔍 наведи на пациента';
             });
             canvas.addEventListener('click', function(e) {
@@ -5901,7 +6070,7 @@ if (e.key === ' ' || e.key === 'Space') {
                     const mx = (e.clientX - rect.left) * scaleX, my = (e.clientY - rect.top) * scaleY;
                     let found = null;
                     for (let p of patients) { 
-                        if (p.state === 'healed') continue; 
+                        if (p.state === 'healed' || p.isLobotomized) continue; 
                         if (dist({ x: mx, y: my }, p) < p.size + 12) { 
                             found = p; 
                             break; 
@@ -5922,8 +6091,8 @@ if (e.key === ' ' || e.key === 'Space') {
                 const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
                 const mx = (e.clientX - rect.left) * scaleX, my = (e.clientY - rect.top) * scaleY;
                 let found = null;
-                for (let p of patients) { if (p.state === 'healed') continue; if (dist({ x: mx, y: my }, p) < p.size + 12) { found = p; break; } }
-                if (found) { selectedPatient = found; document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + found.disease.code + ' ' + found.disease.name; } else { selectedPatient = null; if (isEctSelectMode) document.getElementById('diagnosisDisplay').innerHTML = '⚡ Выберите цель для ЭСТ'; else document.getElementById('diagnosisDisplay').innerHTML = '🔍 наведи на пациента'; }
+                for (let p of patients) { if (p.state === 'healed' || p.isLobotomized) continue; if (dist({ x: mx, y: my }, p) < p.size + 12) { found = p; break; } }
+                if (found) { selectedPatient = found; document.getElementById('diagnosisDisplay').innerHTML = '🔍 ' + found.disease.code + ' ' + found.disease.name; } else { selectedPatient = null; if (isEctSelectMode) { const isLobotomy = selectedDoc && selectedDoc.bonus && selectedDoc.bonus.type === 'lobotomy'; document.getElementById('diagnosisDisplay').innerHTML = isLobotomy ? '🧠 Выберите цель для ЛОБОТОМИИ' : '⚡ Выберите цель для ЭСТ'; } else document.getElementById('diagnosisDisplay').innerHTML = '🔍 наведи на пациента'; }
                 updateUI();
             });
             canvas.addEventListener('dragover', function(e) { e.preventDefault(); });
@@ -5936,7 +6105,7 @@ if (e.key === ' ' || e.key === 'Space') {
                 const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
                 const mx = (e.clientX - rect.left) * scaleX, my = (e.clientY - rect.top) * scaleY;
                 let targetPatient = null;
-                for (let p of patients) { if (p.state === 'healed') continue; if (dist({ x: mx, y: my }, p) < p.size + 12) { targetPatient = p; break; } }
+                for (let p of patients) { if (p.state === 'healed' || p.isLobotomized) continue; if (dist({ x: mx, y: my }, p) < p.size + 12) { targetPatient = p; break; } }
                 if (targetPatient) { applyDrug(targetPatient, drug); if (targetPatient.health <= 0) targetPatient.state = 'healed'; updateUI(); renderDrugPanel(); } 
                 else { statusMessage = '❌ перетащите на пациента'; updateUI(); }
             });
@@ -6087,13 +6256,6 @@ document.getElementById('menuRestartBtn').addEventListener('click', function() {
 
 
 
-
-
-
-
-
-
-
 document.getElementById('menuSaveBtn').addEventListener('click', function() {
     saveGame();
     toggleMenu(false);
@@ -6124,7 +6286,6 @@ document.addEventListener('contextmenu', function(e) {
             });
 
         })();
-
 
 
 
